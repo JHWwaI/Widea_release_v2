@@ -42,11 +42,11 @@ type ViewMode = "calendar" | "timeline" | "byWorkspace";
 type TimeBucket = "OVERDUE" | "TODAY" | "TOMORROW" | "THIS_WEEK" | "THIS_MONTH" | "LATER" | "NO_DUE";
 
 const BUCKET_META: Record<TimeBucket, { label: string; ring: string; tone: string }> = {
-  OVERDUE:    { label: "기한 초과", ring: "ring-rose-400/30",   tone: "text-rose-300" },
-  TODAY:      { label: "오늘 마감", ring: "ring-amber-400/30",  tone: "text-amber-300" },
-  TOMORROW:   { label: "내일 마감", ring: "ring-amber-400/20",  tone: "text-amber-200" },
-  THIS_WEEK:  { label: "이번 주",   ring: "ring-violet-400/30", tone: "text-violet-200" },
-  THIS_MONTH: { label: "이번 달",   ring: "ring-violet-400/15", tone: "text-zinc-300" },
+  OVERDUE:    { label: "기한 초과", ring: "ring-white/15",   tone: "text-rose-300" },
+  TODAY:      { label: "오늘 마감", ring: "ring-white/15",   tone: "text-zinc-100" },
+  TOMORROW:   { label: "내일 마감", ring: "ring-white/10",   tone: "text-zinc-200" },
+  THIS_WEEK:  { label: "이번 주",   ring: "ring-white/25", tone: "text-zinc-200" },
+  THIS_MONTH: { label: "이번 달",   ring: "ring-white/15", tone: "text-zinc-300" },
   LATER:      { label: "이후",      ring: "ring-white/10",      tone: "text-zinc-400" },
   NO_DUE:     { label: "기한 없음", ring: "ring-white/5",       tone: "text-zinc-500" },
 };
@@ -74,8 +74,8 @@ function dueText(due: string | null): { text: string; cn: string } {
   const diff = Math.round((d.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   const dt = d.toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" });
   if (diff < 0) return { text: `${dt} · ${-diff}일 지남`, cn: "text-rose-300" };
-  if (diff === 0) return { text: `${dt} · 오늘`, cn: "text-amber-300" };
-  if (diff === 1) return { text: `${dt} · 내일`, cn: "text-amber-200" };
+  if (diff === 0) return { text: `${dt} · 오늘`, cn: "text-zinc-100" };
+  if (diff === 1) return { text: `${dt} · 내일`, cn: "text-zinc-200" };
   if (diff <= 7) return { text: `${dt} · ${diff}일 후`, cn: "text-zinc-300" };
   return { text: dt, cn: "text-zinc-500" };
 }
@@ -191,13 +191,15 @@ function Inner() {
     const total = tasks.length;
     const done = tasks.filter((t) => t.status === "DONE" || t.status === "OUTSOURCED" || t.status === "SKIPPED").length;
     const overdue = tasks.filter((t) => t.status === "PENDING" && t.dueDate && new Date(t.dueDate) < today).length;
+    const todayStr = ymd(today);
+    const dueToday = tasks.filter((t) => t.status === "PENDING" && t.dueDate && ymd(new Date(t.dueDate)) === todayStr).length;
     const dueSoon = tasks.filter((t) => {
       if (t.status !== "PENDING" || !t.dueDate) return false;
       const diff = (new Date(t.dueDate).getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
       return diff >= 0 && diff <= 7;
     }).length;
     const mine = user ? tasks.filter((t) => t.assigneeId === user.id && t.status === "PENDING").length : 0;
-    return { total, done, overdue, dueSoon, mine };
+    return { total, done, overdue, dueToday, dueSoon, mine };
   }, [tasks, today, user]);
 
   // 시간순 — 버킷 그룹
@@ -231,6 +233,47 @@ function Inner() {
     return Array.from(map.values()).filter((g) => g.tasks.length > 0);
   }, [visibleTasks, workspaces]);
 
+  function StatCard({
+    label,
+    count,
+    active,
+    onClick,
+    tone = "default",
+  }: {
+    label: string;
+    count: number;
+    active?: boolean;
+    onClick: () => void;
+    tone?: "default" | "alert";
+  }) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="group flex items-end justify-between gap-2 rounded-xl px-5 py-4 text-left transition-colors"
+        style={{
+          background: active ? "var(--surface-strong)" : "var(--surface-muted)",
+          border: `1px solid ${active ? "var(--line-strong)" : "var(--line)"}`,
+        }}
+      >
+        <span
+          className="text-sm font-medium"
+          style={{ color: active ? "var(--ink)" : "var(--ink-2)" }}
+        >
+          {label}
+        </span>
+        <span
+          className="text-3xl font-semibold leading-none tabular-nums"
+          style={{
+            color: tone === "alert" && count > 0 ? "#F4A6A6" : "var(--ink)",
+          }}
+        >
+          {count}
+        </span>
+      </button>
+    );
+  }
+
   function FilterChip({ value, label, count, accent }: { value: Filter; label: string; count: number; accent?: string }) {
     const active = filter === value;
     return (
@@ -239,7 +282,7 @@ function Inner() {
         onClick={() => setFilter(value)}
         className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
           active
-            ? "bg-violet-500 text-white"
+            ? "bg-white text-zinc-900"
             : "border border-white/10 bg-white/[0.03] text-zinc-300 hover:border-white/20 hover:bg-white/[0.05]"
         }`}
       >
@@ -254,9 +297,9 @@ function Inner() {
   return (
     <div className="space-y-4">
       <header className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-violet-300">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-zinc-300">
               종합 일정
             </p>
             <h1 className="mt-1 text-2xl font-bold text-white">내 모든 워크스페이스의 할 일</h1>
@@ -268,41 +311,73 @@ function Inner() {
           <button
             type="button"
             onClick={() => setShowAddModal(true)}
-            className="rounded-lg border border-violet-400/40 bg-violet-500/15 px-3 py-1.5 text-xs font-bold text-violet-100 hover:bg-violet-500/25"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-zinc-900 shadow-sm transition-colors hover:bg-zinc-100"
           >
-            + 일정 추가
+            <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <path strokeLinecap="round" d="M8 3v10M3 8h10" />
+            </svg>
+            일정 추가
           </button>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-end gap-2">
           <div className="flex items-center rounded-lg border border-white/10 bg-white/[0.02] p-0.5">
             <button
               type="button"
               onClick={() => setView("calendar")}
-              className={`rounded-md px-2.5 py-1 text-[0.7rem] font-semibold transition-colors ${view === "calendar" ? "bg-violet-500 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+              className={`rounded-md px-2.5 py-1 text-[0.7rem] font-semibold transition-colors ${view === "calendar" ? "bg-white text-zinc-900" : "text-zinc-400 hover:text-zinc-200"}`}
             >
               캘린더
             </button>
             <button
               type="button"
               onClick={() => setView("timeline")}
-              className={`rounded-md px-2.5 py-1 text-[0.7rem] font-semibold transition-colors ${view === "timeline" ? "bg-violet-500 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+              className={`rounded-md px-2.5 py-1 text-[0.7rem] font-semibold transition-colors ${view === "timeline" ? "bg-white text-zinc-900" : "text-zinc-400 hover:text-zinc-200"}`}
             >
               시간순
             </button>
             <button
               type="button"
               onClick={() => setView("byWorkspace")}
-              className={`rounded-md px-2.5 py-1 text-[0.7rem] font-semibold transition-colors ${view === "byWorkspace" ? "bg-violet-500 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+              className={`rounded-md px-2.5 py-1 text-[0.7rem] font-semibold transition-colors ${view === "byWorkspace" ? "bg-white text-zinc-900" : "text-zinc-400 hover:text-zinc-200"}`}
             >
               워크스페이스별
             </button>
           </div>
         </div>
 
+        {/* Stat cards */}
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <StatCard
+            label="오늘 마감"
+            count={stats.dueToday}
+            active={filter === "due_soon"}
+            onClick={() => setFilter(filter === "due_soon" ? "all" : "due_soon")}
+          />
+          <StatCard
+            label="이번주"
+            count={stats.dueSoon}
+            active={filter === "due_soon"}
+            onClick={() => setFilter(filter === "due_soon" ? "all" : "due_soon")}
+          />
+          <StatCard
+            label="기한 초과"
+            count={stats.overdue}
+            tone={stats.overdue > 0 ? "alert" : "default"}
+            active={filter === "overdue"}
+            onClick={() => setFilter(filter === "overdue" ? "all" : "overdue")}
+          />
+          <StatCard
+            label="완료"
+            count={stats.done}
+            active={filter === "completed"}
+            onClick={() => setFilter(filter === "completed" ? "all" : "completed")}
+          />
+        </div>
+
         <div className="flex flex-wrap items-center gap-1.5">
           <FilterChip value="all" label="전체" count={stats.total} />
-          <FilterChip value="mine" label="내 일" count={stats.mine} accent="bg-violet-500/20 text-violet-200" />
-          <FilterChip value="due_soon" label="이번주" count={stats.dueSoon} accent="bg-amber-500/20 text-amber-200" />
-          <FilterChip value="overdue" label="기한 초과" count={stats.overdue} accent="bg-rose-500/20 text-rose-200" />
-          <FilterChip value="completed" label="완료" count={stats.done} accent="bg-emerald-500/20 text-emerald-200" />
+          <FilterChip value="mine" label="내 일" count={stats.mine} accent="bg-white/10 text-zinc-200" />
         </div>
 
         {/* 워크스페이스 필터 */}
@@ -314,7 +389,7 @@ function Inner() {
             <button
               type="button"
               onClick={() => setWsFilter(null)}
-              className={`rounded-full px-2.5 py-1 text-[0.65rem] font-semibold transition-colors ${!wsFilter ? "bg-violet-500/20 text-violet-100 ring-1 ring-violet-400/40" : "border border-white/10 text-zinc-400 hover:text-zinc-200"}`}
+              className={`rounded-full px-2.5 py-1 text-[0.65rem] font-semibold transition-colors ${!wsFilter ? "bg-white text-zinc-900" : "border border-white/10 text-zinc-400 hover:text-zinc-200"}`}
             >
               전체
             </button>
@@ -325,7 +400,7 @@ function Inner() {
                   key={w.ideaId}
                   type="button"
                   onClick={() => setWsFilter(w.ideaId)}
-                  className={`rounded-full px-2.5 py-1 text-[0.65rem] font-semibold transition-colors ${active ? "bg-violet-500/20 text-violet-100 ring-1 ring-violet-400/40" : "border border-white/10 text-zinc-400 hover:text-zinc-200"}`}
+                  className={`rounded-full px-2.5 py-1 text-[0.65rem] font-semibold transition-colors ${active ? "bg-white text-zinc-900" : "border border-white/10 text-zinc-400 hover:text-zinc-200"}`}
                 >
                   {w.title}
                 </button>
@@ -348,7 +423,7 @@ function Inner() {
           <p className="text-sm text-zinc-400">아직 워크스페이스가 없거나 작업이 없습니다.</p>
           <Link
             href="/idea-match"
-            className="mt-4 inline-block rounded-lg border border-violet-400/40 bg-violet-500/15 px-4 py-2 text-xs font-bold text-violet-100 hover:bg-violet-500/25"
+            className="mt-4 inline-block rounded-lg border border-white/20 bg-white/[0.08] px-4 py-2 text-xs font-bold text-zinc-900 hover:bg-white/[0.12]"
           >
             아이디어 만들러 가기
           </Link>
@@ -395,8 +470,8 @@ function Inner() {
               key={g.ideaId}
               title={g.title}
               titleHref={`/workspace/${g.ideaId}`}
-              ring="ring-violet-400/20"
-              tone="text-violet-200"
+              ring="ring-white/20"
+              tone="text-zinc-200"
               items={g.tasks}
               onToggleDone={(t) =>
                 patchTask(t.id, { status: t.status === "DONE" ? "PENDING" : "DONE" })
@@ -437,17 +512,30 @@ function BucketSection({
   onToggleDone: (t: FlatTask) => void;
   saving: boolean;
 }) {
+  const doneCount = items.filter((t) => t.status === "DONE" || t.status === "SKIPPED" || t.status === "OUTSOURCED").length;
+  const pct = items.length === 0 ? 0 : Math.round((doneCount / items.length) * 100);
   return (
     <div className={`overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] ring-1 ${ring}`}>
-      <div className="flex items-center justify-between border-b border-white/5 bg-white/[0.02] px-4 py-2">
-        {titleHref ? (
-          <Link href={titleHref} className={`flex items-center gap-2 text-sm font-bold ${tone} hover:underline`}>
-            {title} →
-          </Link>
-        ) : (
-          <p className={`flex items-center gap-2 text-sm font-bold ${tone}`}>{title}</p>
-        )}
-        <span className="text-[0.65rem] tabular-nums text-zinc-500">{items.length}개</span>
+      <div className="border-b border-white/5 bg-white/[0.03] px-5 py-3">
+        <div className="flex items-center justify-between gap-3">
+          {titleHref ? (
+            <Link href={titleHref} className={`text-base font-semibold ${tone} hover:underline`}>
+              {title}
+            </Link>
+          ) : (
+            <p className={`text-base font-semibold ${tone}`}>{title}</p>
+          )}
+          <span className="shrink-0 text-xs tabular-nums text-zinc-400">
+            {doneCount} / {items.length}
+            <span className="ml-2 text-zinc-500">({pct}%)</span>
+          </span>
+        </div>
+        <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/[0.06]">
+          <div
+            className="h-full rounded-full bg-white transition-all"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
       </div>
       <ul>
         {items.map((task) => {
@@ -461,8 +549,8 @@ function BucketSection({
                 disabled={saving}
                 className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
                   task.status === "DONE"
-                    ? "border-emerald-400/50 bg-emerald-500/30 text-emerald-200"
-                    : "border-white/15 hover:border-violet-400/40 hover:bg-violet-500/10"
+                    ? "border-white/25 bg-white/[0.15] text-white"
+                    : "border-white/15 hover:border-white/20 hover:bg-white/[0.06]"
                 }`}
               >
                 {task.status === "DONE" ? "✓" : ""}
@@ -472,7 +560,7 @@ function BucketSection({
                   {task.content}
                 </p>
                 <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[0.65rem] text-zinc-500">
-                  <Link href={`/workspace/${task.ideaId}`} className="hover:text-violet-200">
+                  <Link href={`/workspace/${task.ideaId}`} className="hover:text-zinc-200">
                     {task.ideaTitle}
                   </Link>
                   <span>·</span>
@@ -480,7 +568,7 @@ function BucketSection({
                   {task.assignee ? (
                     <>
                       <span>·</span>
-                      <span className="text-violet-200">👤 {task.assignee.name ?? task.assignee.email.split("@")[0]}</span>
+                      <span className="text-zinc-200">👤 {task.assignee.name ?? task.assignee.email.split("@")[0]}</span>
                     </>
                   ) : null}
                   <span>·</span>
@@ -500,13 +588,72 @@ function BucketSection({
    ───────────────────────────────────────────── */
 
 const WS_COLORS = [
-  "bg-violet-500/30 text-violet-100 border-violet-400/40",
-  "bg-emerald-500/30 text-emerald-100 border-emerald-400/40",
-  "bg-amber-500/30 text-amber-100 border-amber-400/40",
-  "bg-rose-500/30 text-rose-100 border-rose-400/40",
-  "bg-sky-500/30 text-sky-100 border-sky-400/40",
-  "bg-pink-500/30 text-pink-100 border-pink-400/40",
+  "bg-white/[0.08] text-zinc-100 border-white/15",
+  "bg-white/[0.06] text-zinc-200 border-white/12",
+  "bg-white/[0.10] text-white border-white/20",
+  "bg-white/[0.05] text-zinc-300 border-white/10",
+  "bg-white/[0.08] text-zinc-100 border-white/15",
+  "bg-white/[0.06] text-zinc-200 border-white/12",
 ];
+
+// 캘린더 셀의 task 좌측 stripe 색 — 배경(#0B0C10)에 자연스럽게 녹는 무채/매우 옅은 색조
+const WS_STRIPES = ["#8C8F95", "#C8CACE", "#5C5F65", "#ECEDEF", "#A0A3AA", "#6F727A"];
+
+function EditableTaskContent({
+  taskId,
+  initial,
+  completed,
+  saving,
+  onSave,
+}: {
+  taskId: string;
+  initial: string;
+  completed: boolean;
+  saving: boolean;
+  onSave: (v: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(initial);
+
+  useEffect(() => {
+    setValue(initial);
+  }, [initial, taskId]);
+
+  if (editing) {
+    return (
+      <input
+        autoFocus
+        value={value}
+        disabled={saving}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={() => {
+          if (value.trim() && value.trim() !== initial) onSave(value.trim());
+          setEditing(false);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+          if (e.key === "Escape") {
+            setValue(initial);
+            setEditing(false);
+          }
+        }}
+        className="w-full rounded border border-white/15 bg-white/[0.04] px-1.5 py-1 text-sm text-white focus:border-white/40 focus:outline-none"
+      />
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => setEditing(true)}
+      title="클릭하여 편집"
+      className={`w-full text-left text-sm leading-snug transition-colors ${
+        completed ? "text-zinc-500 line-through" : "text-white hover:text-zinc-200"
+      }`}
+    >
+      {initial}
+    </button>
+  );
+}
 
 function ymd(d: Date): string {
   const y = d.getFullYear();
@@ -551,6 +698,16 @@ function CalendarView({
     workspaces.forEach((w, i) => map.set(w.ideaId, WS_COLORS[i % WS_COLORS.length]));
     return map;
   }, [workspaces]);
+  const wsStripe = useMemo(() => {
+    const map = new Map<string, string>();
+    workspaces.forEach((w, i) => map.set(w.ideaId, WS_STRIPES[i % WS_STRIPES.length]));
+    return map;
+  }, [workspaces]);
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
 
   // 그리드 첫 셀(이전 달 뒷부분) ~ 마지막 셀
   const grid = useMemo(() => {
@@ -639,23 +796,6 @@ function CalendarView({
           <h2 className="ml-2 text-base font-bold text-white">{monthLabel}</h2>
         </div>
 
-        {/* 워크스페이스 색 범례 */}
-        {workspaces.length > 0 ? (
-          <div className="flex flex-wrap items-center gap-1.5">
-            {workspaces.slice(0, 6).map((w) => {
-              const cls = wsColor.get(w.ideaId) ?? WS_COLORS[0];
-              return (
-                <span
-                  key={w.ideaId}
-                  className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[0.6rem] font-semibold ${cls}`}
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                  {w.title.length > 10 ? w.title.slice(0, 10) + "…" : w.title}
-                </span>
-              );
-            })}
-          </div>
-        ) : null}
       </div>
 
       {/* 캘린더 그리드 */}
@@ -666,7 +806,7 @@ function CalendarView({
             <div
               key={d}
               className={`px-2 py-1.5 text-center text-[0.65rem] font-semibold uppercase tracking-wider ${
-                i === 0 ? "text-rose-300" : i === 6 ? "text-sky-300" : "text-zinc-400"
+                i === 0 ? "text-rose-400" : i === 6 ? "text-zinc-300" : "text-zinc-400"
               }`}
             >
               {d}
@@ -687,28 +827,33 @@ function CalendarView({
                 key={k + i}
                 type="button"
                 onClick={() => onOpenDate(k)}
-                className={`flex min-h-[96px] flex-col items-stretch gap-0.5 border-b border-r border-white/5 p-1.5 text-left transition-colors hover:bg-white/[0.03] ${
-                  inMonth ? "" : "bg-black/20"
-                }`}
+                className="relative flex min-h-[100px] flex-col items-stretch gap-1 p-1.5 text-left transition-colors"
+                style={{
+                  borderBottom: "1px solid var(--line-soft)",
+                  borderRight: "1px solid var(--line-soft)",
+                  background: !inMonth ? "rgba(0,0,0,0.25)" : isToday ? "var(--surface-strong)" : "transparent",
+                  boxShadow: isToday ? "inset 0 0 0 1px var(--line-strong)" : undefined,
+                }}
               >
                 <div className="flex items-center justify-between">
                   <span
-                    className={`flex h-5 w-5 items-center justify-center rounded-full text-[0.65rem] font-semibold ${
+                    className={`flex h-5 min-w-[1.25rem] items-center justify-center rounded-full px-1 text-[0.7rem] font-semibold tabular-nums ${
                       isToday
-                        ? "bg-violet-500 text-white"
+                        ? "bg-white text-zinc-900"
                         : !inMonth
                           ? "text-zinc-700"
                           : wd === 0
-                            ? "text-rose-300"
-                            : wd === 6
-                              ? "text-sky-300"
-                              : "text-zinc-300"
+                            ? "text-rose-400"
+                            : "text-zinc-300"
                     }`}
                   >
                     {d.getDate()}
                   </span>
                   {dayTasks.length > 0 ? (
-                    <span className="text-[0.55rem] tabular-nums text-zinc-500">
+                    <span
+                      className="rounded-sm px-1 text-[0.6rem] tabular-nums"
+                      style={{ background: "var(--surface)", color: "var(--ink-3)" }}
+                    >
                       {dayTasks.length}
                     </span>
                   ) : null}
@@ -717,25 +862,41 @@ function CalendarView({
                 {/* task 막대 (최대 3개) */}
                 <div className="space-y-0.5">
                   {dayTasks.slice(0, 3).map((t) => {
-                    const cls = wsColor.get(t.ideaId) ?? WS_COLORS[0];
                     const completed =
                       t.status === "DONE" ||
                       t.status === "OUTSOURCED" ||
                       t.status === "SKIPPED";
+                    const isOverdue = !completed && t.dueDate && new Date(t.dueDate) < today;
+                    const stripe = wsStripe.get(t.ideaId) ?? "#52525B";
                     return (
                       <div
                         key={t.id}
-                        className={`truncate rounded border px-1 py-0.5 text-[0.6rem] leading-tight ${cls} ${
-                          completed ? "opacity-50 line-through" : ""
-                        }`}
+                        className="relative flex items-center gap-1 truncate rounded-sm pl-1.5 pr-1 py-0.5 text-[0.6rem] leading-tight transition-colors"
                         title={`${t.ideaTitle} · ${t.content}`}
+                        style={{
+                          background: completed
+                            ? "var(--surface-muted)"
+                            : isOverdue
+                              ? "rgba(244,166,166,0.10)"
+                              : "var(--surface)",
+                          color: completed
+                            ? "var(--ink-4)"
+                            : isOverdue
+                              ? "#F4A6A6"
+                              : "var(--ink-2)",
+                          textDecoration: completed ? "line-through" : "none",
+                          boxShadow: `inset 2px 0 0 ${isOverdue ? "#F4A6A6" : stripe}`,
+                        }}
                       >
-                        {t.content}
+                        <span className={`shrink-0 text-[0.55rem] ${completed ? "text-zinc-500" : "text-zinc-400"}`}>
+                          {completed ? "●" : "○"}
+                        </span>
+                        <span className="truncate">{t.content}</span>
                       </div>
                     );
                   })}
                   {dayTasks.length > 3 ? (
-                    <p className="text-[0.55rem] text-zinc-500">+ {dayTasks.length - 3}개 더</p>
+                    <p className="text-[0.55rem] text-zinc-500">+{dayTasks.length - 3}</p>
                   ) : null}
                 </div>
               </button>
@@ -755,37 +916,47 @@ function CalendarView({
             onKeyDown={(e) => e.key === "Escape" && onOpenDate(null)}
             className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
           />
-          <div className="fixed left-1/2 top-1/2 z-50 flex max-h-[80vh] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl border border-white/10 bg-zinc-950 shadow-2xl">
-            <header className="flex items-center justify-between border-b border-white/10 px-5 py-3">
-              <h3 className="text-base font-bold text-white">{openDate}</h3>
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => onAddNewOnDate(openDate)}
-                  className="rounded-md border border-violet-400/40 bg-violet-500/15 px-2.5 py-1 text-[0.7rem] font-bold text-violet-100 hover:bg-violet-500/25"
-                >
-                  + 추가
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onOpenDate(null)}
-                  className="rounded-full p-1.5 text-zinc-400 hover:bg-white/5 hover:text-white"
-                >
-                  ✕
-                </button>
+          <div className="fixed left-1/2 top-1/2 z-50 flex max-h-[85vh] w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-white/15 bg-zinc-950 shadow-2xl">
+            <header className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+              <div>
+                <p className="text-[0.65rem] font-medium uppercase tracking-wider text-zinc-500">선택한 날짜</p>
+                <h3 className="mt-1 text-lg font-semibold text-white">
+                  {(() => {
+                    const d = new Date(openDate);
+                    const wd = ["일", "월", "화", "수", "목", "금", "토"][d.getDay()];
+                    return `${d.getMonth() + 1}월 ${d.getDate()}일 (${wd})`;
+                  })()}
+                </h3>
               </div>
+              <button
+                type="button"
+                onClick={() => onOpenDate(null)}
+                aria-label="닫기"
+                className="rounded-full p-1.5 text-zinc-400 hover:bg-white/5 hover:text-white"
+              >
+                <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" d="M3 3l10 10M13 3L3 13" />
+                </svg>
+              </button>
             </header>
+            {/* Sticky add-task action — clearly visible at top */}
+            <div className="border-b border-white/[0.06] bg-white/[0.02] px-6 py-3">
+              <button
+                type="button"
+                onClick={() => onAddNewOnDate(openDate)}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-white py-2.5 text-sm font-semibold text-zinc-900 transition-colors hover:bg-zinc-100"
+              >
+                <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4">
+                  <path strokeLinecap="round" d="M8 3v10M3 8h10" />
+                </svg>
+                이 날에 일정 추가
+              </button>
+            </div>
             <div className="flex-1 overflow-y-auto p-3">
               {openTasks.length === 0 ? (
-                <div className="py-6 text-center">
-                  <p className="text-xs text-zinc-500">이 날에는 일정이 없습니다.</p>
-                  <button
-                    type="button"
-                    onClick={() => onAddNewOnDate(openDate)}
-                    className="mt-2 rounded-md border border-violet-400/40 bg-violet-500/15 px-3 py-1.5 text-xs font-bold text-violet-100 hover:bg-violet-500/25"
-                  >
-                    + 일정 추가
-                  </button>
+                <div className="py-10 text-center">
+                  <p className="text-sm text-zinc-400">이 날에는 일정이 없습니다.</p>
+                  <p className="mt-1 text-xs text-zinc-500">상단의 ‘이 날에 일정 추가’ 버튼으로 새 일정을 만들 수 있습니다.</p>
                 </div>
               ) : (
                 <ul className="space-y-1.5">
@@ -807,23 +978,27 @@ function CalendarView({
                             disabled={saving}
                             className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
                               t.status === "DONE"
-                                ? "border-emerald-400/50 bg-emerald-500/30 text-emerald-200"
-                                : "border-white/15 hover:border-violet-400/40"
+                                ? "border-white/25 bg-white/[0.15] text-white"
+                                : "border-white/15 hover:border-white/20"
                             }`}
                           >
                             {t.status === "DONE" ? "✓" : ""}
                           </button>
                           <div className="min-w-0 flex-1">
-                            <p className={`text-sm ${completed ? "text-zinc-500 line-through" : "text-white"}`}>
-                              {t.content}
-                            </p>
+                            <EditableTaskContent
+                              taskId={t.id}
+                              initial={t.content}
+                              completed={completed}
+                              saving={saving}
+                              onSave={(v) => onPatch(t.id, { content: v })}
+                            />
                             <div className="mt-1 flex flex-wrap items-center gap-2 text-[0.65rem]">
                               <span className={`rounded-full border px-1.5 py-0.5 ${cls}`}>
                                 {t.ideaTitle}
                               </span>
                               <span className="text-zinc-500">0{t.stageNumber}. {t.stageName}</span>
                               {t.assignee ? (
-                                <span className="text-violet-200">{t.assignee.name ?? t.assignee.email.split("@")[0]}</span>
+                                <span className="text-zinc-200">{t.assignee.name ?? t.assignee.email.split("@")[0]}</span>
                               ) : null}
                             </div>
                           </div>

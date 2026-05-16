@@ -119,246 +119,255 @@ export default function UserProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8 fade-up pb-12">
-      <header>
-        <Link href="/talent" className="text-xs text-zinc-500 hover:text-zinc-300">
-          ← 전문가 목록
-        </Link>
-      </header>
+    <div className="fade-up pb-12">
+      <Link href="/talent" className="text-xs text-zinc-500 hover:text-zinc-300">
+        ← 전문가 목록
+      </Link>
 
-      {/* 프로필 헤더 */}
-      <section className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-        <div className="flex items-baseline justify-between gap-3">
-          <div>
-            <p className="eyebrow text-violet-300">
-              {CATEGORY_LABEL[profile.category] ?? profile.category}
-            </p>
-            <h1 className="mt-1 text-3xl font-bold text-white">
+      {/* 사람인 스타일 이력서 */}
+      <article className="mt-6 overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.02]">
+        {/* ── 헤더: 이력서 제목 ── */}
+        <div className="border-b-2 border-white/15 bg-white/[0.03] px-6 py-4 sm:px-8">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">RESUME / 이력서</p>
+          <div className="mt-1 flex flex-wrap items-baseline justify-between gap-3">
+            <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
               {user?.name || "익명 전문가"}
             </h1>
-            <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-zinc-400">
-              {profile.location ? <span>📍 {profile.location}</span> : null}
-              {typeof profile.yearsOfExperience === "number" ? (
-                <span>경력 {profile.yearsOfExperience}년차</span>
-              ) : null}
-              {profile.workMode ? (
-                <span>{WORK_MODE_LABEL[profile.workMode] ?? profile.workMode}</span>
-              ) : null}
-              {profile.availability ? <span>{profile.availability}</span> : null}
-            </div>
+            <span
+              className={`rounded-md px-2.5 py-1 text-xs font-semibold ring-1 ${
+                profile.available
+                  ? "bg-white/[0.08] text-zinc-100 ring-white/20"
+                  : "bg-white/[0.03] text-zinc-500 ring-white/10"
+              }`}
+            >
+              {profile.available ? "영입 가능" : "비활성"}
+            </span>
           </div>
-          <span
-            className={`rounded-md px-2.5 py-1 text-xs font-semibold ring-1 ${
-              profile.available
-                ? "bg-emerald-500/10 text-emerald-300 ring-emerald-400/30"
-                : "bg-zinc-700/40 text-zinc-400 ring-white/10"
-            }`}
-          >
-            {profile.available ? "영입 가능" : "비활성"}
-          </span>
         </div>
 
-        <p className="text-base font-semibold text-zinc-100">{profile.headline}</p>
+        {/* ── 인적사항 (Field-Value 테이블) ── */}
+        <Section label="인적사항">
+          <Row label="지원분야" value={CATEGORY_LABEL[profile.category] ?? profile.category} />
+          {typeof profile.yearsOfExperience === "number" ? <Row label="경력" value={`${profile.yearsOfExperience}년차`} /> : null}
+          {profile.location ? <Row label="거주지" value={profile.location} /> : null}
+          {profile.workMode ? <Row label="근무 형태" value={WORK_MODE_LABEL[profile.workMode] ?? profile.workMode} /> : null}
+          <Row label="희망 보수" value={formatRate(profile.hourlyRateMin, profile.hourlyRateMax)} />
+          {profile.availability ? <Row label="참여 가능 시점" value={profile.availability} /> : null}
+          {user?.email ? <Row label="이메일" value={user.email} mono /> : null}
+        </Section>
 
-        {profile.skills.length > 0 ? (
-          <div className="flex flex-wrap gap-1.5">
-            {profile.skills.map((s) => (
-              <span
-                key={s}
-                className="rounded bg-violet-500/10 px-2 py-0.5 text-xs text-violet-200 ring-1 ring-violet-400/20"
-              >
-                {s}
-              </span>
-            ))}
-          </div>
+        {/* ── 한 줄 소개 ── */}
+        {profile.headline ? (
+          <Section label="한 줄 소개">
+            <p className="px-6 py-4 text-sm leading-relaxed text-zinc-100 sm:px-8">{profile.headline}</p>
+          </Section>
         ) : null}
 
-        <div className="flex items-center justify-between border-t border-white/5 pt-4">
-          <p className="text-base font-bold text-emerald-300">
-            {formatRate(profile.hourlyRateMin, profile.hourlyRateMax)}
-          </p>
-          <div className="flex gap-2">
+        {/* ── 자기소개서 ── */}
+        {profile.bio ? (
+          <Section label="자기소개서">
+            <p className="whitespace-pre-wrap px-6 py-4 text-sm leading-7 text-zinc-200 sm:px-8">{profile.bio}</p>
+          </Section>
+        ) : null}
+
+        {/* ── 경력사항 ── */}
+        {profile.careers && profile.careers.length > 0 ? (
+          <Section label="경력사항">
+            <table className="w-full text-sm">
+              <tbody>
+                {profile.careers.map((c, i) => (
+                  <tr key={i} className="border-b border-white/[0.05] last:border-b-0">
+                    <td className="w-[180px] px-6 py-3 align-top text-xs text-zinc-500 sm:px-8">{c.period || "—"}</td>
+                    <td className="px-6 py-3 align-top sm:px-8">
+                      <p className="font-semibold text-white">{c.company}</p>
+                      {c.role ? <p className="text-xs text-zinc-400">{c.role}</p> : null}
+                      {c.summary ? (
+                        <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-zinc-300">{c.summary}</p>
+                      ) : null}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Section>
+        ) : null}
+
+        {/* ── 대표 프로젝트 ── */}
+        {profile.portfolioItems && profile.portfolioItems.length > 0 ? (
+          <Section label="대표 프로젝트">
+            <div className="divide-y divide-white/[0.05]">
+              {profile.portfolioItems.map((p, i) => (
+                <div key={i} className="px-6 py-3 sm:px-8">
+                  <p className="font-semibold text-white">
+                    {p.title}
+                    {p.role ? <span className="ml-2 text-xs font-normal text-zinc-400">{p.role}</span> : null}
+                  </p>
+                  {p.summary ? (
+                    <p className="mt-1 whitespace-pre-wrap text-sm leading-6 text-zinc-300">{p.summary}</p>
+                  ) : null}
+                  {p.stack && p.stack.length > 0 ? (
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {p.stack.map((s) => (
+                        <span key={s} className="rounded border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[0.65rem] text-zinc-200">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+                  {p.url ? (
+                    <a href={p.url} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs text-zinc-400 hover:text-zinc-200 hover:underline">
+                      프로젝트 링크 ↗
+                    </a>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </Section>
+        ) : null}
+
+        {/* ── 학력 ── */}
+        {profile.education && profile.education.length > 0 ? (
+          <Section label="학력">
+            <table className="w-full text-sm">
+              <tbody>
+                {profile.education.map((ed, i) => (
+                  <tr key={i} className="border-b border-white/[0.05] last:border-b-0">
+                    <td className="w-[180px] px-6 py-3 align-top text-xs text-zinc-500 sm:px-8">{ed.period || "—"}</td>
+                    <td className="px-6 py-3 align-top sm:px-8">
+                      <p className="font-semibold text-white">{ed.school}</p>
+                      {ed.degree ? <p className="mt-0.5 text-xs text-zinc-400">{ed.degree}</p> : null}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Section>
+        ) : null}
+
+        {/* ── 자격증 · 수상 ── */}
+        {profile.certifications && profile.certifications.length > 0 ? (
+          <Section label="자격증 · 수상">
+            <table className="w-full text-sm">
+              <tbody>
+                {profile.certifications.map((c, i) => (
+                  <tr key={i} className="border-b border-white/[0.05] last:border-b-0">
+                    <td className="w-[180px] px-6 py-3 align-top text-xs text-zinc-500 sm:px-8">{c.year || "—"}</td>
+                    <td className="px-6 py-3 align-top sm:px-8">
+                      <p className="font-semibold text-white">{c.name}</p>
+                      {c.issuer ? <p className="mt-0.5 text-xs text-zinc-400">{c.issuer}</p> : null}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Section>
+        ) : null}
+
+        {/* ── 보유 기술 ── */}
+        {profile.skills.length > 0 ? (
+          <Section label="보유 기술">
+            <div className="flex flex-wrap gap-1.5 px-6 py-4 sm:px-8">
+              {profile.skills.map((s) => (
+                <span key={s} className="rounded-md border border-white/10 bg-white/[0.04] px-2 py-0.5 text-xs text-zinc-100">
+                  {s}
+                </span>
+              ))}
+            </div>
+          </Section>
+        ) : null}
+
+        {/* ── 도메인 경험 ── */}
+        {profile.industries && profile.industries.length > 0 ? (
+          <Section label="도메인 경험">
+            <div className="flex flex-wrap gap-1.5 px-6 py-4 sm:px-8">
+              {profile.industries.map((s) => (
+                <span key={s} className="rounded-md border border-white/10 bg-white/[0.04] px-2 py-0.5 text-xs text-zinc-100">
+                  {s}
+                </span>
+              ))}
+            </div>
+          </Section>
+        ) : null}
+
+        {/* ── 사용 가능 언어 ── */}
+        {profile.languages && profile.languages.length > 0 ? (
+          <Section label="사용 가능 언어">
+            <div className="flex flex-wrap gap-1.5 px-6 py-4 sm:px-8">
+              {profile.languages.map((s) => (
+                <span key={s} className="rounded-md border border-white/10 bg-white/[0.04] px-2 py-0.5 text-xs text-zinc-100">
+                  {s}
+                </span>
+              ))}
+            </div>
+          </Section>
+        ) : null}
+
+        {/* ── 포트폴리오 · 링크 ── */}
+        {profile.links.length > 0 ? (
+          <Section label="포트폴리오 · 링크">
+            <ul className="px-6 py-4 space-y-1.5 sm:px-8">
+              {profile.links.map((l, i) => (
+                <li key={`${l.url}-${i}`}>
+                  <a
+                    href={l.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-baseline gap-2 text-sm text-zinc-200 hover:text-white"
+                  >
+                    <span className="font-medium">{l.label}</span>
+                    <span className="truncate text-xs text-zinc-500">{l.url}</span>
+                    <span className="text-xs text-zinc-500">↗</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </Section>
+        ) : null}
+
+        {/* ── 액션 ── */}
+        <div className="bg-white/[0.03] px-6 py-4 sm:px-8">
+          <div className="flex flex-wrap items-center gap-2">
             {user?.email ? (
               <a
                 href={`mailto:${user.email}`}
-                className="rounded-xl bg-violet-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_4px_24px_-4px_rgba(124,58,237,0.5)] hover:bg-violet-400"
+                className="rounded-md border border-white/15 bg-white/[0.08] px-4 py-2 text-sm font-semibold text-zinc-100 transition-colors hover:border-white/30 hover:bg-white/[0.12] hover:text-white"
               >
-                💬 이메일로 컨택
+                이메일로 컨택
               </a>
             ) : null}
+            <SendCollabRequestButton expertUserId={profile.userId} />
           </div>
         </div>
+      </article>
 
-        {/* 워크스페이스 협업 요청 */}
-        <SendCollabRequestButton expertUserId={profile.userId} />
-      </section>
-
-      {/* 자세한 소개 */}
-      <section className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-        <p className="eyebrow">소개</p>
-        <p className="whitespace-pre-wrap text-base leading-7 text-zinc-200">
-          {profile.bio}
-        </p>
-      </section>
-
-      {/* 경력 이력 */}
-      {profile.careers && profile.careers.length > 0 ? (
-        <section className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-          <p className="eyebrow">경력 이력</p>
-          <ul className="space-y-4">
-            {profile.careers.map((c, i) => (
-              <li key={i} className="border-l-2 border-violet-400/40 pl-4">
-                <p className="text-base font-bold text-white">
-                  {c.company}
-                  <span className="ml-2 text-sm font-normal text-zinc-300">· {c.role}</span>
-                </p>
-                {c.period ? <p className="text-xs text-zinc-500">{c.period}</p> : null}
-                {c.summary ? (
-                  <p className="mt-1 text-sm leading-6 text-zinc-300 whitespace-pre-wrap">
-                    {c.summary}
-                  </p>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
-      {/* 대표 프로젝트 */}
-      {profile.portfolioItems && profile.portfolioItems.length > 0 ? (
-        <section className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-          <p className="eyebrow">대표 프로젝트</p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {profile.portfolioItems.map((p, i) => (
-              <div key={i} className="rounded-xl border border-white/5 bg-white/[0.03] p-4">
-                <p className="text-sm font-bold text-white">
-                  {p.title}
-                  {p.role ? <span className="ml-2 text-xs font-normal text-zinc-400">· {p.role}</span> : null}
-                </p>
-                {p.summary ? (
-                  <p className="mt-1 text-xs leading-5 text-zinc-300 whitespace-pre-wrap">{p.summary}</p>
-                ) : null}
-                {p.stack && p.stack.length > 0 ? (
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    {p.stack.map((s) => (
-                      <span key={s} className="rounded bg-violet-500/10 px-1.5 py-0.5 text-[0.65rem] text-violet-200">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
-                {p.url ? (
-                  <a
-                    href={p.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 inline-block text-xs text-violet-300 hover:underline"
-                  >
-                    프로젝트 보기 ↗
-                  </a>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      {/* 도메인 + 언어 */}
-      {(profile.industries?.length || 0) > 0 || (profile.languages?.length || 0) > 0 ? (
-        <section className="grid gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:grid-cols-2">
-          {profile.industries && profile.industries.length > 0 ? (
-            <div>
-              <p className="eyebrow">도메인 경험</p>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {profile.industries.map((s) => (
-                  <span
-                    key={s}
-                    className="rounded bg-amber-500/10 px-2 py-0.5 text-xs text-amber-200 ring-1 ring-amber-400/20"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ) : null}
-          {profile.languages && profile.languages.length > 0 ? (
-            <div>
-              <p className="eyebrow">사용 언어</p>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {profile.languages.map((s) => (
-                  <span
-                    key={s}
-                    className="rounded bg-sky-500/10 px-2 py-0.5 text-xs text-sky-200 ring-1 ring-sky-400/20"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ) : null}
-        </section>
-      ) : null}
-
-      {/* 학력 + 자격증 */}
-      {(profile.education?.length || 0) > 0 || (profile.certifications?.length || 0) > 0 ? (
-        <section className="grid gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:grid-cols-2">
-          {profile.education && profile.education.length > 0 ? (
-            <div className="space-y-2">
-              <p className="eyebrow">학력</p>
-              <ul className="space-y-1.5 text-sm">
-                {profile.education.map((ed, i) => (
-                  <li key={i}>
-                    <p className="font-semibold text-white">{ed.school}</p>
-                    {ed.degree ? <p className="text-xs text-zinc-400">{ed.degree}</p> : null}
-                    {ed.period ? <p className="text-xs text-zinc-500">{ed.period}</p> : null}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-          {profile.certifications && profile.certifications.length > 0 ? (
-            <div className="space-y-2">
-              <p className="eyebrow">자격증·수상</p>
-              <ul className="space-y-1.5 text-sm">
-                {profile.certifications.map((c, i) => (
-                  <li key={i}>
-                    <p className="font-semibold text-white">{c.name}</p>
-                    <p className="text-xs text-zinc-400">
-                      {c.issuer}{c.year ? ` · ${c.year}` : ""}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </section>
-      ) : null}
-
-      {/* 링크 */}
-      {profile.links.length > 0 ? (
-        <section className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-          <p className="eyebrow">포트폴리오·링크</p>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {profile.links.map((l, i) => (
-              <a
-                key={`${l.url}-${i}`}
-                href={l.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2.5 transition-colors hover:border-violet-400/30 hover:bg-violet-500/[0.06]"
-              >
-                <p className="text-sm font-semibold text-white">{l.label} ↗</p>
-                <p className="truncate text-xs text-zinc-500">{l.url}</p>
-              </a>
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      {/* 푸터 메타 */}
-      <p className="text-center text-xs text-zinc-600">
-        조회 {profile.viewCount}회{user?.createdAt ? ` · 가입 ${new Date(user.createdAt).toLocaleDateString("ko-KR")}` : ""}
+      <p className="mt-6 text-center text-xs text-zinc-600">
+        조회 {profile.viewCount}회
       </p>
+    </div>
+  );
+}
+
+/* 사람인 스타일 섹션 — 좌측 라벨 컬럼 + 우측 내용 */
+function Section({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <section className="grid grid-cols-1 border-b border-white/[0.06] sm:grid-cols-[160px_1fr]">
+      <div className="border-b border-white/[0.05] bg-white/[0.02] px-6 py-3 sm:border-b-0 sm:border-r sm:px-6 sm:py-4">
+        <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-zinc-300">{label}</p>
+      </div>
+      <div>{children}</div>
+    </section>
+  );
+}
+
+function Row({ label, value, mono = false }: { label: string; value: React.ReactNode; mono?: boolean }) {
+  return (
+    <div className="flex border-b border-white/[0.04] last:border-b-0">
+      <div className="w-[120px] shrink-0 bg-white/[0.02] px-4 py-2.5 text-xs text-zinc-400 sm:w-[140px]">
+        {label}
+      </div>
+      <div className={`flex-1 px-4 py-2.5 text-sm text-zinc-100 ${mono ? "font-mono text-[0.8125rem]" : ""}`}>
+        {value}
+      </div>
     </div>
   );
 }

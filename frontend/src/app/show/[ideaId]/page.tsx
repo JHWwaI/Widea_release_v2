@@ -89,7 +89,7 @@ export default function ShowPage() {
 
         <div className="relative mx-auto max-w-3xl space-y-8 text-center">
           {benchmark?.similarityPct ? (
-            <p className="inline-flex items-center gap-2 rounded-full border border-violet-400/30 bg-violet-500/10 px-4 py-1.5 text-xs font-semibold text-violet-200">
+            <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-4 py-1.5 text-xs font-semibold text-zinc-200">
               ✦ {benchmark.companyName}와 {benchmark.similarityPct}% 유사 · 검증된 모델
             </p>
           ) : null}
@@ -105,7 +105,7 @@ export default function ShowPage() {
           ) : null}
 
           {hookLine ? (
-            <blockquote className="editorial-quote mx-auto max-w-xl text-violet-200">
+            <blockquote className="editorial-quote mx-auto max-w-xl text-zinc-200">
               "{hookLine}"
             </blockquote>
           ) : null}
@@ -141,7 +141,7 @@ export default function ShowPage() {
       {idea.whyNowInKoreaKo ? (
         <section className="border-b border-white/10 px-6 py-16">
           <div className="mx-auto max-w-3xl">
-            <p className="eyebrow text-amber-300">⏰ 지금 한국에서</p>
+            <p className="eyebrow text-zinc-200">⏰ 지금 한국에서</p>
             <p className="editorial-body mt-3 text-zinc-200">
               {idea.whyNowInKoreaKo}
             </p>
@@ -154,14 +154,14 @@ export default function ShowPage() {
         <section className="border-b border-white/10 px-6 py-16">
           <div className="mx-auto max-w-3xl">
             <div className="flex items-baseline justify-between">
-              <p className="eyebrow text-emerald-300">현재 진척</p>
-              <p className="display-num text-3xl text-emerald-300 sm:text-4xl">
+              <p className="eyebrow text-zinc-200">현재 진척</p>
+              <p className="display-num text-3xl text-zinc-200 sm:text-4xl">
                 {progress.overallPct}%
               </p>
             </div>
             <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-violet-500 to-emerald-400 transition-all"
+                className="h-full rounded-full bg-gradient-to-r from-zinc-300 to-white transition-all"
                 style={{ width: `${progress.overallPct}%` }}
               />
             </div>
@@ -202,7 +202,7 @@ export default function ShowPage() {
           <div className="flex flex-wrap justify-center gap-3">
             <a
               href={`mailto:?subject=${encodeURIComponent(idea.titleKo)}&body=${encodeURIComponent(`${idea.oneLinerKo ?? ""}\n\n${typeof window !== "undefined" ? window.location.href : ""}`)}`}
-              className="rounded-full bg-violet-500 px-6 py-3 text-sm font-bold text-white hover:bg-violet-400"
+              className="rounded-full bg-white/[0.10] px-6 py-3 text-sm font-bold text-white hover:bg-white/[0.15]"
             >
               💬 연락하기 (이메일)
             </a>
@@ -230,7 +230,7 @@ export default function ShowPage() {
           </Link>
           <p>
             AI 창업 워크스페이스 ·{" "}
-            <Link href="/idea-match" className="text-violet-300 hover:text-violet-200">
+            <Link href="/idea-match" className="text-zinc-400 hover:text-zinc-200">
               내 사업도 시작하기 →
             </Link>
           </p>

@@ -50,7 +50,7 @@ export default function ProjectJourney({
               {currentStep.description}
             </p>
           </div>
-          <p className="shrink-0 text-sm font-semibold text-indigo-300">
+          <p className="shrink-0 text-sm font-semibold text-zinc-300">
             {workflow.completedCount} / {workflow.steps.length} 완료
           </p>
         </div>
@@ -81,8 +81,8 @@ export default function ProjectJourney({
               aria-current={step.status === "current" ? "step" : undefined}
               className={cx(
                 "rounded-2xl border p-4 transition-colors",
-                step.status === "done" && "border-emerald-500/30 bg-emerald-500/[0.06]",
-                step.status === "current" && "border-amber-500/40 bg-amber-500/[0.08] shadow-[0_0_24px_rgba(251,191,36,0.12)]",
+                step.status === "done" && "border-emerald-500/30 bg-white/[0.10]/[0.06]",
+                step.status === "current" && "border-amber-500/40 bg-white/[0.10]/[0.08] shadow-[0_0_24px_rgba(251,191,36,0.12)]",
                 step.status === "upcoming" && "border-white/10 bg-white/[0.03]",
               )}
             >
@@ -93,8 +93,8 @@ export default function ProjectJourney({
                 <span
                   className={cx(
                     "rounded-full px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider",
-                    step.status === "done" && "bg-emerald-500/15 text-emerald-300",
-                    step.status === "current" && "bg-amber-500/15 text-amber-300",
+                    step.status === "done" && "bg-white/[0.08] text-zinc-200",
+                    step.status === "current" && "bg-white/[0.08] text-zinc-200",
                     step.status === "upcoming" && "bg-white/10 text-zinc-400",
                   )}
                 >
@@ -113,9 +113,9 @@ export default function ProjectJourney({
       </ol>
 
       {/* 다음 액션 */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-indigo-400/30 bg-indigo-500/[0.08] p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/15 bg-white/[0.10]/[0.08] p-5">
         <div className="min-w-0 flex-1">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-indigo-300">
+          <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-zinc-300">
             다음 액션
           </p>
           <p className="mt-1.5 text-base font-semibold text-white">

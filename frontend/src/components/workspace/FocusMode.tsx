@@ -148,10 +148,10 @@ export default function FocusMode({
         <section className="space-y-3">
           <div className="flex items-baseline justify-between">
             <p className="text-xs font-semibold text-zinc-400">
-              0{currentStage.stageNumber}. <span className="text-violet-200">{currentStage.name}</span>
+              0{currentStage.stageNumber}. <span className="text-zinc-200">{currentStage.name}</span>
             </p>
             <p className="text-xs text-zinc-500">
-              <span className="font-bold text-emerald-300">{overallPct}%</span>
+              <span className="font-bold text-zinc-200">{overallPct}%</span>
               <span className="ml-1.5">· {doneTasks}/{totalTasks}</span>
             </p>
           </div>
@@ -180,9 +180,9 @@ export default function FocusMode({
                   <p
                     className={`text-center text-[0.65rem] font-bold tabular-nums ${
                       isComplete
-                        ? "text-emerald-400"
+                        ? "text-zinc-300"
                         : isCurrent
-                          ? "text-violet-300"
+                          ? "text-zinc-400"
                           : "text-zinc-600"
                     }`}
                   >
@@ -197,7 +197,7 @@ export default function FocusMode({
         {/* HERO: 지금 할 일 */}
         <div className="space-y-3 py-2">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="text-xs font-semibold text-emerald-300">
+            <p className="text-xs font-semibold text-zinc-200">
               지금 할 일{hint?.time ? ` · ${hint.time}` : ""}
             </p>
             {currentTask.orderIndex >= 100 ? (
@@ -226,7 +226,7 @@ export default function FocusMode({
                   <p className="mt-2 text-[0.95rem] leading-7 text-zinc-200">{hint.why}</p>
                 </div>
                 <div className="p-5">
-                  <p className="text-xs font-semibold text-violet-300">어떻게 시작하나</p>
+                  <p className="text-xs font-semibold text-zinc-400">어떻게 시작하나</p>
                   <p className="mt-2 text-[0.95rem] leading-7 text-zinc-100">{hint.how}</p>
                 </div>
               </>
@@ -241,9 +241,9 @@ export default function FocusMode({
                       href={r.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group rounded-lg border border-white/5 px-3 py-2.5 transition-colors hover:border-violet-400/30 hover:bg-violet-500/[0.06]"
+                      className="group rounded-lg border border-white/5 px-3 py-2.5 transition-colors hover:border-white/15 hover:bg-white/[0.10]/[0.06]"
                     >
-                      <p className="text-sm font-semibold text-zinc-100 group-hover:text-violet-100">
+                      <p className="text-sm font-semibold text-zinc-100 group-hover:text-zinc-100">
                         {r.label} ↗
                       </p>
                       {r.outcome ? (
@@ -273,7 +273,7 @@ export default function FocusMode({
               type="button"
               onClick={() => setOutsourceTask(currentTask)}
               disabled={busy}
-              className="w-full rounded-xl border border-violet-400/40 bg-violet-500/10 px-6 py-3.5 text-sm font-bold text-violet-200 transition-colors hover:border-violet-400/60 hover:bg-violet-500/20 disabled:opacity-60"
+              className="w-full rounded-xl border border-white/20 bg-white/[0.06] px-6 py-3.5 text-sm font-bold text-zinc-200 transition-colors hover:border-white/30 hover:bg-white/[0.10] disabled:opacity-60"
             >
               🤝 도움받기 — 외주·AC 컨설팅·팀 모집 자동 작성
             </button>

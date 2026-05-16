@@ -10,7 +10,7 @@ import { formatDate, readError } from "@/lib/product";
 import type { CreditLedgerEntry } from "@/lib/types";
 
 function actionLabel(action: string) {
-  if (action === "GRANT")  return { text: "충전",  cls: "bg-emerald-50 text-emerald-700" };
+  if (action === "GRANT")  return { text: "충전",  cls: "bg-white/[0.06] text-zinc-800" };
   if (action === "REFUND") return { text: "환불",  cls: "bg-blue-50 text-blue-700" };
   if (action === "EXPIRE") return { text: "만료",  cls: "bg-gray-100 text-gray-400" };
   return                          { text: "사용",  cls: "bg-gray-100 text-gray-700" };

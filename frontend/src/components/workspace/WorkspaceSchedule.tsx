@@ -31,9 +31,9 @@ type TimeBucket =
 
 const BUCKET_META: Record<TimeBucket, { label: string; emoji: string; ring: string; tone: string }> = {
   OVERDUE:    { label: "기한 초과",  emoji: "⚠️",  ring: "ring-rose-400/30",    tone: "text-rose-300" },
-  TODAY:      { label: "오늘 마감",  emoji: "🔥",  ring: "ring-amber-400/30",   tone: "text-amber-300" },
-  TOMORROW:   { label: "내일 마감",  emoji: "📅",  ring: "ring-amber-400/20",   tone: "text-amber-200" },
-  THIS_WEEK:  { label: "이번 주",    emoji: "📆",  ring: "ring-violet-400/30",  tone: "text-violet-200" },
+  TODAY:      { label: "오늘 마감",  emoji: "🔥",  ring: "ring-white/15",   tone: "text-zinc-200" },
+  TOMORROW:   { label: "내일 마감",  emoji: "📅",  ring: "ring-amber-400/20",   tone: "text-zinc-200" },
+  THIS_WEEK:  { label: "이번 주",    emoji: "📆",  ring: "ring-white/15",  tone: "text-zinc-200" },
   THIS_MONTH: { label: "이번 달",    emoji: "🗓",   ring: "ring-violet-400/15",  tone: "text-zinc-300" },
   LATER:      { label: "이후",       emoji: "⏳",  ring: "ring-white/10",       tone: "text-zinc-400" },
   NO_DUE:     { label: "기한 없음",  emoji: "—",    ring: "ring-white/5",        tone: "text-zinc-500" },
@@ -64,9 +64,9 @@ const STATUS_OPTS: { value: WorkspaceTask["status"]; label: string; emoji: strin
 
 const STATUS_BADGE: Record<WorkspaceTask["status"], string> = {
   PENDING: "bg-zinc-700 text-zinc-300 ring-white/10",
-  DONE: "bg-emerald-500/15 text-emerald-200 ring-emerald-400/30",
+  DONE: "bg-white/[0.08] text-zinc-200 ring-white/15",
   SKIPPED: "bg-zinc-700 text-zinc-500 ring-white/5",
-  OUTSOURCED: "bg-amber-500/15 text-amber-200 ring-amber-400/30",
+  OUTSOURCED: "bg-white/[0.08] text-zinc-200 ring-white/15",
 };
 
 const STATUS_LABEL: Record<WorkspaceTask["status"], string> = {
@@ -88,8 +88,8 @@ function dueDateInfo(due: string | null): {
   const diffDays = Math.round((d.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   const dateStr = d.toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" });
   if (diffDays < 0) return { text: `${dateStr} · ${-diffDays}일 지남`, className: "text-rose-300" };
-  if (diffDays === 0) return { text: `${dateStr} · 오늘`, className: "text-amber-300" };
-  if (diffDays === 1) return { text: `${dateStr} · 내일`, className: "text-amber-200" };
+  if (diffDays === 0) return { text: `${dateStr} · 오늘`, className: "text-zinc-200" };
+  if (diffDays === 1) return { text: `${dateStr} · 내일`, className: "text-zinc-200" };
   if (diffDays <= 7) return { text: `${dateStr} · ${diffDays}일 후`, className: "text-zinc-300" };
   return { text: dateStr, className: "text-zinc-500" };
 }
@@ -263,7 +263,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
         onClick={() => setFilter(value)}
         className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
           active
-            ? "bg-violet-500 text-white"
+            ? "bg-white/[0.10] text-white"
             : "border border-white/10 bg-white/[0.03] text-zinc-300 hover:border-white/20 hover:bg-white/[0.05]"
         }`}
       >
@@ -285,7 +285,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
       <header className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.02] p-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-violet-300">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">
               일정
             </p>
             <p className="mt-0.5 text-sm text-zinc-300">
@@ -300,7 +300,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
           <div className="flex w-full max-w-[260px] flex-col gap-1 sm:max-w-[320px]">
             <div className="h-1.5 overflow-hidden rounded-full bg-white/5">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-violet-500 to-emerald-400 transition-[width]"
+                className="h-full rounded-full bg-gradient-to-r from-zinc-300 to-white transition-[width]"
                 style={{
                   width:
                     stats.total === 0 ? "0%" : `${Math.round((stats.done / stats.total) * 100)}%`,
@@ -312,8 +312,8 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap gap-1.5">
             <FilterChip value="all" label="전체" count={stats.total} />
-            <FilterChip value="mine" label="내 일" count={stats.mine} accent="bg-violet-500/20 text-violet-200" />
-            <FilterChip value="due_soon" label="이번주" count={stats.dueSoon} accent="bg-amber-500/20 text-amber-200" />
+            <FilterChip value="mine" label="내 일" count={stats.mine} accent="bg-white/[0.10] text-zinc-200" />
+            <FilterChip value="due_soon" label="이번주" count={stats.dueSoon} accent="bg-white/[0.10] text-zinc-200" />
             <FilterChip value="overdue" label="기한 초과" count={stats.overdue} accent="bg-rose-500/20 text-rose-200" />
           </div>
           {/* 뷰 토글 */}
@@ -321,14 +321,14 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
             <button
               type="button"
               onClick={() => setView("timeline")}
-              className={`rounded-md px-2.5 py-1 text-[0.7rem] font-semibold transition-colors ${view === "timeline" ? "bg-violet-500 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+              className={`rounded-md px-2.5 py-1 text-[0.7rem] font-semibold transition-colors ${view === "timeline" ? "bg-white/[0.10] text-white" : "text-zinc-400 hover:text-zinc-200"}`}
             >
               ⏱ 시간순
             </button>
             <button
               type="button"
               onClick={() => setView("stages")}
-              className={`rounded-md px-2.5 py-1 text-[0.7rem] font-semibold transition-colors ${view === "stages" ? "bg-violet-500 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+              className={`rounded-md px-2.5 py-1 text-[0.7rem] font-semibold transition-colors ${view === "stages" ? "bg-white/[0.10] text-white" : "text-zinc-400 hover:text-zinc-200"}`}
             >
               🗂 단계순
             </button>
@@ -361,7 +361,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                     onClick={() => patchTask(t.id, { status: "DONE" })}
                     disabled={saving}
                     title="완료"
-                    className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-white/15 hover:border-emerald-400/50 hover:bg-emerald-500/10"
+                    className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-white/15 hover:border-white/25 hover:bg-white/[0.06]"
                   >
                     {""}
                   </button>
@@ -422,8 +422,8 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                           disabled={saving}
                           className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
                             task.status === "DONE"
-                              ? "border-emerald-400/50 bg-emerald-500/30 text-emerald-200"
-                              : "border-white/15 hover:border-violet-400/40 hover:bg-violet-500/10"
+                              ? "border-white/25 bg-white/[0.15] text-zinc-200"
+                              : "border-white/15 hover:border-white/20 hover:bg-white/[0.06]"
                           }`}
                         >
                           {task.status === "DONE" ? "✓" : ""}
@@ -435,7 +435,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                           <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[0.65rem] text-zinc-500">
                             <span>0{task.stage.stageNumber}. {task.stage.stageName}</span>
                             {assignee ? (
-                              <span className="inline-flex items-center gap-1 text-violet-200">
+                              <span className="inline-flex items-center gap-1 text-zinc-200">
                                 <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gradient-to-br from-violet-500/60 to-violet-700/40 text-[0.5rem] font-bold text-white">
                                   {memberInitial(assignee)}
                                 </span>
@@ -492,7 +492,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                 onClick={() => toggleCollapse(stage.id)}
                 className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.04]"
               >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-500/15 text-xs font-black text-violet-200 ring-1 ring-violet-400/30">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.08] text-xs font-black text-zinc-200 ring-1 ring-white/15">
                   {String(stage.stageNumber).padStart(2, "0")}
                 </span>
                 <div className="min-w-0 flex-1">
@@ -554,12 +554,12 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                               title="완료 토글"
                               className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${
                                 task.status === "DONE"
-                                  ? "border-emerald-400/50 bg-emerald-500/30 text-emerald-200"
+                                  ? "border-white/25 bg-white/[0.15] text-zinc-200"
                                   : task.status === "OUTSOURCED"
-                                    ? "border-amber-400/40 bg-amber-500/20 text-amber-300"
+                                    ? "border-white/20 bg-white/[0.10] text-zinc-200"
                                     : task.status === "SKIPPED"
                                       ? "border-zinc-600 bg-zinc-800 text-zinc-500"
-                                      : "border-white/15 hover:border-violet-400/40 hover:bg-violet-500/10"
+                                      : "border-white/15 hover:border-white/20 hover:bg-white/[0.06]"
                               }`}
                             >
                               {task.status === "DONE"
@@ -593,7 +593,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                                     }}
                                     onBlur={() => setEditingAssignee(null)}
                                     disabled={saving}
-                                    className="h-6 rounded border border-violet-400/40 bg-zinc-900 px-1.5 text-[0.7rem] text-zinc-200"
+                                    className="h-6 rounded border border-white/20 bg-zinc-900 px-1.5 text-[0.7rem] text-zinc-200"
                                   >
                                     <option value="">담당자 없음</option>
                                     {members.map((m) => (
@@ -608,7 +608,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                                     onClick={() => setEditingAssignee(task.id)}
                                     className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[0.65rem] transition-colors ${
                                       assignee
-                                        ? "border-violet-400/30 bg-violet-500/10 text-violet-100 hover:border-violet-400/50"
+                                        ? "border-white/15 bg-white/[0.06] text-zinc-100 hover:border-white/25"
                                         : "border-white/10 bg-white/[0.03] text-zinc-500 hover:border-white/20 hover:text-zinc-300"
                                     }`}
                                   >
@@ -638,7 +638,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                                       setEditingDue(null);
                                     }}
                                     disabled={saving}
-                                    className="h-6 rounded border border-violet-400/40 bg-zinc-900 px-1.5 text-[0.7rem] text-zinc-200"
+                                    className="h-6 rounded border border-white/20 bg-zinc-900 px-1.5 text-[0.7rem] text-zinc-200"
                                   />
                                 ) : (
                                   <button
@@ -676,7 +676,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                                     href={`/community/${task.communityPostId}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-500/10 px-1.5 py-0.5 text-[0.65rem] text-amber-200 hover:bg-amber-500/20"
+                                    className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/[0.06] px-1.5 py-0.5 text-[0.65rem] text-zinc-200 hover:bg-white/[0.10]"
                                   >
                                     🔗 외주 글
                                   </a>
@@ -691,10 +691,10 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
 
                   {/* 새 작업 입력 */}
                   {adding?.stageId === stage.id ? (
-                    <div className="flex items-center gap-2 border-t border-violet-400/20 bg-violet-500/[0.04] px-4 py-2">
+                    <div className="flex items-center gap-2 border-t border-white/10 bg-white/[0.10]/[0.04] px-4 py-2">
                       <input
                         autoFocus
-                        className="flex-1 rounded-lg border border-violet-400/30 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-100 placeholder-zinc-600 focus:outline-none"
+                        className="flex-1 rounded-lg border border-white/15 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-100 placeholder-zinc-600 focus:outline-none"
                         placeholder="새 작업 내용 (Enter 추가, Esc 취소)"
                         value={adding.value}
                         onChange={(e) => setAdding({ stageId: stage.id, value: e.target.value })}
@@ -707,7 +707,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                         type="button"
                         onClick={() => addTask(stage.id, adding.value)}
                         disabled={saving || !adding.value.trim()}
-                        className="rounded-lg bg-violet-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-violet-400 disabled:opacity-40"
+                        className="rounded-lg bg-white/[0.10] px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/[0.15] disabled:opacity-40"
                       >
                         추가
                       </button>
@@ -723,7 +723,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                     <button
                       type="button"
                       onClick={() => setAdding({ stageId: stage.id, value: "" })}
-                      className="flex w-full items-center gap-1.5 border-t border-white/[0.04] px-4 py-2 text-left text-xs text-zinc-500 transition-colors hover:bg-violet-500/[0.04] hover:text-violet-200"
+                      className="flex w-full items-center gap-1.5 border-t border-white/[0.04] px-4 py-2 text-left text-xs text-zinc-500 transition-colors hover:bg-white/[0.10]/[0.04] hover:text-zinc-200"
                     >
                       <span className="text-base leading-none">+</span> 작업 추가
                     </button>

@@ -72,7 +72,7 @@ function BillingSuccessContent() {
     return (
       <div className="flex min-h-screen items-center justify-center" style={{ background: "var(--bg)" }}>
         <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-8 py-6">
-          <span className="inline-flex h-2.5 w-2.5 animate-pulse rounded-full bg-indigo-400" />
+          <span className="inline-flex h-2.5 w-2.5 animate-pulse rounded-full bg-white" />
           <span className="text-sm text-zinc-400">결제를 확인하는 중입니다...</span>
         </div>
       </div>
@@ -105,8 +105,8 @@ function BillingSuccessContent() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4" style={{ background: "var(--bg)" }}>
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-white/[0.04] p-8 text-center space-y-5">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15">
-          <svg className="h-7 w-7 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/15">
+          <svg className="h-7 w-7 text-zinc-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
           </svg>
         </div>
@@ -126,7 +126,7 @@ function BillingSuccessContent() {
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">현재 잔액</span>
-              <span className="font-semibold text-indigo-300">{result.creditBalance.toLocaleString()} cr</span>
+              <span className="font-semibold text-white">{result.creditBalance.toLocaleString()} cr</span>
             </div>
           </div>
         )}

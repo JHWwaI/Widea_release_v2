@@ -25,8 +25,8 @@ const STATUS_LABEL: Record<CollabRequest["status"], string> = {
 };
 
 const STATUS_COLOR: Record<CollabRequest["status"], string> = {
-  PENDING: "text-amber-300 bg-amber-500/10 ring-amber-400/30",
-  ACCEPTED: "text-emerald-300 bg-emerald-500/10 ring-emerald-400/30",
+  PENDING: "text-zinc-200 bg-white/[0.06] ring-white/15",
+  ACCEPTED: "text-zinc-200 bg-white/[0.06] ring-white/15",
   REJECTED: "text-rose-400 bg-rose-500/10 ring-rose-400/30",
   CANCELLED: "text-zinc-500 bg-white/[0.04] ring-white/10",
 };
@@ -78,7 +78,7 @@ export default function CollabRequestsInbox() {
   return (
     <section className="space-y-4">
       <header>
-        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-violet-300">
+        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">
           협업 요청
         </p>
         <h2 className="mt-1 text-lg font-bold text-white">받은 워크스페이스 초대</h2>
@@ -104,7 +104,7 @@ export default function CollabRequestsInbox() {
           {/* 대기 중 */}
           {pending.length > 0 ? (
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-amber-300">대기 중 ({pending.length})</p>
+              <p className="text-xs font-semibold text-zinc-200">대기 중 ({pending.length})</p>
               {pending.map((r) => (
                 <RequestCard
                   key={r.id}
@@ -149,7 +149,7 @@ function RequestCard({
         <div className="min-w-0 flex-1">
           <Link
             href={`/workspace/${r.idea.id}`}
-            className="block truncate text-sm font-bold text-white hover:text-violet-200"
+            className="block truncate text-sm font-bold text-white hover:text-zinc-200"
           >
             {r.idea.titleKo}
           </Link>
@@ -170,7 +170,7 @@ function RequestCard({
         <span className="text-zinc-600">·</span>
         <span className="text-zinc-600">{formatRelativeTime(r.createdAt)}</span>
         <span className="text-zinc-600">·</span>
-        <span className="rounded bg-violet-500/15 px-1.5 py-0.5 font-semibold text-violet-300">
+        <span className="rounded bg-white/[0.08] px-1.5 py-0.5 font-semibold text-zinc-400">
           {r.grantRole === "EDITOR" ? "편집자" : "뷰어"}
         </span>
       </div>
@@ -187,7 +187,7 @@ function RequestCard({
             type="button"
             disabled={processing}
             onClick={onAccept}
-            className="rounded-lg bg-violet-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-violet-400 disabled:opacity-50"
+            className="rounded-lg bg-white/[0.10] px-4 py-1.5 text-xs font-semibold text-white hover:bg-white/[0.15] disabled:opacity-50"
           >
             {processing ? "처리 중..." : "수락"}
           </button>
@@ -203,7 +203,7 @@ function RequestCard({
       ) : r.status === "ACCEPTED" ? (
         <Link
           href={`/workspace/${r.idea.id}`}
-          className="inline-block rounded-lg border border-emerald-400/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-200 hover:bg-emerald-500/20"
+          className="inline-block rounded-lg border border-white/15 bg-white/[0.06] px-4 py-1.5 text-xs font-semibold text-zinc-200 hover:bg-white/[0.10]"
         >
           워크스페이스 열기 →
         </Link>

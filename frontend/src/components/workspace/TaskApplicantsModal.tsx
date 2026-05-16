@@ -155,7 +155,7 @@ export default function TaskApplicantsModal({
                     className="rounded-xl border border-white/10 bg-white/[0.03] p-3"
                   >
                     <div className="flex items-start gap-3">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/40 to-violet-700/30 text-sm font-bold text-white">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.08] text-sm font-bold text-white">
                         {initial}
                       </span>
                       <div className="min-w-0 flex-1">
@@ -169,12 +169,12 @@ export default function TaskApplicantsModal({
                         </p>
                         <div className="mt-1 flex flex-wrap gap-1">
                           {a.channels.commented ? (
-                            <span className="rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[0.6rem] font-semibold text-amber-200">
+                            <span className="rounded-full bg-white/[0.08] px-1.5 py-0.5 text-[0.6rem] font-semibold text-zinc-200">
                               댓글
                             </span>
                           ) : null}
                           {a.channels.dmId ? (
-                            <span className="rounded-full bg-violet-500/15 px-1.5 py-0.5 text-[0.6rem] font-semibold text-violet-200">
+                            <span className="rounded-full bg-white/[0.08] px-1.5 py-0.5 text-[0.6rem] font-semibold text-zinc-200">
                               DM
                             </span>
                           ) : null}
@@ -198,7 +198,7 @@ export default function TaskApplicantsModal({
                       <button
                         type="button"
                         onClick={() => startOrOpenDm(a)}
-                        className="rounded-md border border-violet-400/30 bg-violet-500/10 px-2 py-1 text-[0.65rem] font-semibold text-violet-200 hover:bg-violet-500/20"
+                        className="rounded-md border border-white/15 bg-white/[0.06] px-2 py-1 text-[0.65rem] font-semibold text-zinc-200 hover:bg-white/[0.10]"
                       >
                         메시지
                       </button>
@@ -206,7 +206,7 @@ export default function TaskApplicantsModal({
                         type="button"
                         onClick={() => addToWorkspace(a)}
                         disabled={adding === a.userId}
-                        className="rounded-md border border-emerald-400/40 bg-emerald-500/10 px-2 py-1 text-[0.65rem] font-bold text-emerald-200 hover:bg-emerald-500/20 disabled:opacity-50"
+                        className="rounded-md border border-white/20 bg-white/[0.06] px-2 py-1 text-[0.65rem] font-bold text-zinc-200 hover:bg-white/[0.10] disabled:opacity-50"
                       >
                         {adding === a.userId ? "추가 중..." : "+ 멤버로"}
                       </button>

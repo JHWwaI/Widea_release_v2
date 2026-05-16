@@ -22,6 +22,7 @@ export default function CommunityPage() {
   const searchParams = useSearchParams();
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [category, setCategory] = useState(searchParams.get("category") ?? "");
+  const authorId = searchParams.get("authorId") ?? "";
   const [searchInput, setSearchInput] = useState("");
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
@@ -37,7 +38,7 @@ export default function CommunityPage() {
 
     api<CommunityListResponse>(
       "GET",
-      buildQuery("/api/community/posts", { category, q, page: 1, limit: PAGE_SIZE }),
+      buildQuery("/api/community/posts", { category, q, authorId, page: 1, limit: PAGE_SIZE }),
       undefined,
       token ?? undefined,
     )
@@ -55,7 +56,7 @@ export default function CommunityPage() {
       });
 
     return () => { cancelled = true; };
-  }, [category, q, token]);
+  }, [category, q, authorId, token]);
 
   function handleSearchSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -72,7 +73,7 @@ export default function CommunityPage() {
     try {
       const response = await api<CommunityListResponse>(
         "GET",
-        buildQuery("/api/community/posts", { category, q, page: nextPage, limit: PAGE_SIZE }),
+        buildQuery("/api/community/posts", { category, q, authorId, page: nextPage, limit: PAGE_SIZE }),
         undefined,
         token ?? undefined,
       );
@@ -152,7 +153,7 @@ export default function CommunityPage() {
           </form>
           {q ? (
             <p className="text-xs text-zinc-500">
-              <span className="font-bold text-violet-300">"{q}"</span> 검색 결과
+              <span className="font-bold text-zinc-400">"{q}"</span> 검색 결과
             </p>
           ) : null}
 
@@ -203,7 +204,7 @@ export default function CommunityPage() {
                         {post.idea ? (
                           <Link
                             href={`/workspace/${post.idea.id}`}
-                            className="inline-flex items-center gap-1 rounded-md border border-violet-400/25 bg-violet-500/10 px-2 py-0.5 text-[0.65rem] font-medium text-violet-300 hover:border-violet-400/50 hover:text-violet-200"
+                            className="inline-flex items-center gap-1 rounded-md border border-white/12 bg-white/[0.06] px-2 py-0.5 text-[0.65rem] font-medium text-zinc-400 hover:border-white/25 hover:text-zinc-200"
                             onClick={(e) => e.stopPropagation()}
                           >
                             💡 {post.idea.titleKo}
@@ -212,7 +213,7 @@ export default function CommunityPage() {
                         <span className="text-xs text-zinc-500">{formatDate(post.createdAt)}</span>
                       </div>
                       <Link href={`/community/${post.id}`}>
-                        <h3 className="text-lg font-semibold text-white hover:text-violet-200">
+                        <h3 className="text-lg font-semibold text-white hover:text-zinc-200">
                           {post.title}
                         </h3>
                       </Link>
@@ -233,7 +234,7 @@ export default function CommunityPage() {
                       >
                         ♡ {post._count?.likes || 0}
                       </button>
-                      <Link href={`/community/${post.id}`} className="text-xs text-violet-300 hover:underline">
+                      <Link href={`/community/${post.id}`} className="text-xs text-zinc-400 hover:underline">
                         읽기 →
                       </Link>
                     </div>

@@ -111,7 +111,7 @@ export default function StageDetail({
           <header className="space-y-3 border-b border-white/10 p-6">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-violet-300">{ideaTitle}</p>
+                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">{ideaTitle}</p>
                 <h2 className="mt-1 text-xl font-bold text-white sm:text-2xl">
                   <span className="text-zinc-600">0{stage.stageNumber}.</span> {stage.name}
                 </h2>
@@ -139,7 +139,7 @@ export default function StageDetail({
                   const checked = t.status === "DONE" || t.status === "SKIPPED" || t.status === "OUTSOURCED";
                   const isOpen = openTaskId === t.id;
                   return (
-                    <div key={t.id} className={`rounded-xl border transition-colors ${isOpen ? "border-violet-400/40 bg-violet-500/[0.05]" : checked ? "border-white/5 bg-white/[0.01]" : "border-white/10 bg-white/[0.03]"}`}>
+                    <div key={t.id} className={`rounded-xl border transition-colors ${isOpen ? "border-white/20 bg-white/[0.10]/[0.05]" : checked ? "border-white/5 bg-white/[0.01]" : "border-white/10 bg-white/[0.03]"}`}>
                       {/* Task row */}
                       <div className="group flex items-start gap-3 p-3">
                         {/* Checkbox */}
@@ -173,7 +173,7 @@ export default function StageDetail({
                           </button>
                           <div className="mt-1 flex flex-wrap items-center gap-2">
                             {t.assignee ? (
-                              <span className="inline-flex items-center gap-1 rounded-full border border-violet-400/25 bg-violet-500/10 px-2 py-0.5 text-[0.65rem] text-violet-200">
+                              <span className="inline-flex items-center gap-1 rounded-full border border-white/12 bg-white/[0.06] px-2 py-0.5 text-[0.65rem] text-zinc-200">
                                 👤 {t.assignee.name || t.assignee.email.split("@")[0]}
                               </span>
                             ) : null}
@@ -181,7 +181,7 @@ export default function StageDetail({
                               <span className={`rounded-full border px-2 py-0.5 text-[0.65rem] ${
                                 new Date(t.dueDate) < new Date() && t.status !== "DONE"
                                   ? "border-rose-400/30 bg-rose-500/10 text-rose-300"
-                                  : "border-amber-400/25 bg-amber-500/10 text-amber-200"
+                                  : "border-amber-400/25 bg-white/[0.06] text-zinc-200"
                               }`}>
                                 📅 {new Date(t.dueDate).toLocaleDateString("ko-KR", { month: "short", day: "numeric" })}
                               </span>
@@ -199,13 +199,13 @@ export default function StageDetail({
                             ) : null}
                             {t.status === "OUTSOURCED" && t.communityPostId ? (
                               <>
-                                <a href={`/community/${t.communityPostId}`} target="_blank" rel="noopener noreferrer" className="text-[0.7rem] font-semibold text-violet-300 hover:underline">
+                                <a href={`/community/${t.communityPostId}`} target="_blank" rel="noopener noreferrer" className="text-[0.7rem] font-semibold text-zinc-400 hover:underline">
                                   외주 글 →
                                 </a>
                                 <button
                                   type="button"
                                   onClick={(e) => { e.stopPropagation(); setApplicantsTaskId(t.id); }}
-                                  className="rounded-md border border-emerald-400/30 bg-emerald-500/10 px-1.5 py-0.5 text-[0.65rem] font-semibold text-emerald-200 hover:bg-emerald-500/20"
+                                  className="rounded-md border border-white/15 bg-white/[0.06] px-1.5 py-0.5 text-[0.65rem] font-semibold text-zinc-200 hover:bg-white/[0.10]"
                                   title="이 글에 댓글·DM 보낸 지원자 보기"
                                 >
                                   지원자 보기
@@ -221,7 +221,7 @@ export default function StageDetail({
                             <button
                               type="button"
                               onClick={() => setOutsourceTask(t)}
-                              className="rounded-md border border-violet-400/30 bg-violet-500/10 px-2 py-1 text-[0.7rem] font-semibold text-violet-200 hover:bg-violet-500/20"
+                              className="rounded-md border border-white/15 bg-white/[0.06] px-2 py-1 text-[0.7rem] font-semibold text-zinc-200 hover:bg-white/[0.10]"
                               title={t.outsourceRole ? `${t.outsourceRole} 도움받기` : "외주·전문가 도움받기"}
                             >
                               도움받기
@@ -372,7 +372,7 @@ function TaskDetailPanel({
           <select
             value={assigneeId}
             onChange={(e) => setAssigneeId(e.target.value)}
-            className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 focus:border-violet-400/60 focus:outline-none"
+            className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 focus:border-white/30 focus:outline-none"
           >
             <option value="">담당자 없음</option>
             {members.map((m) => (
@@ -386,7 +386,7 @@ function TaskDetailPanel({
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 focus:border-violet-400/60 focus:outline-none"
+            className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 focus:border-white/30 focus:outline-none"
           />
         </div>
       </div>
@@ -399,7 +399,7 @@ function TaskDetailPanel({
           onChange={(e) => setNotes(e.target.value)}
           rows={2}
           placeholder="기획서 내용, 링크, 진행 상황 등을 적어두세요."
-          className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:border-violet-400/60 focus:outline-none resize-none"
+          className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:border-white/30 focus:outline-none resize-none"
         />
       </div>
 
@@ -416,7 +416,7 @@ function TaskDetailPanel({
           value={outsourceRole}
           onChange={(e) => setOutsourceRole(e.target.value)}
           placeholder="예: 와이어프레임·디자인 / 결제 PG 연동 / IR 멘토링"
-          className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:border-violet-400/60 focus:outline-none"
+          className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:border-white/30 focus:outline-none"
         />
       </div>
 
@@ -424,7 +424,7 @@ function TaskDetailPanel({
         <button
           type="button"
           onClick={handleSave}
-          className="rounded-lg bg-violet-500 px-4 py-1.5 text-sm font-semibold text-white hover:bg-violet-400"
+          className="rounded-lg bg-white/[0.10] px-4 py-1.5 text-sm font-semibold text-white hover:bg-white/[0.15]"
         >
           {saved ? "✓ 저장됨" : "저장"}
         </button>
@@ -477,7 +477,7 @@ function TaskDetailPanel({
 
         <div className="flex gap-2">
           <input
-            className="flex-1 rounded-lg border border-white/10 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:border-violet-400/60 focus:outline-none"
+            className="flex-1 rounded-lg border border-white/10 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-200 placeholder-zinc-600 focus:border-white/30 focus:outline-none"
             placeholder="댓글 입력..."
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
@@ -487,7 +487,7 @@ function TaskDetailPanel({
             type="button"
             onClick={handleAddComment}
             disabled={commentSending || !commentText.trim()}
-            className="rounded-lg border border-violet-400/30 bg-violet-500/10 px-3 py-1.5 text-xs font-semibold text-violet-200 hover:bg-violet-500/20 disabled:opacity-40"
+            className="rounded-lg border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:bg-white/[0.10] disabled:opacity-40"
           >
             등록
           </button>
@@ -504,9 +504,9 @@ function StageResourcesBox({ stageNumber }: { stageNumber: number }) {
   const totalItems = res.groups.reduce((acc, g) => acc + g.items.length, 0);
 
   return (
-    <div className="space-y-4 rounded-2xl border border-violet-400/25 bg-gradient-to-br from-violet-500/[0.07] to-violet-500/[0.02] p-5">
+    <div className="space-y-4 rounded-2xl border border-white/12 bg-gradient-to-br from-violet-500/[0.07] to-violet-500/[0.02] p-5">
       <header className="space-y-1.5">
-        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-violet-300">
+        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">
           이 단계에서 진짜 필요한 것 · 도구 {totalItems}개
         </p>
         {res.nextAction ? <p className="text-base font-bold leading-snug text-white">✦ {res.nextAction}</p> : null}
@@ -534,15 +534,15 @@ function StageResourcesBox({ stageNumber }: { stageNumber: number }) {
 function ResourceItem({ item }: { item: { label: string; url: string; outcome?: string; badge?: string } }) {
   return (
     <a href={item.url} target="_blank" rel="noopener noreferrer"
-      className="group block rounded-xl border border-white/10 bg-white/[0.03] p-3 transition-all hover:border-violet-400/40 hover:bg-violet-500/[0.08]">
+      className="group block rounded-xl border border-white/10 bg-white/[0.03] p-3 transition-all hover:border-white/20 hover:bg-white/[0.10]/[0.08]">
       <div className="flex flex-wrap items-baseline gap-1.5">
-        <span className="text-sm font-bold text-white group-hover:text-violet-100">{item.label}</span>
+        <span className="text-sm font-bold text-white group-hover:text-zinc-100">{item.label}</span>
         {item.badge ? (
           <span className={`rounded px-1.5 py-0.5 text-[0.6rem] font-bold tracking-wider ${
-            item.badge === "정부" ? "bg-amber-500/15 text-amber-300"
+            item.badge === "정부" ? "bg-white/[0.08] text-zinc-200"
               : item.badge === "한국" ? "bg-rose-500/15 text-rose-300"
-              : item.badge === "무료" ? "bg-emerald-500/15 text-emerald-300"
-              : item.badge === "추천" ? "bg-violet-500/25 text-violet-100"
+              : item.badge === "무료" ? "bg-white/[0.08] text-zinc-200"
+              : item.badge === "추천" ? "bg-white/[0.12] text-zinc-100"
               : "bg-zinc-700 text-zinc-300"
           }`}>{item.badge}</span>
         ) : null}
@@ -795,17 +795,17 @@ function NextActionHero({ stage }: { stage: WorkspaceStage }) {
     const total = stage.tasks.length;
     if (total === 0) return null;
     return (
-      <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/[0.06] p-4">
-        <p className="text-sm font-bold text-emerald-200">이 단계의 모든 작업이 완료됐습니다</p>
+      <div className="rounded-xl border border-white/15 bg-white/[0.10]/[0.06] p-4">
+        <p className="text-sm font-bold text-zinc-200">이 단계의 모든 작업이 완료됐습니다</p>
         <p className="mt-0.5 text-xs text-zinc-500">{total}개 작업 완료. 다음 단계로 넘어가세요.</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-violet-400/25 bg-violet-500/[0.04] p-4">
+    <div className="rounded-xl border border-white/12 bg-white/[0.10]/[0.04] p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-violet-300">
+        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">
           다음 할 일
         </p>
         {meta?.duration ? (
@@ -815,7 +815,7 @@ function NextActionHero({ stage }: { stage: WorkspaceStage }) {
       <p className="mt-1.5 text-base font-bold leading-snug text-white">{pending.content}</p>
       {pending.outsourceRole ? (
         <p className="mt-1 text-xs text-zinc-400">
-          외주 가능: <span className="text-violet-200">{pending.outsourceRole}</span> — 아래 task 카드의 [도움받기]
+          외주 가능: <span className="text-zinc-200">{pending.outsourceRole}</span> — 아래 task 카드의 [도움받기]
         </p>
       ) : null}
       {meta?.pitfall ? (

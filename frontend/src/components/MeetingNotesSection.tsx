@@ -91,7 +91,7 @@ export function DesignPicker({
             onClick={() => onChange(d.key)}
             className={`flex flex-col items-start gap-0.5 rounded-lg border px-2.5 py-2 text-left transition-colors ${
               active
-                ? "border-violet-400/50 bg-violet-500/15 text-violet-100"
+                ? "border-white/25 bg-white/[0.08] text-zinc-100"
                 : "border-white/10 bg-white/[0.02] text-zinc-300 hover:border-white/20 hover:bg-white/[0.04]"
             }`}
           >
@@ -378,7 +378,7 @@ export default function MeetingNotesSection({
     <section className="space-y-5 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
       <header className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-violet-300">
+          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">
             자동 회의록
           </p>
           <p className="mt-1 text-sm text-zinc-400">
@@ -421,7 +421,7 @@ export default function MeetingNotesSection({
               type="button"
               onClick={() => downloadBlankTemplate(templateKey, docxDesign, token ?? "")}
               disabled={!token}
-              className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.7rem] font-semibold text-zinc-300 hover:border-violet-400/40 hover:bg-violet-500/[0.08] hover:text-violet-200 disabled:opacity-40"
+              className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[0.7rem] font-semibold text-zinc-300 hover:border-white/20 hover:bg-white/[0.10]/[0.08] hover:text-zinc-200 disabled:opacity-40"
               title="회의 전 빈 양식 .docx로 다운로드"
             >
               📥 빈 양식 .docx 다운로드
@@ -434,7 +434,7 @@ export default function MeetingNotesSection({
       {mode === "idle" ? (
         <div className="grid gap-3 sm:grid-cols-2">
           {/* A. 녹음 파일 업로드 */}
-          <label className="group flex cursor-pointer flex-col items-start gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-violet-400/40 hover:bg-white/[0.05]">
+          <label className="group flex cursor-pointer flex-col items-start gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-white/20 hover:bg-white/[0.05]">
             <span className="text-sm font-bold text-white">🎙 녹음 파일 업로드</span>
             <span className="text-xs leading-relaxed text-zinc-400">
               Whisper AI 전사 (정확도 높음)<br/>
@@ -446,7 +446,7 @@ export default function MeetingNotesSection({
               className="hidden"
               onChange={onFilePick}
             />
-            <span className="mt-1 text-xs font-semibold text-violet-300">파일 선택</span>
+            <span className="mt-1 text-xs font-semibold text-zinc-400">파일 선택</span>
           </label>
 
           {/* D. 문서 파일 업로드 */}
@@ -469,14 +469,14 @@ export default function MeetingNotesSection({
           <button
             type="button"
             onClick={startLiveRecording}
-            className="group flex flex-col items-start gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-left transition-colors hover:border-emerald-400/40 hover:bg-white/[0.05]"
+            className="group flex flex-col items-start gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-left transition-colors hover:border-white/20 hover:bg-white/[0.05]"
           >
             <span className="text-sm font-bold text-white">🎤 실시간 자막</span>
             <span className="text-xs leading-relaxed text-zinc-400">
               지금 마이크로 받아쓰기 (Chrome/Edge)<br/>
               본인 목소리만 캡처됨
             </span>
-            <span className="mt-1 text-xs font-semibold text-emerald-300">시작</span>
+            <span className="mt-1 text-xs font-semibold text-zinc-200">시작</span>
           </button>
 
           {/* C. 텍스트 붙여넣기 */}
@@ -486,14 +486,14 @@ export default function MeetingNotesSection({
               setPasteText("");
               setMode("paste");
             }}
-            className="group flex flex-col items-start gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-left transition-colors hover:border-amber-400/40 hover:bg-white/[0.05]"
+            className="group flex flex-col items-start gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-left transition-colors hover:border-white/20 hover:bg-white/[0.05]"
           >
             <span className="text-sm font-bold text-white">📋 텍스트 붙여넣기</span>
             <span className="text-xs leading-relaxed text-zinc-400">
               녹취 텍스트·노션 메모를 붙여넣어 곧장 템플릿으로 정리<br/>
               데모용 샘플 텍스트 제공
             </span>
-            <span className="mt-1 text-xs font-semibold text-amber-300">붙여넣기</span>
+            <span className="mt-1 text-xs font-semibold text-zinc-200">붙여넣기</span>
           </button>
 
           {/* E. 직접 작성 (템플릿 폼) */}
@@ -514,14 +514,14 @@ export default function MeetingNotesSection({
 
       {mode === "paste" ? (
         <div className="space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-400/30 bg-amber-500/[0.05] px-3 py-2 text-xs text-amber-200">
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/15 bg-white/[0.10]/[0.05] px-3 py-2 text-xs text-zinc-200">
             <span>
               <strong>{MEETING_TEMPLATES[templateKey].label}</strong> 템플릿으로 정리됩니다
             </span>
             <button
               type="button"
               onClick={() => setPasteText(TEMPLATE_SAMPLES[templateKey])}
-              className="rounded-md bg-amber-500/15 px-2 py-1 text-[0.7rem] font-semibold text-amber-100 hover:bg-amber-500/25"
+              className="rounded-md bg-white/[0.08] px-2 py-1 text-[0.7rem] font-semibold text-zinc-100 hover:bg-white/[0.10]/25"
             >
               데모 샘플 채우기
             </button>
@@ -550,7 +550,7 @@ export default function MeetingNotesSection({
                 type="button"
                 onClick={processPastedText}
                 disabled={pasteText.trim().length < 30}
-                className="rounded-lg bg-amber-500 px-4 py-1.5 text-xs font-bold text-zinc-900 hover:bg-amber-400 disabled:opacity-40 disabled:hover:bg-amber-500"
+                className="rounded-lg bg-white/[0.10] px-4 py-1.5 text-xs font-bold text-zinc-900 hover:bg-amber-400 disabled:opacity-40 disabled:hover:bg-white/[0.10]"
               >
                 템플릿으로 정리하기 →
               </button>
@@ -603,7 +603,7 @@ export default function MeetingNotesSection({
       ) : null}
 
       {mode === "uploading" ? (
-        <div className="rounded-xl border border-violet-400/30 bg-violet-500/[0.06] p-4 text-sm text-violet-200">
+        <div className="rounded-xl border border-white/15 bg-white/[0.10]/[0.06] p-4 text-sm text-zinc-200">
           Whisper로 전사 중... (1시간 음성 = 약 1분 소요)
         </div>
       ) : null}
@@ -616,7 +616,7 @@ export default function MeetingNotesSection({
 
       {mode === "live-recording" ? (
         <div className="space-y-3">
-          <div className="flex items-center gap-2 rounded-lg border border-emerald-400/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
+          <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.06] px-3 py-2 text-sm text-zinc-200">
             <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
             녹음 중 · 자동으로 받아쓰는 중
           </div>
@@ -634,7 +634,7 @@ export default function MeetingNotesSection({
       ) : null}
 
       {mode === "saving" ? (
-        <div className="rounded-xl border border-violet-400/30 bg-violet-500/[0.06] p-4 text-sm text-violet-200">
+        <div className="rounded-xl border border-white/15 bg-white/[0.10]/[0.06] p-4 text-sm text-zinc-200">
           저장 + AI 요약 중...
         </div>
       ) : null}
@@ -668,10 +668,10 @@ function NoteResult({ note, onReset }: { note: MeetingNote; onReset: () => void 
   const [showFull, setShowFull] = useState(false);
   const [design, setDesign] = useState<DocxDesign>("classic");
   return (
-    <div className="space-y-4 rounded-xl border border-emerald-400/30 bg-emerald-500/[0.04] p-4">
+    <div className="space-y-4 rounded-xl border border-white/15 bg-white/[0.10]/[0.04] p-4">
       <div className="flex items-baseline justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold text-emerald-300">회의록 생성 완료</p>
+          <p className="text-xs font-semibold text-zinc-200">회의록 생성 완료</p>
           <p className="mt-0.5 text-base font-bold text-white">{note.title}</p>
           <p className="text-xs text-zinc-500">
             {note.source === "UPLOAD" ? "업로드" : note.source === "LIVE_BROWSER" ? "실시간" : "봇"}
@@ -684,7 +684,7 @@ function NoteResult({ note, onReset }: { note: MeetingNote; onReset: () => void 
             type="button"
             onClick={() => downloadFilledNote(note.id, note.title, design, token ?? "")}
             disabled={!token}
-            className="rounded-md border border-emerald-400/40 bg-emerald-500/15 px-2.5 py-1 text-[0.7rem] font-semibold text-emerald-100 hover:bg-emerald-500/25 disabled:opacity-40"
+            className="rounded-md border border-white/20 bg-white/[0.08] px-2.5 py-1 text-[0.7rem] font-semibold text-emerald-100 hover:bg-white/[0.10]/25 disabled:opacity-40"
             title="템플릿 양식에 자동으로 채워진 .docx 다운로드"
           >
             📥 .docx 다운로드

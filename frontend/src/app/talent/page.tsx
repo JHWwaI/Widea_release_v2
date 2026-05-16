@@ -42,7 +42,16 @@ type Expert = {
   links: Array<{ label: string; url: string }>;
   location: string | null;
   available: boolean;
+  yearsOfExperience?: number | null;
+  workMode?: "REMOTE" | "HYBRID" | "ONSITE" | null;
+  industries?: string[];
   user: { id: string; name: string | null; email: string } | null;
+};
+
+const WORK_MODE_LABEL: Record<string, string> = {
+  REMOTE: "원격",
+  HYBRID: "하이브리드",
+  ONSITE: "오피스",
 };
 
 const CATEGORY_LABEL: Record<ExpertCategory, string> = {
@@ -69,9 +78,9 @@ const CATEGORY_LABEL: Record<ExpertCategory, string> = {
   OTHER: "기타",
 };
 
-const DEV_COLOR = "text-emerald-300 bg-emerald-500/10 ring-emerald-400/30";
-const DESIGN_COLOR = "text-violet-300 bg-violet-500/10 ring-violet-400/30";
-const MARKETING_COLOR = "text-amber-300 bg-amber-500/10 ring-amber-400/30";
+const DEV_COLOR = "text-zinc-200 bg-white/[0.06] ring-white/15";
+const DESIGN_COLOR = "text-zinc-400 bg-white/[0.06] ring-white/15";
+const MARKETING_COLOR = "text-zinc-200 bg-white/[0.06] ring-white/15";
 
 const CATEGORY_COLOR: Record<ExpertCategory, string> = {
   DEVELOPER: DEV_COLOR,
@@ -88,7 +97,7 @@ const CATEGORY_COLOR: Record<ExpertCategory, string> = {
   MARKETER: MARKETING_COLOR,
   GROWTH_MARKETER: MARKETING_COLOR,
   CONTENT_MARKETER: MARKETING_COLOR,
-  AC_MENTOR: "text-indigo-300 bg-indigo-500/10 ring-indigo-400/30",
+  AC_MENTOR: "text-zinc-300 bg-white/[0.06] ring-white/15",
   PLANNER: "text-rose-300 bg-rose-500/10 ring-rose-400/30",
   PM: "text-sky-300 bg-sky-500/10 ring-sky-400/30",
   BUSINESS_DEV: "text-cyan-300 bg-cyan-500/10 ring-cyan-400/30",
@@ -181,9 +190,9 @@ export default function TalentPage() {
             </div>
             <Link
               href="/mypage/expert"
-              className="rounded-md border border-violet-400/30 bg-violet-500/10 px-3 py-2 text-xs font-semibold text-violet-200 hover:bg-violet-500/20"
+              className="rounded-md border border-white/15 bg-white/[0.06] px-3 py-2 text-xs font-semibold text-zinc-200 hover:bg-white/[0.10]"
             >
-              ⚙ 내 프로필 등록·수정
+              내 프로필 등록·수정
             </Link>
           </div>
         </header>
@@ -220,7 +229,7 @@ export default function TalentPage() {
               onClick={() => setCategory(c.value)}
               className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
                 category === c.value
-                  ? "bg-violet-500/20 text-violet-200 ring-1 ring-violet-400/40"
+                  ? "bg-white/[0.10] text-zinc-200 ring-1 ring-white/20"
                   : "bg-white/[0.03] text-zinc-400 hover:bg-white/[0.06]"
               }`}
             >
@@ -254,55 +263,78 @@ export default function TalentPage() {
               <Link
                 key={e.id}
                 href={`/u/${e.userId}`}
-                className="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-all hover:border-violet-400/40 hover:bg-white/[0.04]"
+                className="group flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-all hover:border-white/20 hover:bg-white/[0.04]"
               >
-                {/* 헤더: 이름 + 카테고리 배지 */}
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="truncate text-base font-bold text-white">
-                      {e.user?.name || "익명 전문가"}
-                    </p>
-                    {e.location ? (
-                      <p className="text-[0.7rem] text-zinc-500">📍 {e.location}</p>
-                    ) : null}
-                  </div>
-                  <span
-                    className={`shrink-0 rounded-md px-2 py-0.5 text-[0.65rem] font-semibold ring-1 ${CATEGORY_COLOR[e.category]}`}
-                  >
+                {/* 헤더: 카테고리 + 이름 */}
+                <header>
+                  <p className="text-[0.65rem] font-medium uppercase tracking-wider text-zinc-500">
                     {CATEGORY_LABEL[e.category]}
-                  </span>
-                </div>
+                  </p>
+                  <p className="mt-1 truncate text-lg font-semibold tracking-tight text-white">
+                    {e.user?.name || "익명 전문가"}
+                  </p>
+                </header>
 
-                {/* Headline */}
-                <p className="line-clamp-2 text-sm font-semibold text-zinc-100">
-                  {e.headline}
-                </p>
+                {/* 구조화된 메타 정보 — 한 줄씩 좌(라벨)-우(값) */}
+                <dl className="space-y-1.5 text-sm">
+                  {typeof e.yearsOfExperience === "number" ? (
+                    <div className="flex items-baseline justify-between gap-3">
+                      <dt className="text-[0.7rem] text-zinc-500">경력</dt>
+                      <dd className="text-right text-zinc-100">{e.yearsOfExperience}년차</dd>
+                    </div>
+                  ) : null}
+                  {e.location ? (
+                    <div className="flex items-baseline justify-between gap-3">
+                      <dt className="text-[0.7rem] text-zinc-500">지역</dt>
+                      <dd className="truncate text-right text-zinc-100">{e.location}</dd>
+                    </div>
+                  ) : null}
+                  {e.workMode ? (
+                    <div className="flex items-baseline justify-between gap-3">
+                      <dt className="text-[0.7rem] text-zinc-500">근무 형태</dt>
+                      <dd className="text-right text-zinc-100">{WORK_MODE_LABEL[e.workMode] ?? e.workMode}</dd>
+                    </div>
+                  ) : null}
+                  <div className="flex items-baseline justify-between gap-3">
+                    <dt className="text-[0.7rem] text-zinc-500">희망 보수</dt>
+                    <dd className="text-right font-medium text-white">{formatRate(e.hourlyRateMin, e.hourlyRateMax)}</dd>
+                  </div>
+                  {e.industries && e.industries.length > 0 ? (
+                    <div className="flex items-baseline justify-between gap-3">
+                      <dt className="shrink-0 text-[0.7rem] text-zinc-500">도메인</dt>
+                      <dd className="truncate text-right text-zinc-100" title={e.industries.join(", ")}>
+                        {e.industries.slice(0, 2).join(" · ")}
+                        {e.industries.length > 2 ? ` +${e.industries.length - 2}` : ""}
+                      </dd>
+                    </div>
+                  ) : null}
+                </dl>
 
-                {/* Skills (상위 4개) */}
+                {/* 핵심 역량 */}
                 {e.skills.length > 0 ? (
-                  <div className="flex flex-wrap gap-1">
-                    {e.skills.slice(0, 4).map((s) => (
-                      <span
-                        key={s}
-                        className="rounded bg-white/[0.04] px-1.5 py-0.5 text-[0.65rem] text-zinc-300"
-                      >
-                        {s}
-                      </span>
-                    ))}
-                    {e.skills.length > 4 ? (
-                      <span className="text-[0.65rem] text-zinc-500">
-                        +{e.skills.length - 4}
-                      </span>
-                    ) : null}
+                  <div className="border-t border-white/[0.06] pt-3">
+                    <p className="mb-2 text-[0.65rem] uppercase tracking-wider text-zinc-500">핵심 역량</p>
+                    <div className="flex flex-wrap gap-1">
+                      {e.skills.slice(0, 5).map((s) => (
+                        <span
+                          key={s}
+                          className="rounded border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[0.7rem] text-zinc-200"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                      {e.skills.length > 5 ? (
+                        <span className="text-[0.7rem] text-zinc-500">+{e.skills.length - 5}</span>
+                      ) : null}
+                    </div>
                   </div>
                 ) : null}
 
-                {/* 시급 + CTA */}
-                <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-3">
-                  <span className="text-xs font-semibold text-emerald-300">
-                    {formatRate(e.hourlyRateMin, e.hourlyRateMax)}
+                <div className="mt-auto flex items-center justify-between border-t border-white/[0.06] pt-3">
+                  <span className={`rounded-md px-2 py-0.5 text-[0.65rem] font-semibold ring-1 ${e.available ? "bg-white/[0.06] text-zinc-100 ring-white/15" : "bg-white/[0.03] text-zinc-500 ring-white/10"}`}>
+                    {e.available ? "영입 가능" : "비활성"}
                   </span>
-                  <span className="text-xs font-semibold text-zinc-500 group-hover:text-violet-300">
+                  <span className="text-xs font-medium text-zinc-500 group-hover:text-zinc-200">
                     프로필 보기 →
                   </span>
                 </div>

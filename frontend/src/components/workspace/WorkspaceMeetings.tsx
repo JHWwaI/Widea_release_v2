@@ -149,7 +149,7 @@ export default function WorkspaceMeetings({ ideaId }: { ideaId: string }) {
     >
       <header className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-violet-300">
+          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">
             회의록
           </p>
           <h2 className="mt-1 text-lg font-bold text-white">이 아이디어의 회의 기록</h2>
@@ -160,7 +160,7 @@ export default function WorkspaceMeetings({ ideaId }: { ideaId: string }) {
         <div className="flex items-center gap-2">
           <Link
             href={`/collab/meet?ideaId=${encodeURIComponent(ideaId)}`}
-            className="rounded-lg border border-violet-400/30 bg-violet-500/10 px-3 py-1.5 text-xs font-semibold text-violet-200 hover:bg-violet-500/20"
+            className="rounded-lg border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:bg-white/[0.10]"
           >
             화상 회의 시작
           </Link>
@@ -222,7 +222,7 @@ export default function WorkspaceMeetings({ ideaId }: { ideaId: string }) {
                     <p className="truncate text-sm font-bold text-white">{n.title}</p>
                     <div className="flex items-center gap-1.5">
                       {n.templateKey && MEETING_TEMPLATES[n.templateKey] ? (
-                        <span className="rounded bg-violet-500/15 px-2 py-0.5 text-[0.65rem] font-semibold text-violet-200">
+                        <span className="rounded bg-white/[0.08] px-2 py-0.5 text-[0.65rem] font-semibold text-zinc-200">
                           {MEETING_TEMPLATES[n.templateKey].label}
                         </span>
                       ) : null}
@@ -280,7 +280,7 @@ export default function WorkspaceMeetings({ ideaId }: { ideaId: string }) {
                           <button
                             type="button"
                             onClick={() => downloadNoteDocx(detail.id, detail.title, detailDesign, token ?? "")}
-                            className="rounded-md border border-emerald-400/40 bg-emerald-500/15 px-2.5 py-1 text-[0.7rem] font-semibold text-emerald-100 hover:bg-emerald-500/25"
+                            className="rounded-md border border-white/20 bg-white/[0.08] px-2.5 py-1 text-[0.7rem] font-semibold text-emerald-100 hover:bg-white/[0.10]/25"
                           >
                             📥 .docx 다운로드
                           </button>

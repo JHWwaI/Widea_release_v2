@@ -122,10 +122,10 @@ export default function DeepReportTab({
       {/* 잠금 시: 본문 위에 떠있는 sticky CTA + 본문 블러 */}
       {!unlocked ? (
         <div className="pointer-events-none sticky top-4 z-20 mx-auto max-w-3xl pb-2">
-          <div className="pointer-events-auto rounded-2xl border border-violet-400/40 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur sm:p-5">
+          <div className="pointer-events-auto rounded-2xl border border-white/20 bg-zinc-950/95 p-4 shadow-2xl backdrop-blur sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-violet-300">
+                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">
                   잠금된 분석 · 5단계 + 도구 3종 + 워크스페이스 자동 셋업
                 </p>
                 <p className="mt-1 text-sm font-bold text-white sm:text-base">
@@ -136,7 +136,7 @@ export default function DeepReportTab({
                 type="button"
                 onClick={unlock}
                 disabled={unlocking || !canAfford}
-                className="shrink-0 rounded-full bg-violet-500 px-5 py-2.5 text-xs font-bold text-white transition-colors hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
+                className="shrink-0 rounded-full bg-white/[0.10] px-5 py-2.5 text-xs font-bold text-white transition-colors hover:bg-white/[0.15] disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
               >
                 {unlocking ? "해제 중..." : `🔓 ${cost} 크레딧으로 열기`}
               </button>
@@ -166,7 +166,7 @@ export default function DeepReportTab({
       {/* HERO — 매칭 분석 */}
       <header className="space-y-8">
         <div className="space-y-3">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-violet-300">
+          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-zinc-400">
             매칭 분석 · DB {data.length}건 벤치마크
           </p>
 
@@ -175,7 +175,7 @@ export default function DeepReportTab({
             <span className="text-7xl font-black leading-none tracking-tight text-white sm:text-9xl tabular-nums">
               {overallPct}
             </span>
-            <span className="text-3xl font-black text-violet-300 sm:text-5xl">%</span>
+            <span className="text-3xl font-black text-zinc-400 sm:text-5xl">%</span>
           </div>
           <p className="text-base text-zinc-400 sm:text-lg">
             당신의 아이디어와{" "}
@@ -196,7 +196,7 @@ export default function DeepReportTab({
               >
                 <span className="font-semibold">{b.companyName}</span>{" "}
                 <span className="text-zinc-500">·</span>{" "}
-                <span className="tabular-nums text-violet-300">
+                <span className="tabular-nums text-zinc-400">
                   {Math.round((b.matchScore ?? 0) * 100)}%
                 </span>
               </span>
@@ -220,7 +220,7 @@ export default function DeepReportTab({
           <CompanyHeader company={primary} />
           {primary.valuationUsd ? (
             <p className="text-7xl font-black tracking-tight text-white sm:text-8xl">
-              ${(primary.valuationUsd / 1e9).toFixed(1)}<span className="text-violet-300">B</span>
+              ${(primary.valuationUsd / 1e9).toFixed(1)}<span className="text-zinc-400">B</span>
             </p>
           ) : null}
           <p className="text-sm text-zinc-400">
@@ -303,7 +303,7 @@ export default function DeepReportTab({
               {primary.techStackHint.map((t, i) => (
                 <span
                   key={i}
-                  className="rounded-full border border-violet-400/30 bg-violet-500/10 px-3 py-1.5 text-sm font-medium text-violet-100"
+                  className="rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-sm font-medium text-zinc-100"
                 >
                   {t}
                 </span>
@@ -348,7 +348,7 @@ function ArchiveThumbnail({
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative block overflow-hidden rounded-xl border border-white/10 bg-zinc-900 transition-colors hover:border-violet-400/50"
+      className="group relative block overflow-hidden rounded-xl border border-white/10 bg-zinc-900 transition-colors hover:border-white/25"
     >
       <div className="relative aspect-[16/9] w-full">
         {!errored ? (
@@ -385,7 +385,7 @@ function ArchiveThumbnail({
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 to-transparent" />
         <div className="pointer-events-none absolute bottom-3 left-3 right-3 flex items-end justify-between">
           <p className="text-base font-bold text-white">{companyName} 첫 화면</p>
-          <span className="rounded-full bg-violet-500/30 px-3 py-1 text-xs font-semibold text-violet-100 ring-1 ring-violet-400/30">
+          <span className="rounded-full bg-white/[0.15] px-3 py-1 text-xs font-semibold text-zinc-100 ring-1 ring-white/15">
             전체 보기 →
           </span>
         </div>
@@ -422,14 +422,14 @@ function ConclusionSection({
     : null;
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-violet-400/30 bg-gradient-to-br from-violet-950/60 via-zinc-950 to-zinc-950 p-8 sm:p-12">
+    <section className="relative overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-br from-violet-950/60 via-zinc-950 to-zinc-950 p-8 sm:p-12">
       {/* 워터마크 */}
       <span className="pointer-events-none absolute -bottom-12 -right-4 select-none text-[10rem] font-black leading-none text-violet-500/[0.06] sm:text-[14rem]">
         결론
       </span>
 
       <div className="relative space-y-8">
-        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-violet-300">
+        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-zinc-400">
           5단계 검증 완료
         </p>
 
@@ -535,7 +535,7 @@ function CompanyHeader({
           className="h-12 w-12 rounded-xl bg-white object-contain p-1.5 shadow"
         />
       ) : (
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/20 text-lg font-black text-violet-200">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/[0.10] text-lg font-black text-zinc-200">
           {company.companyName.charAt(0)}
         </div>
       )}
@@ -605,7 +605,7 @@ function TimelineBar({ foundedYear }: { foundedYear: number }) {
     <div className="space-y-2">
       <div className="flex items-baseline justify-between text-xs text-zinc-500">
         <span>{foundedYear}</span>
-        <span className="font-semibold text-violet-300">{years}년</span>
+        <span className="font-semibold text-zinc-400">{years}년</span>
         <span>{now}</span>
       </div>
       <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
@@ -674,21 +674,21 @@ function WedgeFlow({
         {/* 화살표 */}
         <div className="flex items-center justify-center">
           <div className="hidden lg:block">
-            <svg className="h-12 w-12 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <svg className="h-12 w-12 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
             </svg>
           </div>
           <div className="lg:hidden flex w-full items-center justify-center py-2">
-            <svg className="h-8 w-8 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <svg className="h-8 w-8 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
             </svg>
           </div>
         </div>
 
         {/* 우: 한국 적용 */}
-        <div className="rounded-xl border border-violet-400/30 bg-violet-500/[0.08] p-5">
+        <div className="rounded-xl border border-white/15 bg-white/[0.10]/[0.08] p-5">
           <div className="mb-3 flex items-center gap-2">
-            <span className="rounded bg-violet-500 px-2 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider text-white">
+            <span className="rounded bg-white/[0.10] px-2 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider text-white">
               한국
             </span>
             <span className="text-sm font-bold text-white">변형 적용</span>
@@ -733,16 +733,16 @@ function PivotBeforeAfter({
 
       {/* 화살표 */}
       <div className="flex justify-center">
-        <svg className="h-8 w-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <svg className="h-8 w-8 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
         </svg>
       </div>
 
       {/* AFTER */}
       {shortcutKo ? (
-        <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/[0.06] p-5">
+        <div className="rounded-xl border border-white/15 bg-white/[0.10]/[0.06] p-5">
           <div className="flex items-center gap-2">
-            <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider text-emerald-300">
+            <span className="rounded-md bg-white/[0.10] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider text-zinc-200">
               ✓ After
             </span>
             <span className="text-xs text-zinc-500">한국 창업자가 바로 갈 정답</span>
@@ -792,7 +792,7 @@ function Chapter({
       </div>
 
       <div className="relative pl-3 sm:pl-6">
-        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-violet-300">
+        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-zinc-400">
           {eyebrow}
         </p>
 
@@ -809,7 +809,7 @@ function Chapter({
             href={link}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center gap-2 rounded-full border border-violet-400/30 bg-violet-500/[0.08] px-4 py-2 text-xs font-semibold text-violet-200 transition-colors hover:border-violet-400/60 hover:bg-violet-500/[0.15]"
+            className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.10]/[0.08] px-4 py-2 text-xs font-semibold text-zinc-200 transition-colors hover:border-white/30 hover:bg-white/[0.10]/[0.15]"
           >
             📜 {linkLabel ?? "자료 보기"}
           </a>

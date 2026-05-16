@@ -118,19 +118,27 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen" style={{ background: "var(--bg)" }}>
-      <Navbar onMenuToggle={handleMenuToggle} />
+      {!user ? <Navbar onMenuToggle={handleMenuToggle} /> : null}
       {user ? (
-        <Sidebar open={sidebarOpen} visible={sidebarVisible} onClose={handleNavClick} />
+        <Sidebar
+          open={sidebarOpen}
+          visible={sidebarVisible}
+          onClose={handleNavClick}
+          onToggle={handleMenuToggle}
+        />
       ) : null}
       <main
         className={[
-          "px-4 pb-12 pt-[calc(var(--navbar-height)+1.25rem)] sm:px-6",
+          "px-3 pb-6 sm:px-4",
+          user ? "pt-12 lg:pt-8" : "pt-[calc(var(--navbar-height)+0.25rem)]",
           user && sidebarVisible
-            ? "lg:pl-[calc(var(--sidebar-width)+1rem)] lg:pr-4 transition-[padding] duration-300"
-            : "lg:px-8 transition-[padding] duration-300",
+            ? "lg:pl-[calc(var(--sidebar-width)+0.5rem)] lg:pr-3 transition-[padding] duration-300"
+            : user
+              ? "lg:pl-[4rem] lg:pr-5 transition-[padding] duration-300"
+              : "lg:px-5 transition-[padding] duration-300",
         ].join(" ")}
       >
-        <div className="mx-auto w-full max-w-[1080px]">{children}</div>
+        <div className="mx-auto w-full max-w-5xl xl:max-w-6xl 2xl:max-w-[1600px]">{children}</div>
       </main>
     </div>
   );

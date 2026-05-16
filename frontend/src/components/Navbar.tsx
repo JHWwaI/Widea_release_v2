@@ -57,98 +57,31 @@ export default function Navbar({ onMenuToggle }: { onMenuToggle?: () => void }) 
       <div
         className="mx-auto flex h-[var(--navbar-height)] max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
       >
-        {/* Left: menu + logo */}
+        {/* Left: sidebar toggle only (brand moved to sidebar header, ChatGPT-style) */}
         <div className="flex items-center gap-3">
           {user ? (
+            // Mobile-only: lg 미만에서만 햄버거 노출 (lg 이상은 사이드바 자체에 토글이 있음)
             <button
               type="button"
               onClick={onMenuToggle}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors"
-              style={{
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                color: "#A8AACC",
-              }}
-              aria-label="메뉴 열기"
+              aria-label="사이드바 토글"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-zinc-100 lg:hidden"
             >
-              <svg className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <rect x="3" y="4" width="18" height="16" rx="2.5" />
-                <line x1="9" y1="4" x2="9" y2="20" />
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4.5" width="18" height="15" rx="2.5" />
+                <line x1="9.5" y1="4.5" x2="9.5" y2="19.5" />
               </svg>
             </button>
-          ) : null}
-
-          <Link href={user ? "/idea-match" : "/"} className="flex items-center">
-            <span className="text-lg font-bold tracking-tight text-white">Widea</span>
-          </Link>
+          ) : (
+            <Link href="/" className="flex items-center">
+              <span className="text-lg font-bold tracking-tight text-white">Widea</span>
+            </Link>
+          )}
         </div>
 
-        {/* Right */}
+        {/* Right: 로그인 전만 노출 (로그인 후 사용자 정보·알림·로그아웃은 사이드바 하단으로 이동) */}
         {user ? (
-          <div className="flex items-center gap-2 sm:gap-3">
-            {user.isAdmin && (
-              <span
-                className="hidden rounded-md px-2.5 py-1 text-xs font-semibold sm:inline-flex"
-                style={{ background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.22)", color: "#FCD34D" }}
-              >
-                Admin
-              </span>
-            )}
-            <span
-              className="hidden rounded-md px-2.5 py-1 text-xs font-medium sm:inline-flex"
-              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "var(--ink-3)" }}
-            >
-              {planLabels[user.planType] || user.planType}
-            </span>
-            <span
-              className="hidden rounded-md px-2.5 py-1 text-xs font-semibold sm:inline-flex"
-              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#A8AACC" }}
-            >
-              {user.isAdmin ? "∞ cr" : `${user.creditBalance} cr`}
-            </span>
-            {/* 알림함 종 — 모든 페이지에서 상시 노출, 미독 카운트 배지 */}
-            <Link
-              href="/mypage/inbox"
-              aria-label={unread > 0 ? `알림함 (미독 ${unread}개)` : "알림함"}
-              title={unread > 0 ? `미독 ${unread}개` : "받은 메시지·요청"}
-              className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-zinc-300 transition-colors hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
-            >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-              </svg>
-              {unread > 0 ? (
-                <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[0.6rem] font-bold text-white">
-                  {unread > 99 ? "99+" : unread}
-                </span>
-              ) : null}
-            </Link>
-
-            <Link
-              href="/mypage"
-              className="group hidden min-w-[120px] rounded-lg px-2 py-1 text-right transition-colors hover:bg-white/[0.04] lg:block"
-              aria-label="내 정보 (마이페이지)"
-              title="마이페이지로 이동"
-            >
-              <p className="text-sm font-medium text-white group-hover:text-zinc-300">
-                {user.name || user.email}
-              </p>
-              <p className="text-xs" style={{ color: "var(--ink-3)" }}>
-                {user.userType ? userTypeLabels[user.userType] : "역할 선택 필요"}
-              </p>
-            </Link>
-            <button
-              type="button"
-              onClick={logout}
-              className="rounded-lg px-3 py-1.5 text-sm font-medium transition-all"
-              style={{
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                color: "#A8AACC",
-              }}
-            >
-              로그아웃
-            </button>
-          </div>
+          <div />
         ) : (
           <div className="flex items-center gap-2">
             <Link

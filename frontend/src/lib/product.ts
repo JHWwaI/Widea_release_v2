@@ -321,19 +321,14 @@ export type ProjectWorkflowState = {
   nextAction: WorkflowAction;
 };
 
-const workflowBlueprint = [
+const projectWorkflowSteps: { key: WorkflowStepKey; title: string; description: string }[] = [
   {
-    key: "brief" as const,
+    key: "brief",
     title: "Project brief",
     description: "Define the market, budget, and the problem shape for this project.",
   },
   {
-    key: "blueprint" as const,
-    title: "Blueprint",
-    description: "Turn benchmark research into a Korea-ready execution plan.",
-  },
-  {
-    key: "ideaMatch" as const,
+    key: "ideaMatch",
     title: "Idea Match",
     description: "Generate startup options that fit the team's real constraints.",
   },
@@ -344,19 +339,18 @@ export function getProjectWorkflowState(input: {
   blueprintCount?: number | null;
   ideaSessionCount?: number | null;
 }): ProjectWorkflowState {
-  const blueprintCount = Math.max(0, input.blueprintCount ?? 0);
   const ideaSessionCount = Math.max(0, input.ideaSessionCount ?? 0);
 
   const completionByKey: Record<WorkflowStepKey, boolean> = {
     brief: true,
-    blueprint: blueprintCount > 0,
+    blueprint: true,
     ideaMatch: ideaSessionCount > 0,
   };
 
   const firstPendingStep =
-    workflowBlueprint.find((step) => !completionByKey[step.key])?.key ?? null;
+    projectWorkflowSteps.find((step) => !completionByKey[step.key])?.key ?? null;
 
-  const steps = workflowBlueprint.map((step) => ({
+  const steps = projectWorkflowSteps.map((step) => ({
     ...step,
     status: completionByKey[step.key]
       ? ("done" as const)
@@ -368,34 +362,18 @@ export function getProjectWorkflowState(input: {
   const completedCount = steps.filter((step) => step.status === "done").length;
   const completionPercent = Math.round((completedCount / steps.length) * 100);
 
-  if (blueprintCount === 0) {
-    return {
-      steps,
-      completedCount,
-      completionPercent,
-      stageLabel: "Blueprint recommended",
-      summary:
-        "You already have enough context to turn research into a localized execution plan.",
-      nextAction: {
-        href: `/blueprint?projectId=${input.projectId}`,
-        label: "Create Blueprint",
-        description: "Build a Korea-ready execution strategy from a benchmark case.",
-      },
-    };
-  }
-
   if (ideaSessionCount === 0) {
     return {
       steps,
       completedCount,
       completionPercent,
-      stageLabel: "Idea validation next",
+      stageLabel: "아이디어 매칭 대기",
       summary:
-        "The benchmark strategy is ready. Now explore business options that fit your budget, timing, and skills.",
+        "프로젝트 조건이 준비됐습니다. 본인 조건에 맞는 한국 시장 아이디어를 생성해보세요.",
       nextAction: {
         href: `/idea-match?projectId=${input.projectId}`,
-        label: "Run Idea Match",
-        description: "Generate startup options based on your real constraints.",
+        label: "아이디어 매칭 시작",
+        description: "예산·팀·관심 분야에 맞는 한국형 아이디어 5개를 받아봅니다.",
       },
     };
   }
@@ -404,13 +382,13 @@ export function getProjectWorkflowState(input: {
     steps,
     completedCount,
     completionPercent,
-    stageLabel: "Strategy in motion",
+    stageLabel: "진행 중",
     summary:
-      "This project already has benchmark research, a blueprint, and at least one idea session. It is ready for iteration.",
+      "아이디어 매칭 세션이 진행 중입니다. 새 세션을 돌려 옵션을 비교하거나 기존 방향을 정교화하세요.",
     nextAction: {
       href: `/idea-match?projectId=${input.projectId}`,
-      label: "Refine strategy",
-      description: "Run another idea session or compare new options against the current direction.",
+      label: "새 매칭 실행",
+      description: "다른 조건으로 아이디어를 추가 탐색합니다.",
     },
   };
 }

@@ -419,10 +419,15 @@ export function registerIdeaMatchRoutes(
             return;
           }
         } else {
+          // 기본 제목 — 산업 1순위 + "사업 아이디어" (날짜 사용 금지)
+          const firstIndustry = Array.isArray(industries) && industries.length > 0
+            ? String(industries[0]).trim()
+            : "";
+          const defaultTitle = firstIndustry
+            ? `${firstIndustry} 사업 아이디어`
+            : "새 사업 아이디어";
           pendingProjectData = {
-            title:
-              projectTitle ||
-              `아이디어 매칭 ${new Date().toLocaleDateString("ko-KR")}`,
+            title: projectTitle || defaultTitle,
             targetMarket: market,
             budgetLimit: BigInt(budgetMap[budgetRange] ?? 30_000_000),
             targetDuration: launchTimeline,

@@ -60,9 +60,9 @@ export default function CollabHubPage() {
 
   return (
     <AuthGuard>
-      <div className="mx-auto max-w-5xl space-y-8 fade-up pb-12">
+      <div className="space-y-8 fade-up pb-12">
         <header className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-wider text-indigo-300">
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
             팀 빌딩 · 협업
           </p>
           <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
@@ -91,7 +91,7 @@ export default function CollabHubPage() {
                 type="button"
                 onClick={() => setTab(key)}
                 className={`rounded-md px-4 py-1.5 text-sm font-semibold transition-colors ${
-                  active ? "bg-indigo-500/20 text-indigo-100" : "text-zinc-400 hover:text-white"
+                  active ? "bg-white/[0.10] text-indigo-100" : "text-zinc-400 hover:text-white"
                 }`}
               >
                 {TAB_META[key].label}
@@ -123,19 +123,19 @@ export default function CollabHubPage() {
               <Link
                 key={post.id}
                 href={`/community/${post.id}`}
-                className="group block rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-indigo-400/40 hover:bg-white/[0.05]"
+                className="group block rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-white/20 hover:bg-white/[0.05]"
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="rounded-md bg-indigo-500/10 px-2 py-0.5 text-[0.6875rem] font-semibold text-indigo-200 ring-1 ring-indigo-400/20">
+                      <span className="rounded-md bg-white/[0.06] px-2 py-0.5 text-[0.6875rem] font-semibold text-zinc-200 ring-1 ring-white/10">
                         {communityCategoryOptions.find((o) => o.value === post.category)?.label || post.category}
                       </span>
                       <span className="text-xs text-zinc-500">
                         {formatRelativeTime(post.createdAt)}
                       </span>
                     </div>
-                    <h3 className="mt-1.5 text-base font-semibold text-white group-hover:text-indigo-200">
+                    <h3 className="mt-1.5 text-base font-semibold text-white group-hover:text-zinc-200">
                       {post.title}
                     </h3>
                     <p className="mt-1 line-clamp-2 text-sm text-zinc-300">
@@ -148,7 +148,7 @@ export default function CollabHubPage() {
                       <span>· ♡ {post._count?.likes || 0}</span>
                     </div>
                   </div>
-                  <span className="shrink-0 text-zinc-500 group-hover:text-indigo-300">→</span>
+                  <span className="shrink-0 text-zinc-500 group-hover:text-zinc-300">→</span>
                 </div>
               </Link>
             ))}
@@ -156,8 +156,8 @@ export default function CollabHubPage() {
         )}
 
         {/* 회의 카드 */}
-        <section className="rounded-2xl border border-indigo-400/30 bg-gradient-to-br from-indigo-500/[0.10] to-purple-500/[0.06] p-6">
-          <p className="text-xs font-semibold uppercase tracking-wider text-indigo-300">
+        <section className="rounded-2xl border border-white/15 bg-gradient-to-br from-indigo-500/[0.10] to-purple-500/[0.06] p-6">
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
             실시간 회의
           </p>
           <h2 className="mt-1.5 text-lg font-bold text-white">

@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import { useAuth } from "@/context/AuthContext";
-import { api } from "@/lib/api";
 import { planLabels, userTypeLabels } from "@/lib/product";
 import FounderHome from "@/components/mypage/FounderHome";
 import AcceleratorHome from "@/components/mypage/AcceleratorHome";
@@ -22,87 +21,63 @@ function UserCodeBadge({ code }: { code: string }) {
       type="button"
       onClick={copy}
       title="클릭하면 복사됩니다"
-      className="flex items-center gap-2 rounded-lg border border-violet-400/25 bg-violet-500/[0.08] px-3 py-2 transition-colors hover:border-violet-400/50"
+      className="inline-flex items-center gap-1.5 text-xs text-zinc-500 transition-colors hover:text-zinc-300"
     >
-      <span className="text-[0.65rem] font-semibold uppercase tracking-wider text-violet-400">초대 코드</span>
-      <span className="font-mono text-sm font-bold tracking-[0.2em] text-white">{code}</span>
-      <span className="text-[0.65rem] text-zinc-500">{copied ? "✓ 복사됨" : "복사"}</span>
+      <span>초대 코드</span>
+      <span className="font-mono text-zinc-300">{code}</span>
+      <span className="text-zinc-500">{copied ? "✓ 복사됨" : "· 복사"}</span>
     </button>
   );
 }
 
 export default function MyPage() {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const role = user?.userType ?? "FOUNDER";
-  const [inboxCount, setInboxCount] = useState(0);
-
-  useEffect(() => {
-    if (!token) return;
-    let cancelled = false;
-    Promise.all([
-      api<{ count: number }>("GET", "/api/inbox/count", undefined, token).catch(() => ({ count: 0 })),
-      api<{ unreadTotal: number }>("GET", "/api/dm/unread-summary", undefined, token).catch(() => ({ unreadTotal: 0 })),
-    ]).then(([inboxRes, dmRes]) => {
-      if (!cancelled) setInboxCount((inboxRes.count ?? 0) + (dmRes.unreadTotal ?? 0));
-    });
-    return () => { cancelled = true; };
-  }, [token]);
-
-  // CTA 버튼 — 역할별 라벨만 다름, 모두 아이디어/커뮤니티로 진입
   const cta =
     role === "EXPERT"
-      ? { href: "/community?category=TEAM_RECRUIT", label: "팀 모집 피드 보기" }
-      : { href: "/idea-match", label: "새 아이디어 탐색" };
+      ? { href: "/community?category=TEAM_RECRUIT", label: "팀 모집 보기" }
+      : { href: "/idea-match", label: "새 아이디어 만들기" };
 
   return (
     <AuthGuard>
-      <div className="mx-auto max-w-5xl space-y-8 fade-up pb-12">
-        {/* 헤더 (역할 무관 공통) */}
-        <header className="flex flex-wrap items-end justify-between gap-4">
-          <div className="space-y-2">
-            <p className="eyebrow">
+      <div className="pb-16">
+        {/* ── Hero 헤더 ── */}
+        <header className="flex flex-wrap items-end justify-between gap-6 border-b border-white/[0.06] pb-8">
+          <div className="min-w-0 space-y-3">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
               {role === "EXPERT" ? "전문가 워크스페이스" : "내 워크스페이스"}
             </p>
-            <h1 className="editorial-h1">
-              안녕하세요{user?.name ? `, ${user.name}` : ""}
+            <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+              안녕하세요{user?.name ? `, ${user.name}님` : ""}
             </h1>
-            <p className="text-sm text-zinc-400">
-              {user?.userType ? userTypeLabels[user.userType] : "역할 미설정"} ·{" "}
-              {user ? planLabels[user.planType] || user.planType : "-"} 플랜 ·{" "}
-              크레딧 {user?.isAdmin ? "Unlimited" : (user?.creditBalance ?? 0)}
-            </p>
-            {user?.userCode ? <UserCodeBadge code={user.userCode} /> : null}
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href="/mypage/inbox"
-              className="relative rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-xs font-semibold text-zinc-200 hover:border-white/20 hover:bg-white/[0.06]"
-              aria-label="인박스"
-              title="받은 응답"
-            >
-              알림함
-              {inboxCount > 0 ? (
-                <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[0.625rem] font-bold text-white">
-                  {inboxCount > 99 ? "99+" : inboxCount}
-                </span>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-400">
+              <span>{user?.userType ? userTypeLabels[user.userType] : "역할 미설정"}</span>
+              <span className="text-zinc-700">·</span>
+              <span>{user ? planLabels[user.planType] || user.planType : "-"} 플랜</span>
+              <span className="text-zinc-700">·</span>
+              <span>크레딧 {user?.isAdmin ? "무제한" : (user?.creditBalance ?? 0)}</span>
+              {user?.userCode ? (
+                <>
+                  <span className="text-zinc-700">·</span>
+                  <UserCodeBadge code={user.userCode} />
+                </>
               ) : null}
-            </Link>
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center gap-3">
             <Link
-              href="/mypage/edit"
-              className="rounded-md border border-violet-400/30 bg-violet-500/10 px-3 py-2 text-xs font-semibold text-violet-200 hover:border-violet-400/50 hover:bg-violet-500/20"
-              aria-label="내 정보 편집"
-              title="내 정보 편집"
+              href={cta.href}
+              className="inline-flex items-center gap-1.5 rounded-md border border-white/20 px-4 py-2 text-sm font-medium text-zinc-100 transition-colors hover:border-white/40 hover:bg-white/[0.04]"
             >
-              내 정보 편집
-            </Link>
-            <Link href={cta.href} className="btn-primary">
               {cta.label}
             </Link>
           </div>
         </header>
 
-        {/* 역할별 본문 */}
-        {role === "EXPERT" ? <AcceleratorHome /> : <FounderHome />}
+        {/* ── 본문 ── */}
+        <main className="mt-8">
+          {role === "EXPERT" ? <AcceleratorHome /> : <FounderHome />}
+        </main>
       </div>
     </AuthGuard>
   );

@@ -99,7 +99,7 @@ export default function VirtualMeeting({
     <div className="absolute inset-y-3 right-3 z-[65] flex w-[420px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-xl border border-white/10 bg-zinc-950 shadow-2xl">
       <header className="flex items-center justify-between border-b border-white/10 px-4 py-2.5">
         <div>
-          <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-violet-300">회의</p>
+          <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-zinc-400">회의</p>
           <p className="text-sm font-bold text-white">음성·화상·화면 공유</p>
         </div>
         <button

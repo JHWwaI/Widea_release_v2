@@ -3,6 +3,7 @@ import { type PrismaClient, WorkspaceRole, CollabRequestStatus } from "@prisma/c
 import { requireAuth } from "../lib/auth.js";
 import { getAuthedUser, handleRouteError, forbiddenError, notFoundError, conflictError } from "../lib/http.js";
 import { emitToUser, emitToWorkspace } from "../lib/realtime.js";
+import { isAdminEmail } from "../lib/admin.js";
 
 /** ideaId 기준으로 OWNER(세션 소유자) 또는 워크스페이스 멤버인지 확인 */
 async function getIdeaWithAccess(
@@ -88,22 +89,25 @@ export function registerWorkspaceCollabRoutes(
         });
         if (existing) throw conflictError("이미 워크스페이스 멤버입니다.");
 
-        // 팀 구독 한도 검증 — 구독 없으면 FREE(1명, OWNER만)
-        const sub = await prisma.workspaceSubscription.findUnique({ where: { ideaId } });
-        const max = sub?.maxMembers ?? 1; // 구독 없으면 OWNER 1명만
-        const cur = await prisma.ideaWorkspaceMember.count({ where: { ideaId } });
-        const totalIncludingOwner = cur + 1;
-        // max 0 = 무제한 (Enterprise)
-        if (max !== 0 && totalIncludingOwner >= max) {
-          res.status(402).json({
-            error: "현재 플랜의 멤버 한도에 도달했습니다.",
-            errorCode: "MEMBER_LIMIT_REACHED",
-            currentMembers: totalIncludingOwner,
-            maxMembers: max,
-            currentPlan: sub?.planType ?? "FREE",
-            upgradeRequired: true,
-          });
-          return;
+        // 팀 구독 한도 검증 — 구독 없으면 FREE(1명, OWNER만). Admin은 우회.
+        const ownerUser = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
+        if (!isAdminEmail(ownerUser?.email)) {
+          const sub = await prisma.workspaceSubscription.findUnique({ where: { ideaId } });
+          const max = sub?.maxMembers ?? 1; // 구독 없으면 OWNER 1명만
+          const cur = await prisma.ideaWorkspaceMember.count({ where: { ideaId } });
+          const totalIncludingOwner = cur + 1;
+          // max 0 = 무제한 (Enterprise)
+          if (max !== 0 && totalIncludingOwner >= max) {
+            res.status(402).json({
+              error: "현재 플랜의 멤버 한도에 도달했습니다.",
+              errorCode: "MEMBER_LIMIT_REACHED",
+              currentMembers: totalIncludingOwner,
+              maxMembers: max,
+              currentPlan: sub?.planType ?? "FREE",
+              upgradeRequired: true,
+            });
+            return;
+          }
         }
 
         const member = await prisma.ideaWorkspaceMember.create({

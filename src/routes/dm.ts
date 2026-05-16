@@ -281,6 +281,125 @@ export function registerDmRoutes(
     },
   );
 
+  /* ─── DELETE /api/dm/conversations/:id
+     대화방 나가기 — 양쪽 모두 사라짐 (cascade로 메시지 전부 삭제) */
+  app.delete(
+    "/api/dm/conversations/:id",
+    requireAuth,
+    async (req: Request, res: Response): Promise<void> => {
+      try {
+        const { userId } = getAuthedUser(req);
+        const id = String(req.params.id);
+        const conv = await prisma.directConversation.findUnique({
+          where: { id },
+          select: { userAId: true, userBId: true },
+        });
+        if (!conv) { res.status(404).json({ error: "대화 없음" }); return; }
+        if (conv.userAId !== userId && conv.userBId !== userId) {
+          res.status(403).json({ error: "접근 권한 없음" }); return;
+        }
+        await prisma.directConversation.delete({ where: { id } });
+        const otherUserId = conv.userAId === userId ? conv.userBId : conv.userAId;
+        emitToUser(otherUserId, "dm.conversation.deleted", { conversationId: id });
+        res.json({ ok: true });
+      } catch (err) {
+        handleRouteError(res, err, "대화 삭제 오류");
+      }
+    },
+  );
+
+  /* ─── DELETE /api/dm/messages/:id
+     내 메시지 삭제 — 본인만 가능 */
+  app.delete(
+    "/api/dm/messages/:id",
+    requireAuth,
+    async (req: Request, res: Response): Promise<void> => {
+      try {
+        const { userId } = getAuthedUser(req);
+        const id = String(req.params.id);
+        const msg = await prisma.directMessage.findUnique({
+          where: { id },
+          select: { senderId: true, conversationId: true, conversation: { select: { userAId: true, userBId: true } } },
+        });
+        if (!msg) { res.status(404).json({ error: "메시지 없음" }); return; }
+        if (msg.senderId !== userId) {
+          res.status(403).json({ error: "본인 메시지만 삭제할 수 있습니다." }); return;
+        }
+        await prisma.directMessage.delete({ where: { id } });
+        const otherUserId = msg.conversation.userAId === userId ? msg.conversation.userBId : msg.conversation.userAId;
+        emitToUser(otherUserId, "dm.message.deleted", { conversationId: msg.conversationId, messageId: id });
+        res.json({ ok: true });
+      } catch (err) {
+        handleRouteError(res, err, "메시지 삭제 오류");
+      }
+    },
+  );
+
+  /* ─── PATCH /api/dm/messages/:id
+     내 메시지 편집 — 본인 + 5분 이내 */
+  app.patch(
+    "/api/dm/messages/:id",
+    requireAuth,
+    async (req: Request, res: Response): Promise<void> => {
+      try {
+        const { userId } = getAuthedUser(req);
+        const id = String(req.params.id);
+        const content = String(req.body?.content ?? "").trim();
+        if (!content) { res.status(400).json({ error: "내용을 입력해주세요." }); return; }
+        if (content.length > 2000) { res.status(400).json({ error: "메시지가 너무 깁니다." }); return; }
+
+        const msg = await prisma.directMessage.findUnique({
+          where: { id },
+          select: { senderId: true, createdAt: true, conversationId: true, conversation: { select: { userAId: true, userBId: true } } },
+        });
+        if (!msg) { res.status(404).json({ error: "메시지 없음" }); return; }
+        if (msg.senderId !== userId) { res.status(403).json({ error: "본인 메시지만 편집할 수 있습니다." }); return; }
+        const ageMs = Date.now() - new Date(msg.createdAt).getTime();
+        if (ageMs > 5 * 60 * 1000) {
+          res.status(400).json({ error: "편집은 5분 이내 메시지만 가능합니다." }); return;
+        }
+        const updated = await prisma.directMessage.update({
+          where: { id },
+          data: { content },
+        });
+        const otherUserId = msg.conversation.userAId === userId ? msg.conversation.userBId : msg.conversation.userAId;
+        emitToUser(otherUserId, "dm.message.edited", { conversationId: msg.conversationId, message: updated });
+        res.json({ message: updated });
+      } catch (err) {
+        handleRouteError(res, err, "메시지 편집 오류");
+      }
+    },
+  );
+
+  /* ─── POST /api/dm/mark-all-read
+     내 모든 대화방 한꺼번에 읽음 처리 */
+  app.post(
+    "/api/dm/mark-all-read",
+    requireAuth,
+    async (req: Request, res: Response): Promise<void> => {
+      try {
+        const { userId } = getAuthedUser(req);
+        const myConvs = await prisma.directConversation.findMany({
+          where: { OR: [{ userAId: userId }, { userBId: userId }] },
+          select: { id: true },
+        });
+        const ids = myConvs.map((c) => c.id);
+        if (ids.length === 0) { res.json({ markedRead: 0 }); return; }
+        const result = await prisma.directMessage.updateMany({
+          where: {
+            conversationId: { in: ids },
+            senderId: { not: userId },
+            readAt: null,
+          },
+          data: { readAt: new Date() },
+        });
+        res.json({ markedRead: result.count });
+      } catch (err) {
+        handleRouteError(res, err, "전체 읽음 처리 오류");
+      }
+    },
+  );
+
   /* ─── GET /api/dm/unread-summary
      사이드바 배지용: 전체 안 읽은 수 + 대화방 수 */
   app.get(

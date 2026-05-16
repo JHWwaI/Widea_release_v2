@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description:
     "글로벌 사례 검색, 한국형 실행 전략, 아이디어 매칭을 한 흐름으로 묶은 AI 창업 워크스페이스",
   manifest: "/manifest.webmanifest",
-  themeColor: "#7C3AED",
+  themeColor: "#0B0C10",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

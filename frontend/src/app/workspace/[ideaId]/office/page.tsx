@@ -40,7 +40,7 @@ export default function OfficePage({ params }: { params: Promise<{ ideaId: strin
       <div className="fixed inset-0 z-[60]" style={{ background: "#0a0b10" }}>
         {/* Beta 배너 */}
         <div className="pointer-events-none absolute left-1/2 top-3 z-20 -translate-x-1/2">
-          <span className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-amber-400/40 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-200 backdrop-blur">
+          <span className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.06] px-3 py-1 text-xs font-medium text-zinc-200 backdrop-blur">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400" />
             가상 사무실 — 개발 중 (프로토타입)
           </span>
@@ -56,8 +56,8 @@ export default function OfficePage({ params }: { params: Promise<{ ideaId: strin
             onClick={() => setShowMeeting((v) => !v)}
             className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium backdrop-blur transition-colors ${
               showMeeting
-                ? "border-emerald-400/40 bg-emerald-500/15 text-emerald-200"
-                : "border-violet-400/40 bg-violet-500/15 text-violet-100 hover:bg-violet-500/20"
+                ? "border-white/20 bg-white/[0.08] text-zinc-200"
+                : "border-white/20 bg-white/[0.08] text-zinc-100 hover:bg-white/[0.10]"
             }`}
             title="음성·화상·화면공유 회의 시작"
           >

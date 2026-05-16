@@ -33,130 +33,65 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen" style={{ background: "#07060F" }}>
-      {/* ── Left brand panel ── */}
-      <div
-        className="relative hidden overflow-hidden lg:flex lg:w-[420px] xl:w-[480px] shrink-0 flex-col justify-between px-12 py-14"
-        style={{
-          background: "linear-gradient(160deg, #0E0C1E 0%, #07060F 100%)",
-          borderRight: "1px solid rgba(255,255,255,0.07)",
-        }}
-      >
-        {/* Background glow */}
-        <div
-          className="pointer-events-none absolute left-0 top-0"
-          style={{
-            width: "500px",
-            height: "500px",
-            background: "radial-gradient(ellipse at 20% 20%, rgba(79,110,247,0.18) 0%, transparent 65%)",
-            filter: "blur(50px)",
-          }}
-        />
-        <div
-          className="pointer-events-none absolute bottom-0 right-0"
-          style={{
-            width: "400px",
-            height: "400px",
-            background: "radial-gradient(ellipse at 80% 80%, rgba(6,182,212,0.08) 0%, transparent 65%)",
-            filter: "blur(60px)",
-          }}
-        />
-
-        {/* Logo */}
-        <Link href="/" className="relative z-10 flex items-center">
-          <span className="text-lg font-bold text-white">Widea</span>
-        </Link>
-
-        {/* Content */}
-        <div className="relative z-10 space-y-8">
-          <div className="space-y-3">
-            <p className="eyebrow">AI 창업 워크스페이스</p>
-            <h2 className="text-3xl font-bold leading-snug text-white">
-              글로벌 사례를<br />한국 전략으로
-            </h2>
-            <p className="text-sm leading-relaxed" style={{ color: "var(--ink-3)" }}>
-              Discovery, Blueprint, Idea Match로 이어지는 창업 검증 흐름을 한 곳에서 관리하세요.
-            </p>
-          </div>
-
-          <ul className="space-y-3">
-            {[
-              { label: "Discovery", desc: "전 세계 유사 사례 벡터 검색", color: "#93AFFE" },
-              { label: "Blueprint", desc: "한국 시장 맞춤 실행 전략 생성", color: "#67E8F9" },
-              { label: "Idea Match", desc: "내 역량·예산에 맞는 아이디어 추천", color: "#6EE7B7" },
-            ].map((f) => (
-              <li key={f.label} className="flex items-start gap-3">
-                <span
-                  className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
-                  style={{ background: `${f.color}22`, border: `1px solid ${f.color}44` }}
-                >
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke={f.color} strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                  </svg>
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-white">{f.label}</p>
-                  <p className="text-xs" style={{ color: "var(--ink-4)" }}>{f.desc}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+    <div className="flex min-h-screen flex-col bg-[#0B0C10] text-zinc-100">
+      {/* Top bar */}
+      <header className="border-b border-white/[0.06]">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5 lg:px-8">
+          <Link href="/" className="text-base font-semibold tracking-tight text-white">
+            Widea
+          </Link>
+          <p className="text-sm text-zinc-400">
+            계정이 없으신가요?{" "}
+            <Link
+              href="/register"
+              className="font-medium text-zinc-100 underline-offset-4 hover:underline"
+            >
+              회원가입
+            </Link>
+          </p>
         </div>
+      </header>
 
-        <p className="relative z-10 text-xs" style={{ color: "var(--ink-4)" }}>© 2025 Widea</p>
-      </div>
-
-      {/* ── Right form ── */}
-      <div
-        className="flex flex-1 flex-col items-center justify-center px-6 py-16"
-        style={{ background: "rgba(7,6,15,0.6)" }}
-      >
-        {/* Mobile logo */}
-        <Link href="/" className="mb-10 flex items-center lg:hidden">
-          <span className="text-lg font-bold text-white">Widea</span>
-        </Link>
-
+      <main className="flex flex-1 items-center justify-center px-6 py-16">
         <div className="w-full max-w-sm">
-          <div className="mb-8 space-y-1">
-            <h1 className="text-2xl font-bold text-white">로그인</h1>
-            <p className="text-sm" style={{ color: "var(--ink-3)" }}>계정으로 워크스페이스에 접속하세요.</p>
+          <div className="mb-8">
+            <h1 className="text-2xl font-semibold tracking-tight text-white">로그인</h1>
+            <p className="mt-1.5 text-sm text-zinc-400">
+              Widea 워크스페이스에 접속하세요.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error ? (
-              <div
-                className="rounded-xl px-4 py-3 text-sm"
-                style={{
-                  background: "rgba(248,113,113,0.08)",
-                  border: "1px solid rgba(248,113,113,0.2)",
-                  color: "#FCA5A5",
-                }}
-              >
+              <div className="rounded-md border border-rose-500/30 bg-rose-500/[0.08] px-3 py-2 text-sm text-rose-200">
                 {error}
               </div>
             ) : null}
 
-            <div className="space-y-1.5">
-              <label htmlFor="email" className="field-label">이메일</label>
+            <div>
+              <label htmlFor="email" className="block text-xs font-medium text-zinc-300">
+                이메일
+              </label>
               <input
                 id="email"
                 type="email"
-                className="input"
-                placeholder="example@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
+                placeholder="you@example.com"
+                className="mt-1.5 w-full rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-white/30 focus:outline-none"
               />
             </div>
 
-            <div className="space-y-1.5">
+            <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="field-label">비밀번호</label>
+                <label htmlFor="password" className="block text-xs font-medium text-zinc-300">
+                  비밀번호
+                </label>
                 <Link
                   href="/forgot-password"
-                  className="text-xs transition-colors"
-                  style={{ color: "#4F6EF7" }}
+                  className="text-xs text-zinc-400 underline-offset-4 hover:text-zinc-100 hover:underline"
                 >
                   비밀번호 찾기
                 </Link>
@@ -164,36 +99,35 @@ export default function LoginPage() {
               <input
                 id="password"
                 type="password"
-                className="input"
-                placeholder="비밀번호 입력"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
+                placeholder="비밀번호 입력"
+                className="mt-1.5 w-full rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-white/30 focus:outline-none"
               />
             </div>
 
             <button
               type="submit"
-              disabled={submitting}
-              className="btn-primary w-full"
+              disabled={submitting || !email.trim() || !password}
+              className="w-full rounded-md bg-white px-3 py-2.5 text-sm font-semibold text-zinc-900 transition-colors hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-white/15 disabled:text-zinc-500"
             >
-              {submitting ? "로그인 중..." : "로그인"}
+              {submitting ? "로그인 중…" : "로그인"}
             </button>
           </form>
-
-          <p className="mt-6 text-center text-sm" style={{ color: "var(--ink-3)" }}>
-            계정이 없다면{" "}
-            <Link
-              href="/register"
-              className="font-semibold transition-colors"
-              style={{ color: "#93AFFE" }}
-            >
-              회원가입
-            </Link>
-          </p>
         </div>
-      </div>
+      </main>
+
+      <footer className="border-t border-white/[0.06]">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5 text-xs text-zinc-500 lg:px-8">
+          <p>© 2026 Widea</p>
+          <nav className="flex items-center gap-4">
+            <Link href="/contact" className="hover:text-zinc-300 transition-colors">문의</Link>
+            <Link href="/billing" className="hover:text-zinc-300 transition-colors">요금</Link>
+          </nav>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -96,10 +96,10 @@ function CommunityNewContent() {
 
           {/* 연결된 아이디어 배너 */}
           {ideaId && ideaTitle ? (
-            <div className="flex items-center gap-3 rounded-xl border border-violet-400/30 bg-violet-500/[0.08] px-4 py-3">
+            <div className="flex items-center gap-3 rounded-xl border border-white/15 bg-white/[0.10]/[0.08] px-4 py-3">
               <span className="text-lg">💡</span>
               <div className="min-w-0 flex-1">
-                <p className="text-xs text-violet-300">연결된 아이디어</p>
+                <p className="text-xs text-zinc-400">연결된 아이디어</p>
                 <p className="truncate text-sm font-semibold text-white">{ideaTitle}</p>
               </div>
               <button

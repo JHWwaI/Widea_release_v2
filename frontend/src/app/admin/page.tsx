@@ -263,7 +263,7 @@ export default function AdminPage() {
                   <Surface key={label} className="space-y-1">
                     <p className="text-xs text-gray-400">{label}</p>
                     <p className="text-3xl font-bold text-gray-900">{value.toLocaleString()}</p>
-                    {sub ? <p className="text-xs text-emerald-600">{sub}</p> : null}
+                    {sub ? <p className="text-xs text-zinc-700">{sub}</p> : null}
                   </Surface>
                 ))}
               </div>
@@ -377,7 +377,7 @@ export default function AdminPage() {
                                 <button
                                   type="button"
                                   onClick={() => { setGrantUserId(u.id); setGrantMsg(""); setGrantAmount("10"); setGrantReason(""); }}
-                                  className="btn-ghost text-xs px-2 py-1 text-emerald-600"
+                                  className="btn-ghost text-xs px-2 py-1 text-zinc-700"
                                 >
                                   크레딧 지급
                                 </button>
@@ -465,13 +465,13 @@ export default function AdminPage() {
                         <td className="px-4 py-3 text-gray-500">{c.fundingStage ?? "—"}</td>
                         <td className="px-4 py-3">
                           {c.dataQualityScore !== null ? (
-                            <span className={`font-medium ${c.dataQualityScore >= 0.8 ? "text-emerald-600" : c.dataQualityScore >= 0.5 ? "text-amber-600" : "text-red-500"}`}>
+                            <span className={`font-medium ${c.dataQualityScore >= 0.8 ? "text-zinc-700" : c.dataQualityScore >= 0.5 ? "text-zinc-700" : "text-red-500"}`}>
                               {(c.dataQualityScore * 100).toFixed(0)}%
                             </span>
                           ) : "—"}
                         </td>
                         <td className="px-4 py-3">
-                          <span className={`rounded px-1.5 py-0.5 text-xs font-medium ${c.isActive ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-400"}`}>
+                          <span className={`rounded px-1.5 py-0.5 text-xs font-medium ${c.isActive ? "bg-white/[0.06] text-zinc-800" : "bg-gray-100 text-gray-400"}`}>
                             {c.isActive ? "활성" : "비활성"}
                           </span>
                         </td>
@@ -538,7 +538,7 @@ export default function AdminPage() {
                 />
               </div>
               {grantMsg ? (
-                <p className={`text-sm ${grantMsg.startsWith("완료") ? "text-emerald-600" : "text-red-600"}`}>{grantMsg}</p>
+                <p className={`text-sm ${grantMsg.startsWith("완료") ? "text-zinc-700" : "text-red-600"}`}>{grantMsg}</p>
               ) : null}
               <div className="flex gap-2">
                 <button type="submit" disabled={granting} className="btn-primary flex-1">

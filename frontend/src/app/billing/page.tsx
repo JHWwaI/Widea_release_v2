@@ -36,7 +36,7 @@ export default function BillingPage() {
 }
 
 function Inner() {
-  const { token, user } = useAuth();
+  const { token, user, refreshUser } = useAuth();
   const [tab, setTab] = useState<Tab>("personal");
   const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>([]);
   const [selectedWs, setSelectedWs] = useState<string>("");
@@ -89,6 +89,7 @@ function Inner() {
       } else {
         await api("POST", "/api/admin/demo-subscribe", { planType: plan.key }, token);
       }
+      await refreshUser();
       setSuccess(`${plan.label} 플랜으로 변경됐습니다.`);
     } catch (caught) {
       setError(readError(caught, "구독 실패"));
@@ -147,7 +148,7 @@ function Inner() {
             type="button"
             onClick={() => setTab("personal")}
             className={`rounded-full px-5 py-2 text-sm font-bold transition-colors ${
-              tab === "personal" ? "bg-violet-500 text-white" : "text-zinc-400 hover:text-zinc-200"
+              tab === "personal" ? "bg-white/[0.10] text-white" : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
             개인
@@ -156,7 +157,7 @@ function Inner() {
             type="button"
             onClick={() => setTab("team")}
             className={`rounded-full px-5 py-2 text-sm font-bold transition-colors ${
-              tab === "team" ? "bg-violet-500 text-white" : "text-zinc-400 hover:text-zinc-200"
+              tab === "team" ? "bg-white/[0.10] text-white" : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
             팀
@@ -187,7 +188,7 @@ function Inner() {
               </select>
               {wsSub ? (
                 <p className="text-xs text-zinc-500">
-                  현재: <strong className="text-violet-200">{PLAN_META[wsSub.planType].label}</strong>
+                  현재: <strong className="text-white">{PLAN_META[wsSub.planType].label}</strong>
                   <span className="mx-1">·</span>
                   멤버 {wsSub.currentMembers}/{wsSub.maxMembers === 0 ? "∞" : wsSub.maxMembers}
                 </p>
@@ -203,7 +204,7 @@ function Inner() {
         </p>
       ) : null}
       {success ? (
-        <p className="rounded-lg border border-emerald-400/30 bg-emerald-500/10 px-4 py-2.5 text-center text-sm text-emerald-200">
+        <p className="rounded-lg border border-white/15 bg-white/10 px-4 py-2.5 text-center text-sm text-white">
           ✓ {success}
         </p>
       ) : null}
@@ -259,18 +260,18 @@ function PlanCard({
 
   const badgeMeta =
     plan.badge === "popular"
-      ? { text: "인기", cn: "bg-violet-500 text-white" }
+      ? { text: "인기", cn: "bg-white/[0.10] text-white" }
       : plan.badge === "best_value"
-        ? { text: "추천", cn: "bg-emerald-500 text-white" }
+        ? { text: "추천", cn: "bg-white text-white" }
         : null;
 
   return (
     <div
       className={`relative flex flex-col gap-3 rounded-2xl border p-5 transition-all ${
         isCurrent
-          ? "border-emerald-400/50 bg-emerald-500/[0.05] ring-1 ring-emerald-400/30"
+          ? "border-white/30 bg-white/[0.05] ring-1 ring-white/15"
           : plan.badge
-            ? "border-violet-400/40 bg-violet-500/[0.04] ring-1 ring-violet-400/20"
+            ? "border-white/15 bg-white/[0.10]/[0.04] ring-1 ring-white/10"
             : "border-white/10 bg-white/[0.02]"
       }`}
     >
@@ -282,7 +283,7 @@ function PlanCard({
         </span>
       ) : null}
       {isCurrent ? (
-        <span className="absolute -top-2.5 right-3 rounded-full bg-emerald-500 px-2.5 py-0.5 text-[0.6rem] font-bold text-white">
+        <span className="absolute -top-2.5 right-3 rounded-full bg-white px-2.5 py-0.5 text-[0.6rem] font-bold text-white">
           현재 플랜
         </span>
       ) : null}
@@ -316,7 +317,7 @@ function PlanCard({
       <ul className="flex-1 space-y-1.5 border-t border-white/5 pt-3">
         {plan.features.map((f) => (
           <li key={f} className="flex items-start gap-1.5 text-[0.7rem] text-zinc-300">
-            <span className="text-emerald-400">✓</span>
+            <span className="text-zinc-300">✓</span>
             <span>{f}</span>
           </li>
         ))}
@@ -328,10 +329,10 @@ function PlanCard({
         disabled={loading || isCurrent || showWsRequired}
         className={`mt-1 w-full rounded-lg px-4 py-2.5 text-sm font-bold transition-colors disabled:opacity-50 ${
           isCurrent
-            ? "bg-emerald-500/30 text-emerald-200 cursor-default"
+            ? "bg-white/30 text-white cursor-default"
             : isEnterprise || isFree
               ? "border border-white/15 bg-white/[0.04] text-white hover:bg-white/[0.08]"
-              : "bg-violet-500 text-white hover:bg-violet-400"
+              : "bg-white/[0.10] text-white hover:bg-white/[0.15]"
         }`}
       >
         {isCurrent

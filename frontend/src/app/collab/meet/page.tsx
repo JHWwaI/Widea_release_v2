@@ -75,11 +75,11 @@ function MeetContent() {
         <div className="mx-auto max-w-7xl space-y-3 fade-up py-2 pb-12">
           <header className="flex flex-wrap items-center justify-between gap-3 px-1">
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-wider text-indigo-300">
+              <p className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
                 실시간 회의
               </p>
               <h1 className="truncate text-lg font-bold text-white">
-                회의방 <span className="text-indigo-300">{room}</span>
+                회의방 <span className="text-zinc-300">{room}</span>
               </h1>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -109,9 +109,9 @@ function MeetContent() {
 
           {/* 자동 회의록 섹션 */}
           {!ideaId ? (
-            <p className="rounded-lg border border-amber-400/30 bg-amber-500/[0.06] px-4 py-3 text-xs text-amber-200">
+            <p className="rounded-lg border border-white/15 bg-white/[0.10]/[0.06] px-4 py-3 text-xs text-zinc-200">
               ⚠ 워크스페이스에서 회의를 시작하지 않으면 회의록이 어떤 아이디어와도 연결되지 않습니다. 보관함을 통합했기 때문에, 끝낸 회의록을 다시 보려면{" "}
-              <Link href="/idea-match" className="underline hover:text-amber-100">아이디어 → 워크스페이스</Link>에서 시작하세요.
+              <Link href="/idea-match" className="underline hover:text-zinc-100">아이디어 → 워크스페이스</Link>에서 시작하세요.
             </p>
           ) : null}
           <MeetingNotesSection roomCode={room} ideaId={ideaId} />
@@ -122,7 +122,7 @@ function MeetContent() {
 
   return (
     <AuthGuard>
-      <div className="mx-auto max-w-3xl space-y-8 fade-up pb-12">
+      <div className="space-y-8 fade-up pb-12">
         <header className="space-y-2">
           <Link href="/collab" className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300">
             ← 협업 허브
@@ -137,8 +137,8 @@ function MeetContent() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           {/* 만들기 */}
-          <section className="space-y-3 rounded-2xl border border-indigo-400/30 bg-gradient-to-br from-indigo-500/[0.10] to-purple-500/[0.06] p-5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-indigo-300">새 회의</p>
+          <section className="space-y-3 rounded-2xl border border-white/15 bg-gradient-to-br from-indigo-500/[0.10] to-purple-500/[0.06] p-5">
+            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-300">새 회의</p>
             <h2 className="text-lg font-bold text-white">회의방 만들기</h2>
             <p className="text-sm text-zinc-300">
               즉시 새 방을 생성합니다. 링크를 팀원에게 공유하면 바로 참여할 수 있어요.
@@ -150,7 +150,7 @@ function MeetContent() {
 
           {/* 참여 */}
           <section className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-indigo-300">코드로 참여</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-300">코드로 참여</p>
             <h2 className="text-lg font-bold text-white">기존 회의방 참여</h2>
             <p className="text-sm text-zinc-300">초대받은 회의방 코드 또는 링크 끝의 코드를 입력하세요.</p>
             <form onSubmit={handleJoin} className="space-y-2">

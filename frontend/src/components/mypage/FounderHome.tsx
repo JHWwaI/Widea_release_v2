@@ -108,7 +108,7 @@ export default function FounderHome() {
   const showOnboarding = !loading && selectedCount === 0;
 
   return (
-    <>
+    <div className="space-y-10">
       {error ? (
         <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
           {error}
@@ -119,7 +119,7 @@ export default function FounderHome() {
       {showOnboarding ? (
         <section className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
           <header>
-            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-violet-300">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">
               시작 가이드
             </p>
             <h2 className="mt-1 text-base font-bold text-white">
@@ -163,7 +163,7 @@ export default function FounderHome() {
           <h2 className="text-base font-semibold text-white">
             내 프로젝트 <span className="text-zinc-500">({myIdeas.length})</span>
           </h2>
-          <Link href="/idea-match" className="text-xs font-medium text-indigo-300 hover:text-indigo-200">
+          <Link href="/idea-match" className="text-xs font-medium text-zinc-300 hover:text-zinc-200">
             새 아이디어 만들기 →
           </Link>
         </div>
@@ -197,23 +197,21 @@ export default function FounderHome() {
                   }}
                   className={`group flex cursor-pointer flex-col gap-3 rounded-2xl border bg-white/[0.02] p-5 transition-all hover:bg-white/[0.04] ${
                     isSelected
-                      ? "border-violet-400/30 hover:border-violet-400/60"
-                      : "border-white/10 hover:border-indigo-400/40"
+                      ? "border-white/15 hover:border-white/30"
+                      : "border-white/10 hover:border-white/20"
                   }`}
                 >
-                  {/* 제목 + 상태 */}
-                  <div className="flex items-baseline justify-between gap-2">
-                    <p className="truncate text-base font-bold text-white">{idea.titleKo}</p>
+                  {/* 상태 라벨 */}
+                  <p className="flex items-center gap-1.5 text-[0.65rem] font-medium uppercase tracking-wider text-zinc-500">
                     <span
-                      className={`shrink-0 rounded-md px-2 py-0.5 text-[0.65rem] font-semibold ${
-                        isSelected
-                          ? "bg-violet-500/10 text-violet-300 ring-1 ring-violet-400/30"
-                          : "bg-indigo-500/10 text-indigo-300 ring-1 ring-indigo-400/20"
-                      }`}
-                    >
-                      {isSelected ? "대표" : "Shortlist"}
-                    </span>
-                  </div>
+                      aria-hidden
+                      className={`h-1.5 w-1.5 rounded-full ${isSelected ? "bg-white" : "bg-zinc-600"}`}
+                    />
+                    {isSelected ? "진행 중" : "후보"}
+                  </p>
+
+                  {/* 제목 */}
+                  <p className="-mt-1 truncate text-base font-semibold text-white">{idea.titleKo}</p>
 
                   {/* 한 줄 설명 */}
                   {idea.oneLinerKo ? (
@@ -225,13 +223,13 @@ export default function FounderHome() {
                     <div className="space-y-1.5">
                       <div className="flex items-baseline justify-between text-xs">
                         <span className="text-zinc-500">진척</span>
-                        <span className="font-bold tabular-nums text-emerald-300">
+                        <span className="font-bold tabular-nums text-white">
                           {summary.pct}% <span className="text-zinc-500">· {summary.done}/{summary.total}</span>
                         </span>
                       </div>
                       <div className="h-1 overflow-hidden rounded-full bg-white/[0.05]">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-violet-500 to-emerald-400 transition-all"
+                          className="h-full rounded-full bg-white transition-all"
                           style={{ width: `${summary.pct}%` }}
                         />
                       </div>
@@ -240,8 +238,8 @@ export default function FounderHome() {
 
                   {/* 다음 할 일 */}
                   {isSelected && summary?.nextTask ? (
-                    <div className="rounded-lg border border-violet-400/20 bg-violet-500/[0.04] p-3">
-                      <p className="text-[0.65rem] font-semibold text-violet-300">
+                    <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                      <p className="text-[0.65rem] font-semibold text-zinc-400">
                         다음 할 일 · 0{summary.nextStageNumber} {summary.nextStageName}
                       </p>
                       <p className="mt-1 line-clamp-2 text-sm font-semibold text-zinc-100">
@@ -261,12 +259,12 @@ export default function FounderHome() {
                       <Link
                         href={`/workspace/${idea.id}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="rounded-md border border-violet-400/30 bg-violet-500/10 px-2.5 py-1 text-xs font-semibold text-violet-200 hover:bg-violet-500/20"
+                        className="text-xs font-medium text-zinc-300 hover:text-white"
                       >
-                        워크스페이스 →
+                        워크스페이스 열기 →
                       </Link>
                     ) : (
-                      <span className="text-xs text-zinc-500 group-hover:text-indigo-300">분석 보기 →</span>
+                      <span className="text-xs text-zinc-500 group-hover:text-zinc-300">분석 보기 →</span>
                     )}
                   </div>
                 </div>
@@ -288,7 +286,7 @@ export default function FounderHome() {
           <QuickLink href="/contact" title="문의하기" desc="버그 신고·문의·피드백" />
         </div>
       </section>
-    </>
+    </div>
   );
 }
 
@@ -312,8 +310,8 @@ function OnboardingStep({
       <span
         className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
           done
-            ? "bg-emerald-500 text-white"
-            : "bg-violet-500/20 text-violet-200 ring-1 ring-violet-400/40"
+            ? "bg-white text-zinc-900"
+            : "bg-white/[0.06] text-zinc-200 ring-1 ring-white/20"
         }`}
       >
         {done ? "✓" : n}
@@ -327,7 +325,7 @@ function OnboardingStep({
       {!done && ctaHref ? (
         <Link
           href={ctaHref}
-          className="shrink-0 rounded-md border border-violet-400/40 bg-violet-500/15 px-2.5 py-1 text-[0.65rem] font-bold text-violet-100 hover:bg-violet-500/25"
+          className="shrink-0 rounded-md border border-white/15 bg-white/[0.08] px-2.5 py-1 text-[0.65rem] font-bold text-zinc-100 hover:bg-white/[0.12]"
         >
           {ctaLabel}
         </Link>
@@ -340,11 +338,11 @@ function QuickLink({ href, title, desc }: { href: string; title: string; desc: s
   return (
     <Link
       href={href}
-      className="group rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-indigo-400/40 hover:bg-white/[0.05]"
+      className="group rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-white/20 hover:bg-white/[0.05]"
     >
-      <p className="text-sm font-semibold text-white group-hover:text-indigo-200">{title}</p>
+      <p className="text-sm font-semibold text-white group-hover:text-zinc-200">{title}</p>
       <p className="mt-1 text-xs text-zinc-400">{desc}</p>
-      <p className="mt-3 text-xs font-semibold text-indigo-300">바로가기 →</p>
+      <p className="mt-3 text-xs font-semibold text-zinc-300">바로가기 →</p>
     </Link>
   );
 }

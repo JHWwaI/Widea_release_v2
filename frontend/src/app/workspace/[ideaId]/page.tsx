@@ -135,7 +135,7 @@ export default function WorkspacePage() {
     return (
       <AuthGuard>
         <div className="mx-auto max-w-2xl space-y-6 py-20 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-300">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400">
             워크스페이스
           </p>
           <h1 className="text-3xl font-bold text-white sm:text-4xl">
@@ -201,7 +201,7 @@ export default function WorkspacePage() {
 
   return (
     <AuthGuard>
-      <div className="mx-auto max-w-5xl space-y-10 fade-up py-4 pb-12">
+      <div className="space-y-10 fade-up py-4 pb-12">
         {/* 헤더 */}
         <header className="space-y-3">
           <Link href={`/ideas/${idea.id}`} className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300">
@@ -218,14 +218,14 @@ export default function WorkspacePage() {
             <div className="flex items-center gap-3">
               <Link
                 href={`/workspace/${idea.id}/office`}
-                className="inline-flex items-center gap-2 rounded-lg border border-amber-400/30 bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-200 transition-colors hover:bg-amber-500/15"
+                className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.06] px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/[0.08]"
                 title="가상 사무실 — 개발 중 (프로토타입)"
               >
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400" />
                 가상 사무실 (베타)
               </Link>
               <div className="text-right">
-                <p className="display-num text-4xl text-emerald-300 sm:text-5xl">{overallPct}%</p>
+                <p className="display-num text-4xl text-zinc-200 sm:text-5xl">{overallPct}%</p>
                 <p className="mt-1 text-xs text-zinc-500">전체 진척 ({done}/{total})</p>
               </div>
             </div>
@@ -245,7 +245,7 @@ export default function WorkspacePage() {
             onClick={() => setTab("stages")}
             className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
               tab === "stages"
-                ? "bg-violet-500/15 text-violet-100 ring-1 ring-violet-400/30"
+                ? "bg-white/[0.10]/15 text-zinc-100 ring-1 ring-white/15"
                 : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
             }`}
           >
@@ -258,7 +258,7 @@ export default function WorkspacePage() {
             onClick={() => setTab("meetings")}
             className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
               tab === "meetings"
-                ? "bg-violet-500/15 text-violet-100 ring-1 ring-violet-400/30"
+                ? "bg-white/[0.10]/15 text-zinc-100 ring-1 ring-white/15"
                 : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
             }`}
           >
@@ -271,7 +271,7 @@ export default function WorkspacePage() {
             onClick={() => setTab("members")}
             className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
               tab === "members"
-                ? "bg-violet-500/15 text-violet-100 ring-1 ring-violet-400/30"
+                ? "bg-white/[0.10]/15 text-zinc-100 ring-1 ring-white/15"
                 : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
             }`}
           >
@@ -284,9 +284,9 @@ export default function WorkspacePage() {
           <>
 
         {allDone ? (
-          <section className="rounded-2xl border border-emerald-400/30 bg-emerald-500/[0.06] p-6 text-center">
+          <section className="rounded-2xl border border-white/15 bg-white/[0.10]/[0.06] p-6 text-center">
             <p className="text-3xl">🎉</p>
-            <h2 className="mt-2 text-xl font-bold text-emerald-200">모든 단계 완료!</h2>
+            <h2 className="mt-2 text-xl font-bold text-zinc-200">모든 단계 완료!</h2>
             <p className="mt-1 text-sm text-zinc-400">{total}개 작업을 모두 처리했어요.</p>
             <Link
               href={`/show/${idea.id}`}
@@ -296,9 +296,9 @@ export default function WorkspacePage() {
             </Link>
           </section>
         ) : nextTask && nextStage ? (
-          <section className="space-y-4 rounded-2xl border border-violet-400/30 bg-gradient-to-br from-violet-500/[0.08] to-violet-500/[0.02] p-6">
+          <section className="space-y-4 rounded-2xl border border-white/15 bg-white/[0.04] p-6">
             <div className="flex items-baseline justify-between">
-              <p className="text-xs font-semibold text-violet-300">
+              <p className="text-xs font-semibold text-zinc-400">
                 지금 할 일 · 0{nextStage.stageNumber} {nextStage.name}
               </p>
               <p className="text-xs text-zinc-500">{done}/{total} 진행</p>
@@ -309,7 +309,7 @@ export default function WorkspacePage() {
             <button
               type="button"
               onClick={() => setView("focus")}
-              className="inline-flex rounded-xl bg-violet-500 px-5 py-2.5 text-sm font-bold text-white shadow-[0_4px_18px_-6px_rgba(124,58,237,0.45)] transition-all hover:bg-violet-400"
+              className="inline-flex rounded-xl bg-white/[0.10] px-5 py-2.5 text-sm font-bold text-white  transition-all hover:bg-white/[0.15]"
             >
               이 작업 시작하기 →
             </button>
@@ -325,38 +325,38 @@ export default function WorkspacePage() {
           <div className="grid gap-3 sm:grid-cols-3">
             <Link
               href={`/community/new?category=OUTSOURCE_REQUEST&ideaId=${idea.id}&ideaTitle=${encodeURIComponent(idea.titleKo)}&title=${encodeURIComponent(`[${idea.titleKo}] 외주 의뢰`)}`}
-              className="group rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-all hover:border-amber-400/40 hover:bg-amber-500/[0.05]"
+              className="group rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-all hover:border-white/20 hover:bg-white/[0.10]/[0.05]"
             >
               <p className="text-2xl">🛠</p>
-              <h3 className="mt-2 text-sm font-bold text-white group-hover:text-amber-200">외주 의뢰</h3>
+              <h3 className="mt-2 text-sm font-bold text-white group-hover:text-zinc-200">외주 의뢰</h3>
               <p className="mt-1 text-xs leading-5 text-zinc-400">
                 디자이너·개발자·마케터에게 작업 요청
               </p>
-              <p className="mt-3 text-xs font-semibold text-amber-300">글 작성하기 →</p>
+              <p className="mt-3 text-xs font-semibold text-zinc-200">글 작성하기 →</p>
             </Link>
 
             <Link
               href={`/community/new?category=AC_REQUEST&ideaId=${idea.id}&ideaTitle=${encodeURIComponent(idea.titleKo)}&title=${encodeURIComponent(`[${idea.titleKo}] 전문 컨설팅 요청`)}`}
-              className="group rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-all hover:border-violet-400/40 hover:bg-violet-500/[0.05]"
+              className="group rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-all hover:border-white/20 hover:bg-white/[0.10]/[0.05]"
             >
               <p className="text-2xl">🎓</p>
-              <h3 className="mt-2 text-sm font-bold text-white group-hover:text-violet-200">전문 컨설팅</h3>
+              <h3 className="mt-2 text-sm font-bold text-white group-hover:text-zinc-200">전문 컨설팅</h3>
               <p className="mt-1 text-xs leading-5 text-zinc-400">
                 엑셀러레이터·멘토 매칭으로 검증
               </p>
-              <p className="mt-3 text-xs font-semibold text-violet-300">글 작성하기 →</p>
+              <p className="mt-3 text-xs font-semibold text-zinc-400">글 작성하기 →</p>
             </Link>
 
             <Link
               href={`/community/new?category=TEAM_RECRUIT&ideaId=${idea.id}&ideaTitle=${encodeURIComponent(idea.titleKo)}&title=${encodeURIComponent(`[${idea.titleKo}] 팀원 모집`)}`}
-              className="group rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-all hover:border-emerald-400/40 hover:bg-emerald-500/[0.05]"
+              className="group rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-all hover:border-white/20 hover:bg-white/[0.10]/[0.05]"
             >
               <p className="text-2xl">🤝</p>
-              <h3 className="mt-2 text-sm font-bold text-white group-hover:text-emerald-200">팀원 모집</h3>
+              <h3 className="mt-2 text-sm font-bold text-white group-hover:text-zinc-200">팀원 모집</h3>
               <p className="mt-1 text-xs leading-5 text-zinc-400">
                 공동창업자·개발자·기획자 영입
               </p>
-              <p className="mt-3 text-xs font-semibold text-emerald-300">글 작성하기 →</p>
+              <p className="mt-3 text-xs font-semibold text-zinc-200">글 작성하기 →</p>
             </Link>
           </div>
         </section>
@@ -371,9 +371,9 @@ export default function WorkspacePage() {
             const stagePct = stageTotal === 0 ? 0 : Math.round((stageDone / stageTotal) * 100);
             const statusBadge =
               s.status === "DONE"
-                ? { label: "완료", color: "text-emerald-300", bg: "bg-emerald-500/10", ring: "ring-emerald-400/30" }
+                ? { label: "완료", color: "text-zinc-200", bg: "bg-white/[0.06]", ring: "ring-white/15" }
                 : s.status === "ACTIVE"
-                  ? { label: "진행 중", color: "text-violet-300", bg: "bg-violet-500/10", ring: "ring-violet-400/30" }
+                  ? { label: "진행 중", color: "text-zinc-400", bg: "bg-white/[0.10]/10", ring: "ring-white/15" }
                   : { label: "대기", color: "text-zinc-500", bg: "bg-white/[0.03]", ring: "ring-white/10" };
 
             return (
@@ -382,7 +382,7 @@ export default function WorkspacePage() {
                 type="button"
                 onClick={() => setOpenStageId(s.id)}
                 className={`group relative overflow-hidden rounded-2xl border bg-white/[0.02] p-5 text-left transition-all hover:bg-white/[0.05] ${
-                  s.status === "ACTIVE" ? "border-violet-400/40" : "border-white/10"
+                  s.status === "ACTIVE" ? "border-white/20" : "border-white/10"
                 }`}
               >
                 <div className="flex items-baseline justify-between">
@@ -407,7 +407,7 @@ export default function WorkspacePage() {
                       s.status === "DONE"
                         ? "bg-emerald-400"
                         : s.status === "ACTIVE"
-                          ? "bg-violet-400"
+                          ? "bg-white"
                           : "bg-zinc-600"
                     }`}
                     style={{ width: `${stagePct}%` }}

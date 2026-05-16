@@ -11,7 +11,6 @@ import { readError } from "@/lib/product";
 import type {
   GeneratedIdea,
   IdeaCard,
-  IdeaMatchCase,
   IdeaMatchSessionDetailResponse,
 } from "@/lib/types";
 
@@ -51,45 +50,10 @@ function toIdeaCardFromGeneratedIdea(idea: GeneratedIdea): IdeaCard {
   };
 }
 
-function getIdeaScoreLabel(idea: IdeaCard, index: number) {
-  const raw = typeof idea.feasibilityScore === "number" ? idea.feasibilityScore : NaN;
-  const value = Number.isFinite(raw) ? Math.max(0, Math.min(10, raw / 10)) : Math.max(7.2, 9.2 - index * 0.4);
-  return value.toFixed(1);
-}
-
 function getIdeaHighlight(idea: IdeaCard) {
   if (typeof idea.whyNowInKorea === "string" && idea.whyNowInKorea.trim()) return idea.whyNowInKorea;
   if (typeof idea.whyKorea === "string" && idea.whyKorea.trim()) return idea.whyKorea;
   return idea.summary || "";
-}
-
-/* ── Score ring ── */
-function ScoreRing({ score, size = 48 }: { score: string; size?: number }) {
-  const numScore = parseFloat(score);
-  const pct = numScore / 10;
-  const r = (size / 2) - 5;
-  const circ = 2 * Math.PI * r;
-  const dash = circ * pct;
-
-  const color = numScore >= 8.5 ? "#10B981" : numScore >= 7 ? "#4F6EF7" : "#F59E0B";
-
-  return (
-    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-      <svg width={size} height={size} style={{ transform: "rotate(-90deg)", position: "absolute" }}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="3" />
-        <circle
-          cx={size / 2} cy={size / 2} r={r}
-          fill="none"
-          stroke={color}
-          strokeWidth="3"
-          strokeDasharray={`${dash} ${circ - dash}`}
-          strokeLinecap="round"
-          style={{ transition: "stroke-dasharray 0.6s ease" }}
-        />
-      </svg>
-      <span className="relative text-xs font-bold" style={{ color }}>{score}</span>
-    </div>
-  );
 }
 
 /* ── Status pill ── */
@@ -148,7 +112,6 @@ function IdeaMatchResultsContent() {
 
   const generatedIdeas = session?.generatedIdeas ?? [];
   const ideaCards = generatedIdeas.map(toIdeaCardFromGeneratedIdea);
-  const matchedCases: IdeaMatchCase[] = Array.isArray(session?.matchedCases) ? session.matchedCases : [];
   const projectTitle = session?.projectPolicy?.title ?? "";
 
   async function handleUnlock(index: number) {
@@ -192,25 +155,19 @@ function IdeaMatchResultsContent() {
 
   return (
     <AuthGuard>
-      <div className="fade-up mx-auto max-w-5xl space-y-8 pb-12">
+      <div className="fade-up space-y-8 pb-12">
 
         {/* 헤더 */}
         <header className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-wider text-indigo-300">
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
             아이디어 매칭 결과
           </p>
           <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
             {projectTitle || "AI가 추천한 창업 아이디어"}
           </h1>
           <p className="text-base leading-7 text-zinc-300">
-            글로벌 사례 <span className="font-semibold text-white">{matchedCases.length}건</span>을 분석해 한국 시장 맞춤 아이디어 <span className="font-semibold text-white">{ideaCards.length}개</span>를 생성했습니다.
-            <br className="hidden sm:block" />
             마음에 드는 카드를 선택하면 실행 전략과 정부지원사업 매칭까지 한번에 볼 수 있어요.
           </p>
-          <div className="flex flex-wrap gap-2 pt-1">
-            <Link href="/idea-match" className="btn-secondary text-sm">새로 탐색하기</Link>
-            <Link href="/mypage" className="btn-ghost text-sm">내 아이디어 보기</Link>
-          </div>
         </header>
 
         {unlockError ? (
@@ -230,8 +187,6 @@ function IdeaMatchResultsContent() {
               const status = generated?.status ?? "DRAFT";
               const unlockCost = 5;
               const canUnlock = (user?.creditBalance ?? 0) >= unlockCost || user?.isAdmin;
-              const score = getIdeaScoreLabel(idea, index);
-
               const cardBody = (
                 <>
                   {/* 잠금 오버레이 */}
@@ -262,12 +217,11 @@ function IdeaMatchResultsContent() {
                     </div>
                   ) : null}
 
-                  {/* 상단: 번호 + 점수 */}
-                  <div className="flex items-start justify-between">
+                  {/* 상단: 번호 */}
+                  <div>
                     <span className="text-3xl font-bold tracking-tight text-zinc-600">
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <ScoreRing score={score} size={48} />
                   </div>
 
                   {/* 타이틀 */}
@@ -289,14 +243,14 @@ function IdeaMatchResultsContent() {
 
                   {/* 액션 라벨 */}
                   {isUnlocked ? (
-                    <p className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-indigo-300">
+                    <p className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-zinc-300">
                       자세히 보기 →
                     </p>
                   ) : null}
                 </>
               );
 
-              const baseClass = "group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-left transition-all hover:border-indigo-400/40 hover:bg-white/[0.05] hover:shadow-[0_0_24px_rgba(93,93,255,0.12)]";
+              const baseClass = "group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-left transition-all hover:border-white/20 hover:bg-white/[0.05] hover:shadow-[0_0_24px_rgba(93,93,255,0.12)]";
 
               if (isUnlocked && generated?.id) {
                 return (

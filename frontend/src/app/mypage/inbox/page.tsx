@@ -50,6 +50,31 @@ export default function InboxPage() {
   const [dms, setDms] = useState<DmConv[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showNewDm, setShowNewDm] = useState(false);
+  const [newDmId, setNewDmId] = useState("");
+  const [newDmError, setNewDmError] = useState("");
+  const [startingDm, setStartingDm] = useState(false);
+
+  async function startDm() {
+    if (!token || !newDmId.trim()) return;
+    setStartingDm(true);
+    setNewDmError("");
+    try {
+      const res = await api<{ conversation: { id: string } }>(
+        "POST",
+        "/api/dm/start",
+        { identifier: newDmId.trim() },
+        token,
+      );
+      setShowNewDm(false);
+      setNewDmId("");
+      router.push(`/messages?dm=${encodeURIComponent(res.conversation.id)}`);
+    } catch (caught) {
+      setNewDmError(readError(caught, "사용자를 찾을 수 없습니다."));
+    } finally {
+      setStartingDm(false);
+    }
+  }
 
   useEffect(() => {
     if (!token) return;
@@ -86,32 +111,64 @@ export default function InboxPage() {
 
   return (
     <AuthGuard>
-      <div className="mx-auto max-w-3xl space-y-6 fade-up pb-12">
-        <header className="space-y-2">
-          <Link href="/mypage" className="text-xs text-zinc-500 hover:text-zinc-300">
-            ← 마이페이지
-          </Link>
-          <p className="eyebrow">알림함</p>
-          <h1 className="editorial-h2 text-white">받은 메시지·요청</h1>
-          <p className="text-sm text-zinc-400">
-            1:1 메시지, 협업 요청, 댓글·좋아요를 한 곳에서
-          </p>
+      <div className="space-y-6 fade-up pb-12">
+        <header className="flex items-start justify-between gap-3">
+          <div className="space-y-2">
+            <Link href="/mypage" className="text-xs text-zinc-500 hover:text-zinc-300">
+              ← 마이페이지
+            </Link>
+            <p className="eyebrow">알림함</p>
+            <h1 className="editorial-h2 text-white">받은 메시지·요청</h1>
+            <p className="text-sm text-zinc-400">
+              1:1 메시지, 협업 요청, 댓글·좋아요를 한 곳에서
+            </p>
+          </div>
+          {totalUnreadDm > 0 ? (
+            <button
+              type="button"
+              onClick={async () => {
+                if (!token) return;
+                try {
+                  await api("POST", "/api/dm/mark-all-read", undefined, token);
+                  setDms((prev) => prev.map((c) => ({ ...c, unreadCount: 0 })));
+                } catch (caught) {
+                  setError(readError(caught, "전체 읽음 처리 실패"));
+                }
+              }}
+              className="shrink-0 rounded-md border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-zinc-100 transition-colors hover:border-white/30 hover:bg-white/[0.10]"
+            >
+              모두 읽음
+            </button>
+          ) : null}
         </header>
 
         {/* 받은 DM (미독 우선) */}
-        {recentDms.length > 0 ? (
-          <section className="space-y-2 rounded-2xl border border-violet-400/25 bg-violet-500/[0.04] p-4">
-            <header className="flex items-baseline justify-between">
-              <p className="text-sm font-bold text-violet-200">
-                1:1 메시지
-                {totalUnreadDm > 0 ? (
-                  <span className="ml-2 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1.5 text-[0.65rem] font-bold text-white">
-                    {totalUnreadDm}
-                  </span>
-                ) : null}
-              </p>
-              <p className="text-[0.65rem] text-zinc-500">최근 {recentDms.length}개</p>
-            </header>
+        <section className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+          <header className="flex items-center justify-between">
+            <p className="text-sm font-semibold text-white">
+              1:1 메시지
+              {totalUnreadDm > 0 ? (
+                <span className="ml-2 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1.5 text-[0.65rem] font-bold text-white">
+                  {totalUnreadDm}
+                </span>
+              ) : null}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setNewDmError("");
+                setNewDmId("");
+                setShowNewDm(true);
+              }}
+              className="inline-flex items-center gap-1 rounded-md border border-white/15 bg-white/[0.06] px-2.5 py-1 text-[0.7rem] font-semibold text-zinc-100 transition-colors hover:border-white/30 hover:bg-white/[0.10]"
+            >
+              <svg viewBox="0 0 16 16" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" d="M8 3v10M3 8h10" />
+              </svg>
+              새 채팅
+            </button>
+          </header>
+          {recentDms.length > 0 ? (
             <ul className="space-y-1.5">
               {recentDms.map((c) => {
                 const peerName = c.peer.name || c.peer.email || c.peer.userCode || "사용자";
@@ -121,9 +178,9 @@ export default function InboxPage() {
                     <button
                       type="button"
                       onClick={() => openDm(c.id)}
-                      className="flex w-full items-center gap-3 rounded-lg border border-white/5 bg-white/[0.03] px-3 py-2 text-left hover:border-violet-400/40 hover:bg-white/[0.05]"
+                      className="flex w-full items-center gap-3 rounded-lg border border-white/5 bg-white/[0.03] px-3 py-2 text-left hover:border-white/20 hover:bg-white/[0.05]"
                     >
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/40 to-violet-700/30 text-xs font-bold text-white">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.08] text-xs font-bold text-zinc-100">
                         {initial}
                       </span>
                       <div className="min-w-0 flex-1">
@@ -149,11 +206,12 @@ export default function InboxPage() {
                 );
               })}
             </ul>
-            <p className="text-[0.65rem] text-zinc-500">
-              클릭하면 채팅창으로 바로 연결됩니다.
+          ) : (
+            <p className="rounded-lg border border-dashed border-white/10 bg-white/[0.02] px-3 py-4 text-center text-xs text-zinc-500">
+              아직 채팅이 없습니다. <span className="text-zinc-300">+ 새 채팅</span>으로 초대 코드 또는 이메일을 입력해 시작하세요.
             </p>
-          </section>
-        ) : null}
+          )}
+        </section>
 
         {/* 협업 요청 */}
         <CollabRequestsInbox />
@@ -181,7 +239,7 @@ export default function InboxPage() {
             {/* 댓글 */}
             {data.comments.length > 0 ? (
               <section className="space-y-2">
-                <h2 className="text-sm font-bold text-violet-300">
+                <h2 className="text-sm font-bold text-zinc-400">
                   댓글 {data.comments.length}건
                 </h2>
                 <ul className="space-y-2">
@@ -189,11 +247,11 @@ export default function InboxPage() {
                     <li key={c.id}>
                       <Link
                         href={c.post ? `/community/${c.post.id}` : "/community"}
-                        className="block rounded-xl border border-white/10 bg-white/[0.02] p-4 transition-colors hover:border-violet-400/40 hover:bg-white/[0.04]"
+                        className="block rounded-xl border border-white/10 bg-white/[0.02] p-4 transition-colors hover:border-white/20 hover:bg-white/[0.04]"
                       >
                         <div className="flex items-baseline justify-between gap-2">
                           <p className="text-xs text-zinc-500">
-                            <span className="font-bold text-violet-200">
+                            <span className="font-bold text-zinc-200">
                               {c.author.name || c.author.email.split("@")[0]}
                             </span>
                             님이{" "}
@@ -251,6 +309,56 @@ export default function InboxPage() {
           </div>
         )}
       </div>
+
+      {/* 새 채팅 모달 */}
+      {showNewDm ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          onClick={() => !startingDm && setShowNewDm(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl border border-white/10 bg-zinc-900 p-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-base font-semibold text-white">새 채팅 시작</h3>
+            <p className="mt-1 text-xs text-zinc-400">
+              상대방의 <span className="font-mono text-zinc-200">초대 코드</span>(6자) 또는 <span className="text-zinc-200">이메일</span>을 입력하세요.
+            </p>
+            <input
+              autoFocus
+              value={newDmId}
+              onChange={(e) => setNewDmId(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") startDm();
+                if (e.key === "Escape") setShowNewDm(false);
+              }}
+              placeholder="예: ABC123 또는 friend@example.com"
+              className="mt-4 w-full rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-white/30 focus:outline-none"
+            />
+            {newDmError ? <p className="mt-2 text-xs text-rose-300">{newDmError}</p> : null}
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowNewDm(false)}
+                disabled={startingDm}
+                className="rounded-md border border-white/10 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-white/20 hover:text-white"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={startDm}
+                disabled={startingDm || !newDmId.trim()}
+                className="rounded-md bg-white px-4 py-1.5 text-sm font-semibold text-zinc-900 transition-colors hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-white/15 disabled:text-zinc-500"
+              >
+                {startingDm ? "찾는 중…" : "시작"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </AuthGuard>
   );
 }

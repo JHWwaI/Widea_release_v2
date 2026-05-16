@@ -152,7 +152,7 @@ export default function OutsourceModal({
           <header className="space-y-3 border-b border-white/10 p-5">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-violet-300">
+                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">
                   외주·컨설팅·팀 모집 글 작성
                 </p>
                 <p className="mt-1 text-sm text-zinc-300">{task.content}</p>
@@ -179,7 +179,7 @@ export default function OutsourceModal({
                   value={roleInput}
                   onChange={(e) => setRoleInput(e.target.value)}
                   placeholder="예: 와이어프레임·디자인 / 결제 PG 연동 / IR 멘토링"
-                  className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:border-violet-400/60 focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:border-white/30 focus:outline-none"
                 />
               </div>
               {!draft ? (
@@ -187,7 +187,7 @@ export default function OutsourceModal({
                   type="button"
                   onClick={generateDraft}
                   disabled={loading || !roleInput.trim()}
-                  className="rounded-lg bg-violet-500 px-4 py-2 text-xs font-bold text-white hover:bg-violet-400 disabled:opacity-40"
+                  className="rounded-lg bg-white/[0.10] px-4 py-2 text-xs font-bold text-white hover:bg-white/[0.15] disabled:opacity-40"
                 >
                   {loading ? "생성 중..." : "초안 자동 작성"}
                 </button>
@@ -250,8 +250,8 @@ export default function OutsourceModal({
 
               {/* 추천 전문가 — 게시 안 하고 직접 컨택 */}
               {matched.length > 0 ? (
-                <div className="space-y-2 rounded-xl border border-violet-400/20 bg-violet-500/[0.04] p-4">
-                  <p className="text-xs font-bold text-violet-300">
+                <div className="space-y-2 rounded-xl border border-white/10 bg-white/[0.10]/[0.04] p-4">
+                  <p className="text-xs font-bold text-zinc-400">
                     💡 이 task에 맞는 전문가 {matched.length}명 — 게시 없이 직접 컨택 가능
                   </p>
                   <div className="space-y-1.5">
@@ -261,7 +261,7 @@ export default function OutsourceModal({
                         href={`/u/${m.userId}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2 transition-colors hover:border-violet-400/40 hover:bg-violet-500/[0.06]"
+                        className="flex items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2 transition-colors hover:border-white/20 hover:bg-white/[0.10]/[0.06]"
                       >
                         <div className="min-w-0">
                           <p className="text-sm font-bold text-white">
@@ -274,7 +274,7 @@ export default function OutsourceModal({
                             </p>
                           ) : null}
                         </div>
-                        <span className="shrink-0 text-[0.7rem] font-semibold text-violet-300">
+                        <span className="shrink-0 text-[0.7rem] font-semibold text-zinc-400">
                           프로필 →
                         </span>
                       </Link>
@@ -287,8 +287,8 @@ export default function OutsourceModal({
             </div>
           ) : (
             <div className="flex-1 space-y-4 p-5">
-              <div className="rounded-2xl border border-violet-400/25 bg-violet-500/[0.06] p-4">
-                <p className="text-sm font-semibold text-violet-200">
+              <div className="rounded-2xl border border-white/12 bg-white/[0.10]/[0.06] p-4">
+                <p className="text-sm font-semibold text-zinc-200">
                   외주 역할을 입력하고 <strong>[초안 자동 작성]</strong>을 누르세요.
                 </p>
                 <p className="mt-1 text-xs text-zinc-400">
@@ -299,7 +299,7 @@ export default function OutsourceModal({
               {/* 추천 전문가 — 초안 없어도 미리 노출 */}
               {matched.length > 0 ? (
                 <div className="space-y-2 rounded-xl border border-white/10 bg-white/[0.02] p-4">
-                  <p className="text-xs font-bold text-violet-300">
+                  <p className="text-xs font-bold text-zinc-400">
                     이 task에 맞는 전문가 {matched.length}명 — 게시 없이 직접 컨택 가능
                   </p>
                   <div className="space-y-1.5">
@@ -309,7 +309,7 @@ export default function OutsourceModal({
                         href={`/u/${m.userId}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2 transition-colors hover:border-violet-400/40 hover:bg-violet-500/[0.06]"
+                        className="flex items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2 transition-colors hover:border-white/20 hover:bg-white/[0.10]/[0.06]"
                       >
                         <div className="min-w-0">
                           <p className="text-sm font-bold text-white">
@@ -322,7 +322,7 @@ export default function OutsourceModal({
                             </p>
                           ) : null}
                         </div>
-                        <span className="shrink-0 text-[0.7rem] font-semibold text-violet-300">
+                        <span className="shrink-0 text-[0.7rem] font-semibold text-zinc-400">
                           프로필 →
                         </span>
                       </Link>

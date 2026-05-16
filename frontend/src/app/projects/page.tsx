@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import { EmptyState, LoadingState, PageHeader, Surface } from "@/components/ProductUI";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
-import { formatCurrency, formatDate, getProjectWorkflowState, readError } from "@/lib/product";
+import { formatCurrency, getProjectWorkflowState, readError } from "@/lib/product";
 import type { ProjectListResponse, ProjectSummary } from "@/lib/types";
 
 // ── 설문 옵션 데이터 ──────────────────────────────────────────────
@@ -125,7 +125,7 @@ function ChipButton({
       className={`rounded-xl border px-4 py-2 text-sm font-medium transition ${
         active
           ? "border-blue-500 bg-blue-50 text-blue-700"
-          : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+          : "border-white/10 bg-white/[0.04] text-zinc-300 hover:border-white/15 hover:bg-white/[0.06]"
       }`}
     >
       {label}
@@ -149,7 +149,7 @@ function RadioCard({
       className={`w-full rounded-xl border px-4 py-3 text-left text-sm font-medium transition ${
         active
           ? "border-blue-500 bg-blue-50 text-blue-700"
-          : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+          : "border-white/10 bg-white/[0.04] text-zinc-200 hover:border-white/15 hover:bg-white/[0.06]"
       }`}
     >
       {label}
@@ -243,9 +243,9 @@ export default function ProjectsPage() {
         return (
           <div className="space-y-5">
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-400">Step 1 — 내 강점</p>
-              <h2 className="text-xl font-bold text-gray-900">현재 직업이 뭔가요?</h2>
-              <p className="mt-1 text-sm text-gray-500">AI가 나에게 맞는 아이디어를 찾는 데 가장 중요한 정보입니다.</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-zinc-500">Step 1 — 내 강점</p>
+              <h2 className="text-xl font-bold text-white">현재 직업이 뭔가요?</h2>
+              <p className="mt-1 text-sm text-zinc-400">AI가 나에게 맞는 아이디어를 찾는 데 가장 중요한 정보입니다.</p>
             </div>
             <input
               className="input"
@@ -254,7 +254,7 @@ export default function ProjectsPage() {
               onChange={(e) => set("currentJob", e.target.value)}
             />
             <div>
-              <p className="mb-3 text-sm font-semibold text-gray-700">보유 역량 (복수 선택)</p>
+              <p className="mb-3 text-sm font-semibold text-zinc-200">보유 역량 (복수 선택)</p>
               <div className="flex flex-wrap gap-2">
                 {TECHNICAL_SKILL_OPTIONS.map((skill) => (
                   <ChipButton
@@ -273,11 +273,11 @@ export default function ProjectsPage() {
         return (
           <div className="space-y-5">
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-400">Step 2 — 자원</p>
-              <h2 className="text-xl font-bold text-gray-900">얼마나 쏟을 수 있어요?</h2>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-zinc-500">Step 2 — 자원</p>
+              <h2 className="text-xl font-bold text-white">얼마나 쏟을 수 있어요?</h2>
             </div>
             <div>
-              <p className="mb-3 text-sm font-semibold text-gray-700">투자 가능 예산</p>
+              <p className="mb-3 text-sm font-semibold text-zinc-200">투자 가능 예산</p>
               <div className="grid gap-2">
                 {BUDGET_RANGE_OPTIONS.map((opt) => (
                   <RadioCard
@@ -290,7 +290,7 @@ export default function ProjectsPage() {
               </div>
             </div>
             <div>
-              <p className="mb-3 text-sm font-semibold text-gray-700">시간 투자 수준</p>
+              <p className="mb-3 text-sm font-semibold text-zinc-200">시간 투자 수준</p>
               <div className="grid gap-2">
                 {COMMITMENT_OPTIONS.map((opt) => (
                   <RadioCard
@@ -303,7 +303,7 @@ export default function ProjectsPage() {
               </div>
             </div>
             <div>
-              <p className="mb-3 text-sm font-semibold text-gray-700">팀 규모</p>
+              <p className="mb-3 text-sm font-semibold text-zinc-200">팀 규모</p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {TEAM_SIZE_OPTIONS.map((opt) => (
                   <RadioCard
@@ -322,11 +322,11 @@ export default function ProjectsPage() {
         return (
           <div className="space-y-5">
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-400">Step 3 — 방향</p>
-              <h2 className="text-xl font-bold text-gray-900">누구한테 팔고 싶어요?</h2>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-zinc-500">Step 3 — 방향</p>
+              <h2 className="text-xl font-bold text-white">누구한테 팔고 싶어요?</h2>
             </div>
             <div>
-              <p className="mb-3 text-sm font-semibold text-gray-700">타겟 고객</p>
+              <p className="mb-3 text-sm font-semibold text-zinc-200">타겟 고객</p>
               <div className="grid gap-2">
                 {TARGET_MARKET_OPTIONS.map((opt) => (
                   <RadioCard
@@ -339,7 +339,7 @@ export default function ProjectsPage() {
               </div>
             </div>
             <div>
-              <p className="mb-3 text-sm font-semibold text-gray-700">관심 산업 (복수 선택, 최소 1개)</p>
+              <p className="mb-3 text-sm font-semibold text-zinc-200">관심 산업 (복수 선택, 최소 1개)</p>
               <div className="flex flex-wrap gap-2">
                 {INDUSTRY_OPTIONS.map((ind) => (
                   <ChipButton
@@ -358,9 +358,9 @@ export default function ProjectsPage() {
         return (
           <div className="space-y-5">
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-400">Step 4 — 문제</p>
-              <h2 className="text-xl font-bold text-gray-900">어떤 문제를 해결하고 싶어요?</h2>
-              <p className="mt-1 text-sm text-gray-500">직접 겪었거나, 주변에서 자주 보이는 불편함이면 더 좋아요.</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-zinc-500">Step 4 — 문제</p>
+              <h2 className="text-xl font-bold text-white">어떤 문제를 해결하고 싶어요?</h2>
+              <p className="mt-1 text-sm text-zinc-400">직접 겪었거나, 주변에서 자주 보이는 불편함이면 더 좋아요.</p>
             </div>
             <textarea
               className="textarea min-h-[140px]"
@@ -368,7 +368,7 @@ export default function ProjectsPage() {
               value={form.problemKeywords}
               onChange={(e) => set("problemKeywords", e.target.value)}
             />
-            <p className="text-xs text-gray-400">{form.problemKeywords.length}자 (최소 10자)</p>
+            <p className="text-xs text-zinc-500">{form.problemKeywords.length}자 (최소 10자)</p>
           </div>
         );
 
@@ -376,11 +376,11 @@ export default function ProjectsPage() {
         return (
           <div className="space-y-5">
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-400">Step 5 — 리스크 & 기간</p>
-              <h2 className="text-xl font-bold text-gray-900">어느 정도 도전할 수 있어요?</h2>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-zinc-500">Step 5 — 리스크 & 기간</p>
+              <h2 className="text-xl font-bold text-white">어느 정도 도전할 수 있어요?</h2>
             </div>
             <div>
-              <p className="mb-3 text-sm font-semibold text-gray-700">리스크 성향</p>
+              <p className="mb-3 text-sm font-semibold text-zinc-200">리스크 성향</p>
               <div className="grid gap-2">
                 {RISK_TOLERANCE_OPTIONS.map((opt) => (
                   <RadioCard
@@ -393,7 +393,7 @@ export default function ProjectsPage() {
               </div>
             </div>
             <div>
-              <p className="mb-3 text-sm font-semibold text-gray-700">목표 런칭 타임라인</p>
+              <p className="mb-3 text-sm font-semibold text-zinc-200">목표 런칭 타임라인</p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {[
                   { value: "ONE_MONTH", label: "1개월 이내" },
@@ -418,9 +418,9 @@ export default function ProjectsPage() {
         return (
           <div className="space-y-5">
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-400">Step 6 — 완료</p>
-              <h2 className="text-xl font-bold text-gray-900">이 프로젝트 이름을 지어주세요</h2>
-              <p className="mt-1 text-sm text-gray-500">나중에 여러 프로젝트를 구분하는 데 쓰입니다.</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-zinc-500">Step 6 — 완료</p>
+              <h2 className="text-xl font-bold text-white">이 프로젝트 이름을 지어주세요</h2>
+              <p className="mt-1 text-sm text-zinc-400">나중에 여러 프로젝트를 구분하는 데 쓰입니다.</p>
             </div>
             <input
               className="input"
@@ -428,15 +428,15 @@ export default function ProjectsPage() {
               value={form.title}
               onChange={(e) => set("title", e.target.value)}
             />
-            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">입력 요약</p>
-              <p className="text-sm text-gray-700"><span className="text-gray-400">직업</span> {form.currentJob}</p>
-              <p className="text-sm text-gray-700"><span className="text-gray-400">예산</span> {BUDGET_RANGE_OPTIONS.find(o => o.value === form.budgetRange)?.label}</p>
-              <p className="text-sm text-gray-700"><span className="text-gray-400">시간</span> {COMMITMENT_OPTIONS.find(o => o.value === form.commitment)?.label}</p>
-              <p className="text-sm text-gray-700"><span className="text-gray-400">팀</span> {TEAM_SIZE_OPTIONS.find(o => o.value === form.teamSize)?.label}</p>
-              <p className="text-sm text-gray-700"><span className="text-gray-400">타겟</span> {form.targetMarket}</p>
-              <p className="text-sm text-gray-700"><span className="text-gray-400">산업</span> {form.industries.join(", ")}</p>
-              <p className="text-sm text-gray-700 line-clamp-2"><span className="text-gray-400">문제</span> {form.problemKeywords}</p>
+            <div className="rounded-xl border border-white/[0.06] bg-white/[0.06] p-4 space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">입력 요약</p>
+              <p className="text-sm text-zinc-200"><span className="text-zinc-500">직업</span> {form.currentJob}</p>
+              <p className="text-sm text-zinc-200"><span className="text-zinc-500">예산</span> {BUDGET_RANGE_OPTIONS.find(o => o.value === form.budgetRange)?.label}</p>
+              <p className="text-sm text-zinc-200"><span className="text-zinc-500">시간</span> {COMMITMENT_OPTIONS.find(o => o.value === form.commitment)?.label}</p>
+              <p className="text-sm text-zinc-200"><span className="text-zinc-500">팀</span> {TEAM_SIZE_OPTIONS.find(o => o.value === form.teamSize)?.label}</p>
+              <p className="text-sm text-zinc-200"><span className="text-zinc-500">타겟</span> {form.targetMarket}</p>
+              <p className="text-sm text-zinc-200"><span className="text-zinc-500">산업</span> {form.industries.join(", ")}</p>
+              <p className="text-sm text-zinc-200 line-clamp-2"><span className="text-zinc-500">문제</span> {form.problemKeywords}</p>
             </div>
           </div>
         );
@@ -477,12 +477,12 @@ export default function ProjectsPage() {
           <Surface className="space-y-6">
             {/* 진행 바 */}
             <div className="space-y-2">
-              <div className="flex justify-between text-xs text-gray-400">
+              <div className="flex justify-between text-xs text-zinc-500">
                 {STEPS.map((s, i) => (
                   <span key={s.key} className={i === step ? "font-semibold text-blue-600" : ""}>{s.label}</span>
                 ))}
               </div>
-              <div className="h-1.5 w-full rounded-full bg-gray-100">
+              <div className="h-1.5 w-full rounded-full bg-white/[0.08]">
                 <div
                   className="h-1.5 rounded-full bg-blue-500 transition-all"
                   style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
@@ -493,7 +493,7 @@ export default function ProjectsPage() {
             {renderStep()}
 
             {/* 네비게이션 */}
-            <div className="flex items-center justify-between border-t border-gray-100 pt-4">
+            <div className="flex items-center justify-between border-t border-white/[0.06] pt-4">
               <button
                 type="button"
                 onClick={() => step === 0 ? (setShowWizard(false)) : setStep((s) => s - 1)}
@@ -546,33 +546,29 @@ export default function ProjectsPage() {
                 ideaSessionCount: project.ideaSessionCount,
               });
               return (
-                <div key={project.id} className="rounded-2xl border border-gray-100 bg-white p-5">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
+                <div key={project.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.04] p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="text-xl font-semibold text-gray-900">{project.title}</h3>
+                        <h3 className="text-xl font-semibold text-white">{project.title}</h3>
                         <span className="badge badge-accent">{workflow.stageLabel}</span>
                       </div>
-                      <p className="mt-1 text-sm text-gray-500">
-                        {project.targetMarket} · {formatCurrency(project.budgetLimit)} · {formatDate(project.createdAt)}
+                      <p className="mt-1 text-sm text-zinc-400">
+                        {project.targetMarket} · {formatCurrency(project.budgetLimit)}
                       </p>
                     </div>
-                    <span className="badge badge-neutral">Progress {workflow.completionPercent}%</span>
+                    <ProjectMenu
+                      project={project}
+                      onRenamed={(newTitle) =>
+                        setProjects((ps) => ps.map((p) => (p.id === project.id ? { ...p, title: newTitle } : p)))
+                      }
+                      onDelete={() => handleDelete(project.id)}
+                    />
                   </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
+                  <div className="mt-4">
                     <Link href={`/projects/${project.id}`} className="btn-primary px-4 py-2 text-sm">
                       워크스페이스 열기
                     </Link>
-                    <Link href={workflow.nextAction.href} className="btn-secondary px-4 py-2 text-sm">
-                      {workflow.nextAction.label}
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(project.id)}
-                      className="btn-ghost px-4 py-2 text-sm"
-                    >
-                      삭제
-                    </button>
                   </div>
                 </div>
               );
@@ -581,5 +577,156 @@ export default function ProjectsPage() {
         )}
       </div>
     </AuthGuard>
+  );
+}
+
+function ProjectMenu({
+  project,
+  onRenamed,
+  onDelete,
+}: {
+  project: ProjectSummary;
+  onRenamed: (newTitle: string) => void;
+  onDelete: () => void;
+}) {
+  const { token } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [title, setTitle] = useState(project.title);
+  const [saving, setSaving] = useState(false);
+  const [editError, setEditError] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onDocClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    function onEsc(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onEsc);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onEsc);
+    };
+  }, [open]);
+
+  async function save() {
+    if (!token || !title.trim() || title.trim() === project.title) {
+      setEditing(false);
+      return;
+    }
+    setSaving(true);
+    setEditError("");
+    try {
+      await api("PUT", `/api/projects/${project.id}`, { title: title.trim() }, token);
+      onRenamed(title.trim());
+      setEditing(false);
+    } catch (caught) {
+      setEditError(readError(caught, "수정에 실패했습니다."));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <>
+      <div ref={ref} className="relative">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-label="프로젝트 옵션"
+          aria-haspopup="menu"
+          aria-expanded={open}
+          className="flex h-9 w-9 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-zinc-100"
+        >
+          <svg viewBox="0 0 16 16" className="h-4 w-4" fill="currentColor">
+            <circle cx="8" cy="3" r="1.5" />
+            <circle cx="8" cy="8" r="1.5" />
+            <circle cx="8" cy="13" r="1.5" />
+          </svg>
+        </button>
+        {open ? (
+          <div
+            role="menu"
+            className="absolute right-0 top-full z-20 mt-1 w-40 overflow-hidden rounded-lg border border-white/10 bg-zinc-900 shadow-lg"
+          >
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setOpen(false);
+                setTitle(project.title);
+                setEditError("");
+                setEditing(true);
+              }}
+              className="block w-full px-3 py-2 text-left text-sm text-zinc-200 transition-colors hover:bg-white/[0.06]"
+            >
+              정보 편집
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setOpen(false);
+                onDelete();
+              }}
+              className="block w-full border-t border-white/[0.06] px-3 py-2 text-left text-sm text-rose-300 transition-colors hover:bg-rose-500/10"
+            >
+              삭제
+            </button>
+          </div>
+        ) : null}
+      </div>
+
+      {editing ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          onClick={() => !saving && setEditing(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl border border-white/10 bg-zinc-900 p-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h4 className="text-base font-semibold text-white">프로젝트 정보 편집</h4>
+            <label className="mt-4 block text-xs font-medium text-zinc-400">프로젝트 이름</label>
+            <input
+              autoFocus
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") save();
+              }}
+              className="mt-1.5 w-full rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-white/30 focus:outline-none"
+              placeholder="프로젝트 이름"
+              maxLength={80}
+            />
+            {editError ? <p className="mt-2 text-xs text-rose-300">{editError}</p> : null}
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setEditing(false)}
+                disabled={saving}
+                className="rounded-md border border-white/10 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:border-white/20 hover:text-white"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={save}
+                disabled={saving || !title.trim()}
+                className="rounded-md border border-white/20 bg-white/[0.08] px-3 py-1.5 text-sm font-medium text-zinc-100 transition-colors hover:bg-white/[0.12] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {saving ? "저장 중…" : "저장"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }

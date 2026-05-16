@@ -113,7 +113,7 @@ export default function ArtifactsPanel({ ideaId }: { ideaId: string }) {
             바로 시작할 수 있어요
           </h2>
           {error ? (
-            <p className="rounded-xl border border-amber-400/20 bg-amber-500/[0.06] p-4 text-sm leading-7 text-amber-200">
+            <p className="rounded-xl border border-white/10 bg-white/[0.10]/[0.06] p-4 text-sm leading-7 text-zinc-200">
               ⚠ AI가 지금 일시적으로 바빠 모집공고·커피챗 자동 작성을 못 만들었어요.<br/>
               그래도 워크스페이스 셋업은 정상 작동합니다. 아래 버튼으로 바로 시작하세요.
             </p>
@@ -126,7 +126,7 @@ export default function ArtifactsPanel({ ideaId }: { ideaId: string }) {
 
         <div className="space-y-3 text-center">
           {launched ? (
-            <p className="text-base font-bold text-emerald-400">✓ 워크스페이스 생성 완료</p>
+            <p className="text-base font-bold text-zinc-300">✓ 워크스페이스 생성 완료</p>
           ) : (
             <button
               type="button"
@@ -150,7 +150,7 @@ export default function ArtifactsPanel({ ideaId }: { ideaId: string }) {
   return (
     <section className="space-y-12">
       <header className="space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-200">
           분석 끝 · 실행 도구 자동 생성됨
         </p>
         <h2 className="text-3xl font-bold leading-tight text-white sm:text-4xl">
@@ -195,20 +195,20 @@ export default function ArtifactsPanel({ ideaId }: { ideaId: string }) {
               href={coffeeChatTemplate.archiveLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 flex items-center gap-3 rounded-xl border border-violet-400/30 bg-violet-500/[0.08] p-4 transition-colors hover:border-violet-400/50 hover:bg-violet-500/[0.12]"
+              className="mt-4 flex items-center gap-3 rounded-xl border border-white/15 bg-white/[0.10]/[0.08] p-4 transition-colors hover:border-white/25 hover:bg-white/[0.10]/[0.12]"
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-500/20 text-base">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/[0.10] text-base">
                 📜
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-semibold text-white">
                   {coffeeChatTemplate.archiveLabel ?? "Wayback Machine 스냅샷"}
                 </span>
-                <span className="mt-0.5 block truncate text-xs text-violet-300">
+                <span className="mt-0.5 block truncate text-xs text-zinc-400">
                   {coffeeChatTemplate.archiveLink}
                 </span>
               </span>
-              <span className="shrink-0 text-violet-300">→</span>
+              <span className="shrink-0 text-zinc-400">→</span>
             </a>
           ) : null}
         </ArtifactBlock>
@@ -232,7 +232,7 @@ export default function ArtifactsPanel({ ideaId }: { ideaId: string }) {
                   {investorChecklist.kpiToProve.map((k, i) => (
                     <li key={i}>
                       <p className="text-base font-semibold text-white">
-                        {k.metric} <span className="text-violet-300">→ {k.target}</span>
+                        {k.metric} <span className="text-zinc-400">→ {k.target}</span>
                       </p>
                       {k.rationale ? (
                         <p className="mt-0.5 text-sm leading-7 text-zinc-400">{k.rationale}</p>
@@ -270,7 +270,7 @@ export default function ArtifactsPanel({ ideaId }: { ideaId: string }) {
 
             {investorChecklist.moatKo ? (
               <div className="border-l-2 border-violet-400 pl-5">
-                <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-violet-300">
+                <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-zinc-400">
                   왜 망하지 않는가
                 </p>
                 <p className="mt-2 text-base leading-8 text-white">{investorChecklist.moatKo}</p>
@@ -290,7 +290,7 @@ export default function ArtifactsPanel({ ideaId }: { ideaId: string }) {
         <div className="relative space-y-10">
           {launched ? (
             <div className="space-y-3 text-center">
-              <p className="text-3xl font-black leading-tight text-emerald-300 sm:text-4xl">
+              <p className="text-3xl font-black leading-tight text-zinc-200 sm:text-4xl">
                 첫 줄이 시작됐다.
               </p>
               <p className="text-base text-zinc-300">
@@ -310,7 +310,7 @@ export default function ArtifactsPanel({ ideaId }: { ideaId: string }) {
 
               {/* 셋업 */}
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-300">
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-zinc-200">
                   당신의 첫 줄
                 </p>
                 <p className="text-base leading-8 text-zinc-200 sm:text-lg">
@@ -355,7 +355,7 @@ function Step({ num, title, desc }: { num: string; title: string; desc: string }
   return (
     <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
       <div className="flex items-baseline gap-2">
-        <span className="text-2xl font-black text-emerald-300/40">{num}</span>
+        <span className="text-2xl font-black text-zinc-200/40">{num}</span>
         <span className="text-sm font-bold text-white">{title}</span>
       </div>
       <p className="mt-1 text-xs leading-relaxed text-zinc-400">{desc}</p>
@@ -383,7 +383,7 @@ function ArtifactBlock({
       </div>
       <div className="min-w-0 space-y-4">
         <header>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-300">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400">
             {label}
           </p>
           {subtitle ? (

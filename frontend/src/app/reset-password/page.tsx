@@ -52,7 +52,7 @@ function ResetPasswordContent() {
         </div>
 
         {done ? (
-          <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-6 text-center space-y-2">
+          <div className="rounded-xl border border-emerald-100 bg-white/[0.06] p-6 text-center space-y-2">
             <p className="font-semibold text-emerald-800">비밀번호가 변경됐습니다</p>
             <Link href="/login" className="btn-primary mt-3 inline-block text-sm px-6">
               로그인하기

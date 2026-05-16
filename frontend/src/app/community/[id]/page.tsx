@@ -177,14 +177,14 @@ export default function CommunityPostDetailPage() {
               {post.idea ? (
                 <Link
                   href={`/workspace/${post.idea.id}`}
-                  className="flex items-center gap-3 rounded-xl border border-violet-400/25 bg-violet-500/[0.07] px-4 py-3 transition-colors hover:border-violet-400/50 hover:bg-violet-500/[0.12]"
+                  className="flex items-center gap-3 rounded-xl border border-white/12 bg-white/[0.10]/[0.07] px-4 py-3 transition-colors hover:border-white/25 hover:bg-white/[0.10]/[0.12]"
                 >
                   <span className="text-xl">💡</span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-violet-400">연결된 아이디어</p>
+                    <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-400">연결된 아이디어</p>
                     <p className="truncate text-sm font-semibold text-white">{post.idea.titleKo}</p>
                   </div>
-                  <span className="shrink-0 text-xs text-violet-300">워크스페이스 →</span>
+                  <span className="shrink-0 text-xs text-zinc-400">워크스페이스 →</span>
                 </Link>
               ) : null}
 
@@ -278,7 +278,7 @@ export default function CommunityPostDetailPage() {
               ) : (
                 <p className="text-sm text-zinc-500">
                   댓글을 작성하려면{" "}
-                  <Link href="/login" className="text-violet-300 underline">
+                  <Link href="/login" className="text-zinc-400 underline">
                     로그인
                   </Link>
                   이 필요합니다.
@@ -354,7 +354,7 @@ function ContactAuthorButton({ post }: { post: CommunityPostDetail }) {
         type="button"
         onClick={startDm}
         disabled={busy}
-        className="flex w-full items-center justify-center gap-2 rounded-xl border border-violet-400/40 bg-violet-500/15 px-4 py-3 text-sm font-bold text-violet-100 transition-colors hover:border-violet-400/60 hover:bg-violet-500/25 disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/[0.08] px-4 py-3 text-sm font-bold text-zinc-100 transition-colors hover:border-white/30 hover:bg-white/[0.12] disabled:opacity-50"
       >
         {busy ? "메시지 발송 중..." : `${cfg.label} — 1:1 메시지 보내기`}
       </button>

@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
 import { useAuth } from "@/context/AuthContext";
 import { api, buildQuery } from "@/lib/api";
-import { budgetRangeOptions, getCreditErrorDetails, readError, splitTags } from "@/lib/product";
+import { getCreditErrorDetails, readError, splitTags } from "@/lib/product";
 import type {
   IdeaMatchResponse,
   IdeaMatchSessionListResponse,
@@ -15,18 +15,18 @@ import type {
 const IDEA_MATCH_CREDIT_COST = 10;
 
 const INDUSTRY_CATEGORIES = [
-  { group: "AI & Data", items: ["AI", "AI / VoiceTech", "AI / DesignTech", "AIMLOps", "Data Analytics"], count: 85 },
-  { group: "SaaS & B2B", items: ["SaaS", "Vertical SaaS", "HRTech", "LegalTech", "RegTech"], count: 142 },
-  { group: "FinTech & InsurTech", items: ["FinTech", "InsurTech", "WealthTech", "PaymentTech", "Lending"], count: 98 },
-  { group: "Healthcare & Bio", items: ["HealthTech", "MedTech", "BioTech", "FemTech", "Mental Health"], count: 76 },
-  { group: "EdTech & HR", items: ["EdTech", "SkillTech", "HRTech", "Recruitment", "Training"], count: 64 },
-  { group: "Commerce & D2C", items: ["E-Commerce", "Marketplace", "D2C", "RetailTech", "Social Commerce"], count: 72 },
-  { group: "Food & Agriculture", items: ["FoodTech", "AgTech", "F&B", "Restaurant Tech", "Delivery"], count: 89 },
-  { group: "Logistics & Mobility", items: ["LogisticsTech", "Mobility", "DeliveryTech", "SupplyChain"], count: 45 },
-  { group: "Property & Construction", items: ["PropTech", "ConstructionTech", "AEC Tech", "Real Estate"], count: 38 },
-  { group: "Climate & Energy", items: ["CleanTech", "EnergyTech", "ESG", "WasteManagement", "AgriTech"], count: 62 },
-  { group: "Content & Creator", items: ["Creator Economy", "MediaTech", "Gaming", "Entertainment"], count: 43 },
-  { group: "Travel & Hospitality", items: ["TravelTech", "Hospitality", "Tourism", "EventTech"], count: 35 },
+  { group: "AI · 데이터", items: ["AI", "음성 AI", "디자인 AI", "MLOps", "데이터 분석"], count: 85 },
+  { group: "SaaS · B2B", items: ["SaaS", "버티컬 SaaS", "HR Tech", "리걸테크", "규제 기술"], count: 142 },
+  { group: "핀테크 · 보험", items: ["핀테크", "인슈어테크", "자산관리", "결제", "대출"], count: 98 },
+  { group: "헬스케어 · 바이오", items: ["헬스테크", "메드테크", "바이오", "여성 건강", "정신 건강"], count: 76 },
+  { group: "에듀테크 · HR", items: ["에듀테크", "스킬 학습", "HR Tech", "채용", "기업 교육"], count: 64 },
+  { group: "커머스 · D2C", items: ["이커머스", "마켓플레이스", "D2C", "리테일테크", "소셜 커머스"], count: 72 },
+  { group: "푸드 · 농업", items: ["푸드테크", "애그테크", "외식", "레스토랑 기술", "배달"], count: 89 },
+  { group: "물류 · 모빌리티", items: ["물류 기술", "모빌리티", "배송", "공급망"], count: 45 },
+  { group: "부동산 · 건설", items: ["프롭테크", "건설 기술", "AEC", "부동산"], count: 38 },
+  { group: "친환경 · 에너지", items: ["클린테크", "에너지", "ESG", "폐기물 관리", "농업"], count: 62 },
+  { group: "콘텐츠 · 크리에이터", items: ["크리에이터 이코노미", "미디어", "게임", "엔터테인먼트"], count: 43 },
+  { group: "여행 · 호스피탈리티", items: ["트래블테크", "호스피탈리티", "관광", "이벤트"], count: 35 },
 ];
 
 const REVENUE_MODELS = [
@@ -41,9 +41,9 @@ const REVENUE_MODELS = [
 ];
 
 const TARGET_MARKETS = [
-  { value: "B2C", label: "B2C", desc: "일반 소비자", icon: "👤" },
-  { value: "B2B", label: "B2B", desc: "기업 고객", icon: "🏢" },
-  { value: "B2B2C", label: "B2B2C", desc: "파트너 경유", icon: "🔗" },
+  { value: "B2C", label: "B2C", desc: "일반 소비자" },
+  { value: "B2B", label: "B2B", desc: "기업 고객" },
+  { value: "B2B2C", label: "B2B2C", desc: "파트너 경유" },
 ];
 
 const FUNDING_STAGES = [
@@ -64,48 +64,40 @@ const BUDGET_OPTIONS = [
 ];
 
 const TEAM_OPTIONS = [
-  { value: "SOLO", label: "1인", icon: "👤" },
-  { value: "TWO_TO_THREE", label: "2~3인", icon: "👥" },
-  { value: "FOUR_TO_TEN", label: "4~10인", icon: "👥" },
-  { value: "OVER_TEN", label: "10인+", icon: "🏢" },
+  { value: "SOLO", label: "1인" },
+  { value: "TWO_TO_THREE", label: "2~3인" },
+  { value: "FOUR_TO_TEN", label: "4~10인" },
+  { value: "OVER_TEN", label: "10인+" },
 ];
 
 const STEPS = [
-  { id: 1, label: "산업 분야", desc: "어떤 분야에 관심 있나요?" },
-  { id: 2, label: "수익 모델", desc: "선호하는 수익 구조" },
-  { id: 3, label: "타깃 시장", desc: "누구에게 팝니까?" },
-  { id: 4, label: "해결할 문제", desc: "어떤 페인포인트를 공략?" },
-  { id: 5, label: "실행 역량", desc: "팀과 예산 현황" },
-  { id: 6, label: "최종 확인", desc: "아이디어 생성 시작" },
+  { id: 1, label: "산업 분야", desc: "어떤 산업에 관심 있나요?", hint: "DB에서 관련 해외 사례를 우선 검색합니다 (복수 선택 가능)" },
+  { id: 2, label: "수익 모델", desc: "선호하는 수익 모델", hint: "DB에서 해당 모델의 검증된 사례를 필터링합니다 (선택 안 해도 됩니다)" },
+  { id: 3, label: "타깃 시장", desc: "벤치마크 & 타깃 시장", hint: "어떤 단계의 해외 사례를 참고하고, 누구에게 팔 건가요?" },
+  { id: 4, label: "해결할 문제", desc: "해결하고 싶은 문제", hint: "AI가 이 문제에 맞는 해외 솔루션을 매칭합니다 (선택 사항)" },
+  { id: 5, label: "실행 역량", desc: "실행 역량", hint: "팀 규모와 예산에 맞는 현실적인 아이디어를 제안합니다" },
+  { id: 6, label: "최종 확인", desc: "아이디어 생성 준비 완료", hint: "선택한 조건으로 AI가 한국 맞춤 아이디어 5개를 생성합니다" },
 ];
 
-/* ── Dark card selector ── */
-function CardSelect({ selected, onClick, label, desc, icon }: {
-  selected: boolean; onClick: () => void; label: string; desc?: string; icon?: string;
+/* ── Card selector ── */
+function CardSelect({ selected, onClick, label, desc }: {
+  selected: boolean; onClick: () => void; label: string; desc?: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="rounded-xl p-3 text-left transition-all"
-      style={
+      className={`rounded-xl border p-3 text-left transition-colors ${
         selected
-          ? {
-              background: "rgba(79,110,247,0.12)",
-              border: "1px solid rgba(79,110,247,0.35)",
-            }
-          : {
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }
-      }
+          ? "border-white/60 bg-white/[0.08]"
+          : "border-white/[0.08] bg-white/[0.03] hover:border-white/20"
+      }`}
     >
-      {icon ? <span className="text-lg">{icon}</span> : null}
-      <p className="text-sm font-semibold" style={{ color: selected ? "#BAC8FF" : "#EDEEFF" }}>
+      <p className={`text-sm font-semibold ${selected ? "text-white" : "text-zinc-200"}`}>
         {label}
       </p>
       {desc ? (
-        <p className="mt-0.5 text-xs" style={{ color: selected ? "#93AFFE" : "var(--ink-3)" }}>
+        <p className={`mt-0.5 text-xs ${selected ? "text-zinc-300" : "text-zinc-500"}`}>
           {desc}
         </p>
       ) : null}
@@ -113,33 +105,13 @@ function CardSelect({ selected, onClick, label, desc, icon }: {
   );
 }
 
-/* ── Step indicator ── */
-function StepIndicator({ current, total }: { current: number; total: number }) {
-  return (
-    <div className="flex items-center gap-1.5">
-      {Array.from({ length: total }).map((_, i) => (
-        <div
-          key={i}
-          className="h-1.5 rounded-full transition-all duration-300"
-          style={{
-            width: i === current - 1 ? "2rem" : i < current ? "1.5rem" : "1rem",
-            background:
-              i < current
-                ? "linear-gradient(90deg, #4F6EF7, #6366F1)"
-                : "rgba(255,255,255,0.1)",
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 export default function IdeaMatchPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const wantsLatest = searchParams.get("projectId") !== null || searchParams.get("latest") === "1";
   const { token, user, updateCredit } = useAuth();
-  const [sessions, setSessions] = useState<IdeaMatchSessionListResponse["sessions"]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [progressStep, setProgressStep] = useState(0);
   const [error, setError] = useState("");
   const [creditShortfall, setCreditShortfall] = useState(false);
 
@@ -163,15 +135,18 @@ export default function IdeaMatchPage() {
   }, 0);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token || !wantsLatest) return;
     let cancelled = false;
-    setLoading(true);
-    api<IdeaMatchSessionListResponse>("GET", buildQuery("/api/idea-match/sessions", { limit: 6 }), undefined, token)
-      .then((s) => { if (!cancelled) setSessions(s.sessions); })
-      .catch((e) => { if (!cancelled) setError(readError(e, "데이터를 불러오지 못했습니다.")); })
-      .finally(() => { if (!cancelled) setLoading(false); });
+    api<IdeaMatchSessionListResponse>("GET", buildQuery("/api/idea-match/sessions", { limit: 1 }), undefined, token)
+      .then((s) => {
+        if (cancelled) return;
+        if (s.sessions.length > 0) {
+          router.replace(`/idea-match/results?sessionId=${s.sessions[0].id}`);
+        }
+      })
+      .catch(() => { /* ignore — funnel will continue */ });
     return () => { cancelled = true; };
-  }, [token]);
+  }, [token, wantsLatest, router]);
 
   function toggle(arr: string[], set: (v: string[]) => void, item: string) {
     set(arr.includes(item) ? arr.filter((i) => i !== item) : [...arr, item]);
@@ -182,9 +157,30 @@ export default function IdeaMatchPage() {
     return true;
   }
 
+  // 분석 진행 단계 메시지 — UI 인식용 (실제 API 단계와 매칭)
+  const PROGRESS_STEPS = [
+    "조건을 분석하고 있습니다",
+    "해외 스타트업 사례를 검색하고 있습니다",
+    "한국 시장 맥락으로 변환하고 있습니다",
+    "아이디어를 생성하고 있습니다",
+    "결과를 정리하고 있습니다",
+  ];
+
+  useEffect(() => {
+    if (!submitting) {
+      setProgressStep(0);
+      return;
+    }
+    const t = setInterval(() => {
+      setProgressStep((s) => Math.min(s + 1, PROGRESS_STEPS.length - 1));
+    }, 4500);
+    return () => clearInterval(t);
+  }, [submitting]);
+
   async function handleSubmit() {
     if (!token || !hasCredits) return;
     setSubmitting(true);
+    setProgressStep(0);
     setError("");
 
     const industries = selectedCategories.flatMap(
@@ -232,21 +228,11 @@ export default function IdeaMatchPage() {
       case 1:
         return (
           <div className="space-y-6">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-white">
-                어떤 산업에 관심 있나요?{" "}
-                <span style={{ color: "#93AFFE" }}>*</span>
-              </h2>
-              <p style={{ color: "var(--ink-3)" }} className="text-sm">DB에서 관련 해외 사례를 우선 검색합니다 (복수 선택 가능)</p>
-              {matchEstimate > 0 && (
-                <span
-                  className="inline-block rounded-full px-3 py-1 text-sm font-semibold"
-                  style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)", color: "#6EE7B7" }}
-                >
-                  약 {matchEstimate}개 사례 매칭 예상
-                </span>
-              )}
-            </div>
+            {matchEstimate > 0 && (
+              <p className="text-xs text-zinc-400">
+                매칭 예상 사례 <span className="font-medium tabular-nums text-white">{matchEstimate}</span>건
+              </p>
+            )}
             <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
               {INDUSTRY_CATEGORIES.map((cat) => {
                 const sel = selectedCategories.includes(cat.group);
@@ -255,25 +241,16 @@ export default function IdeaMatchPage() {
                     key={cat.group}
                     type="button"
                     onClick={() => toggle(selectedCategories, setSelectedCategories, cat.group)}
-                    className="rounded-xl p-4 text-left transition-all"
-                    style={
+                    className={`rounded-xl border p-4 text-left transition-colors ${
                       sel
-                        ? { background: "rgba(79,110,247,0.12)", border: "1px solid rgba(79,110,247,0.35)" }
-                        : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }
-                    }
+                        ? "border-white/60 bg-white/[0.08]"
+                        : "border-white/[0.08] bg-white/[0.03] hover:border-white/20"
+                    }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-bold" style={{ color: sel ? "#BAC8FF" : "#EDEEFF" }}>
-                        {cat.group}
-                      </p>
-                      <span
-                        className="rounded px-1.5 py-0.5 text-[0.6875rem] font-semibold"
-                        style={{ background: "rgba(255,255,255,0.06)", color: "var(--ink-3)" }}
-                      >
-                        {cat.count}건
-                      </span>
-                    </div>
-                    <p className="mt-1 text-xs" style={{ color: sel ? "#93AFFE" : "var(--ink-4)" }}>
+                    <p className={`text-sm font-semibold ${sel ? "text-white" : "text-zinc-200"}`}>
+                      {cat.group}
+                    </p>
+                    <p className="mt-1 truncate text-xs text-zinc-500">
                       {cat.items.slice(0, 3).join(" · ")}
                     </p>
                   </button>
@@ -287,13 +264,7 @@ export default function IdeaMatchPage() {
       case 2:
         return (
           <div className="space-y-6">
-            <div className="space-y-1">
-              <h2 className="text-2xl font-bold text-white">선호하는 수익 모델</h2>
-              <p className="text-sm" style={{ color: "var(--ink-3)" }}>
-                DB에서 해당 모델의 검증된 사례를 필터링합니다 (선택 안 해도 됩니다)
-              </p>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
               {REVENUE_MODELS.map((model) => {
                 const sel = selectedModels.includes(model.value);
                 return (
@@ -301,18 +272,16 @@ export default function IdeaMatchPage() {
                     key={model.value}
                     type="button"
                     onClick={() => toggle(selectedModels, setSelectedModels, model.value)}
-                    className="rounded-xl p-4 text-left transition-all"
-                    style={
+                    className={`rounded-xl border p-4 text-left transition-colors ${
                       sel
-                        ? { background: "rgba(79,110,247,0.12)", border: "1px solid rgba(79,110,247,0.35)" }
-                        : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }
-                    }
+                        ? "border-white/60 bg-white/[0.08]"
+                        : "border-white/[0.08] bg-white/[0.03] hover:border-white/20"
+                    }`}
                   >
-                    <p className="text-sm font-semibold" style={{ color: sel ? "#BAC8FF" : "#EDEEFF" }}>
+                    <p className={`text-sm font-semibold ${sel ? "text-white" : "text-zinc-200"}`}>
                       {model.label}
                     </p>
-                    <p className="mt-0.5 text-xs" style={{ color: "var(--ink-3)" }}>{model.desc}</p>
-                    <p className="mt-2 text-[0.6875rem]" style={{ color: "var(--ink-4)" }}>DB {model.dbCount}건</p>
+                    <p className="mt-0.5 text-xs text-zinc-500">{model.desc}</p>
                   </button>
                 );
               })}
@@ -324,15 +293,8 @@ export default function IdeaMatchPage() {
       case 3:
         return (
           <div className="space-y-8">
-            <div className="space-y-1">
-              <h2 className="text-2xl font-bold text-white">벤치마크 & 타깃 시장</h2>
-              <p className="text-sm" style={{ color: "var(--ink-3)" }}>
-                어떤 단계의 해외 사례를 참고하고, 누구에게 팔 건가요?
-              </p>
-            </div>
-
             <div className="space-y-3">
-              <p className="text-sm font-semibold" style={{ color: "#A8AACC" }}>참고할 해외 사례의 성장 단계</p>
+              <p className="text-sm font-semibold" style={{ color: "#A1A1AA" }}>참고할 해외 사례의 성장 단계</p>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {FUNDING_STAGES.map((s) => (
                   <CardSelect key={s.value} selected={refStage === s.value} onClick={() => setRefStage(s.value)} label={s.label} desc={s.desc} />
@@ -341,16 +303,16 @@ export default function IdeaMatchPage() {
             </div>
 
             <div className="space-y-3">
-              <p className="text-sm font-semibold" style={{ color: "#A8AACC" }}>한국 내 타깃 시장</p>
+              <p className="text-sm font-semibold" style={{ color: "#A1A1AA" }}>한국 내 타깃 시장</p>
               <div className="grid grid-cols-3 gap-3">
                 {TARGET_MARKETS.map((m) => (
-                  <CardSelect key={m.value} selected={targetMarket === m.value} onClick={() => setTargetMarket(m.value)} label={m.label} desc={m.desc} icon={m.icon} />
+                  <CardSelect key={m.value} selected={targetMarket === m.value} onClick={() => setTargetMarket(m.value)} label={m.label} desc={m.desc} />
                 ))}
               </div>
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="targetCustomer" className="block text-sm font-semibold" style={{ color: "#A8AACC" }}>
+              <label htmlFor="targetCustomer" className="block text-sm font-semibold" style={{ color: "#A1A1AA" }}>
                 구체적인 타깃 고객
               </label>
               <input
@@ -368,12 +330,6 @@ export default function IdeaMatchPage() {
       case 4:
         return (
           <div className="space-y-6">
-            <div className="space-y-1">
-              <h2 className="text-2xl font-bold text-white">해결하고 싶은 문제</h2>
-              <p className="text-sm" style={{ color: "var(--ink-3)" }}>
-                AI가 이 문제에 맞는 해외 솔루션을 매칭합니다 (선택 사항)
-              </p>
-            </div>
             <textarea
               value={problemDesc}
               onChange={(e) => setProblemDesc(e.target.value)}
@@ -388,24 +344,17 @@ export default function IdeaMatchPage() {
       case 5:
         return (
           <div className="space-y-8">
-            <div className="space-y-1">
-              <h2 className="text-2xl font-bold text-white">실행 역량</h2>
-              <p className="text-sm" style={{ color: "var(--ink-3)" }}>
-                팀 규모와 예산에 맞는 현실적인 아이디어를 제안합니다
-              </p>
-            </div>
-
             <div className="space-y-3">
-              <p className="text-sm font-semibold" style={{ color: "#A8AACC" }}>팀 규모</p>
+              <p className="text-sm font-semibold" style={{ color: "#A1A1AA" }}>팀 규모</p>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {TEAM_OPTIONS.map((t) => (
-                  <CardSelect key={t.value} selected={teamSize === t.value} onClick={() => setTeamSize(t.value)} label={t.label} icon={t.icon} />
+                  <CardSelect key={t.value} selected={teamSize === t.value} onClick={() => setTeamSize(t.value)} label={t.label} />
                 ))}
               </div>
             </div>
 
             <div className="space-y-3">
-              <p className="text-sm font-semibold" style={{ color: "#A8AACC" }}>초기 투자 예산</p>
+              <p className="text-sm font-semibold" style={{ color: "#A1A1AA" }}>초기 투자 예산</p>
               <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
                 {BUDGET_OPTIONS.map((b) => (
                   <button
@@ -415,7 +364,7 @@ export default function IdeaMatchPage() {
                     className="rounded-xl px-4 py-3 text-sm font-medium transition-all"
                     style={
                       budget === b.value
-                        ? { background: "rgba(79,110,247,0.12)", border: "1px solid rgba(79,110,247,0.35)", color: "#BAC8FF" }
+                        ? { background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.6)", color: "#ffffff" }
                         : { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--ink-3)" }
                     }
                   >
@@ -426,7 +375,7 @@ export default function IdeaMatchPage() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="skills" className="block text-sm font-semibold" style={{ color: "#A8AACC" }}>
+              <label htmlFor="skills" className="block text-sm font-semibold" style={{ color: "#A1A1AA" }}>
                 보유 기술/역량{" "}
                 <span style={{ color: "var(--ink-4)" }}>(선택)</span>
               </label>
@@ -442,290 +391,242 @@ export default function IdeaMatchPage() {
         );
 
       /* ── STEP 6: 최종 확인 ── */
-      case 6:
+      case 6: {
+        const disabled = submitting || !hasCredits || selectedCategories.length === 0;
         return (
-          <div className="space-y-6">
-            <div className="space-y-1">
-              <h2 className="text-2xl font-bold text-white">아이디어 생성 준비 완료</h2>
-              <p className="text-sm" style={{ color: "var(--ink-3)" }}>
-                선택한 조건으로 AI가 한국 맞춤 아이디어 5개를 생성합니다
-              </p>
-            </div>
-
-            {/* Summary card */}
-            <div
-              className="rounded-2xl p-5 space-y-4"
-              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}
-            >
-              <SummaryRow label="산업 분야">
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedCategories.length > 0
-                    ? selectedCategories.map((c) => (
-                        <span
-                          key={c}
-                          className="rounded-md px-2 py-0.5 text-xs font-semibold"
-                          style={{ background: "rgba(79,110,247,0.12)", border: "1px solid rgba(79,110,247,0.2)", color: "#BAC8FF" }}
-                        >
-                          {c}
-                        </span>
-                      ))
-                    : <span className="text-sm" style={{ color: "var(--ink-4)" }}>선택 없음</span>
-                  }
-                </div>
-              </SummaryRow>
-              <SummaryRow label="수익 모델">
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedModels.length > 0
-                    ? selectedModels.map((m) => (
-                        <span
-                          key={m}
-                          className="rounded-md px-2 py-0.5 text-xs font-semibold"
-                          style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.18)", color: "#6EE7B7" }}
-                        >
-                          {REVENUE_MODELS.find((r) => r.value === m)?.label}
-                        </span>
-                      ))
-                    : <span className="text-sm" style={{ color: "var(--ink-4)" }}>미선택 (전체)</span>
-                  }
-                </div>
-              </SummaryRow>
-              <SummaryRow label="타깃">
-                <span className="text-sm" style={{ color: "#A8AACC" }}>{targetMarket} · {refStage}</span>
-              </SummaryRow>
-              <SummaryRow label="팀/예산">
-                <span className="text-sm" style={{ color: "#A8AACC" }}>
+          <div className="space-y-8">
+            {/* Review list */}
+            <dl className="divide-y divide-white/[0.06] border-y border-white/[0.06]">
+              <ReviewRow label="산업 분야">
+                {selectedCategories.length > 0 ? (
+                  <div className="flex flex-wrap justify-end gap-1.5">
+                    {selectedCategories.map((c) => (
+                      <span
+                        key={c}
+                        className="rounded-md border border-white/15 bg-white/[0.06] px-2 py-0.5 text-xs font-medium text-zinc-100"
+                      >
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-sm text-zinc-500">선택 없음</span>
+                )}
+              </ReviewRow>
+              <ReviewRow label="수익 모델">
+                {selectedModels.length > 0 ? (
+                  <div className="flex flex-wrap justify-end gap-1.5">
+                    {selectedModels.map((m) => (
+                      <span
+                        key={m}
+                        className="rounded-md border border-white/10 bg-white/[0.04] px-2 py-0.5 text-xs text-zinc-300"
+                      >
+                        {REVENUE_MODELS.find((r) => r.value === m)?.label}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-sm text-zinc-500">미선택 (전체)</span>
+                )}
+              </ReviewRow>
+              <ReviewRow label="타깃 시장">
+                <span className="text-sm text-zinc-200">{targetMarket} · {refStage}</span>
+              </ReviewRow>
+              <ReviewRow label="팀 · 예산">
+                <span className="text-sm text-zinc-200">
                   {TEAM_OPTIONS.find((t) => t.value === teamSize)?.label} · {BUDGET_OPTIONS.find((b) => b.value === budget)?.label}
                 </span>
-              </SummaryRow>
-              {problemDesc && (
-                <SummaryRow label="문제 정의">
-                  <p className="text-sm line-clamp-2" style={{ color: "#A8AACC" }}>{problemDesc}</p>
-                </SummaryRow>
-              )}
-              {matchEstimate > 0 && (
-                <div
-                  className="rounded-xl px-4 py-3 text-sm font-semibold"
-                  style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.16)", color: "#6EE7B7" }}
-                >
-                  약 {matchEstimate}개 해외 사례 → Pinecone 벡터 검색 → AI 분석
-                </div>
-              )}
-            </div>
+              </ReviewRow>
+              {problemDesc ? (
+                <ReviewRow label="문제 정의">
+                  <p className="line-clamp-2 max-w-md text-sm text-zinc-300">{problemDesc}</p>
+                </ReviewRow>
+              ) : null}
+            </dl>
 
-            {error && (
-              <div
-                className="rounded-xl p-4 text-sm"
-                style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.2)", color: "#FCA5A5" }}
-              >
+            {error ? (
+              <div className="rounded-lg border border-rose-500/20 bg-rose-500/[0.08] px-4 py-3 text-sm text-rose-200">
                 {error}
               </div>
-            )}
+            ) : null}
 
-            {(!hasCredits || creditShortfall) && (
-              <div
-                className="rounded-xl p-4 space-y-3"
-                style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.18)" }}
-              >
-                <p className="text-sm font-semibold" style={{ color: "#FCD34D" }}>
-                  크레딧이 부족합니다 — 현재 {creditBalance}cr / 필요 {IDEA_MATCH_CREDIT_COST}cr
+            {!hasCredits || creditShortfall ? (
+              <div className="flex items-center justify-between gap-3 py-3">
+                <p className="text-sm text-zinc-300">
+                  크레딧 부족 — 현재 <span className="tabular-nums text-white">{creditBalance}cr</span> · 필요 <span className="tabular-nums text-white">{IDEA_MATCH_CREDIT_COST}cr</span>
                 </p>
                 <Link
                   href="/billing"
-                  className="inline-block rounded-lg px-4 py-2 text-sm font-semibold text-white transition-all"
-                  style={{ background: "linear-gradient(135deg, #D97706, #F59E0B)" }}
+                  className="shrink-0 rounded-md border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-zinc-100 transition-colors hover:bg-white/[0.10]"
                 >
-                  크레딧 충전하기 →
+                  충전
                 </Link>
               </div>
-            )}
+            ) : null}
 
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={submitting || !hasCredits || selectedCategories.length === 0}
-              className="w-full rounded-xl py-4 text-base font-bold text-white transition-all"
-              style={
-                submitting || !hasCredits || selectedCategories.length === 0
-                  ? { background: "rgba(255,255,255,0.08)", cursor: "not-allowed", color: "var(--ink-4)" }
-                  : {
-                      background: "linear-gradient(135deg, #4F6EF7, #6366F1)",
-                      boxShadow: "0 4px 24px rgba(79,110,247,0.4)",
-                    }
-              }
-            >
-              {submitting ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  DB 분석 중...
-                </span>
-              ) : (
-                `아이디어 분석 시작 · ${IDEA_MATCH_CREDIT_COST} 크레딧`
-              )}
-            </button>
-
-            <p className="text-center text-xs" style={{ color: "var(--ink-4)" }}>
-              잔여 크레딧: {user?.isAdmin ? "Unlimited" : creditBalance ?? 0}
-            </p>
+            {/* Action area (flat) */}
+            <div className="pt-2">
+              <div className="mb-4 flex items-baseline justify-between">
+                <p className="text-sm text-zinc-400">
+                  분석 비용 <span className="ml-1 font-semibold tabular-nums text-white">{IDEA_MATCH_CREDIT_COST}</span> 크레딧
+                </p>
+                <p className="text-xs text-zinc-500">
+                  잔여 <span className="tabular-nums text-zinc-300">{user?.isAdmin ? "무제한" : (creditBalance ?? 0)}</span>
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={disabled}
+                className={`flex w-full items-center justify-center gap-2 rounded-lg border px-6 py-3.5 text-sm font-semibold transition-colors ${
+                  disabled
+                    ? "cursor-not-allowed border-white/[0.06] bg-transparent text-zinc-600"
+                    : "border-white/20 bg-white/[0.10] text-white hover:border-white/35 hover:bg-white/[0.15]"
+                }`}
+              >
+                {submitting ? (
+                  <>
+                    <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    분석 중…
+                  </>
+                ) : (
+                  <>아이디어 분석 시작</>
+                )}
+              </button>
+            </div>
           </div>
         );
+      }
 
       default:
         return null;
     }
   }
 
+  const pct = (step / STEPS.length) * 100;
+
   return (
     <AuthGuard>
-      <div className="fade-up mx-auto max-w-2xl py-6">
-        {/* Header */}
-        <div className="mb-8 space-y-3 text-center">
-          <div
-            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5"
-            style={{ background: "rgba(79,110,247,0.1)", border: "1px solid rgba(79,110,247,0.22)" }}
-          >
-            <span className="text-sm font-bold" style={{ color: "#BAC8FF" }}>969개</span>
-            <span className="text-sm" style={{ color: "#4F6EF7" }}>해외 성공 사례 실시간 분석</span>
-          </div>
-          <h1 className="text-3xl font-bold text-white sm:text-4xl">
-            해외 성공 사례에서<br />
-            <span className="gradient-text">내 아이디어를 찾다</span>
+      <div className="fade-up pb-6">
+        {/* Step header */}
+        <div className="mb-2">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+            <span className="tabular-nums text-zinc-300">{step}</span>
+            <span className="mx-1.5 text-zinc-600">/</span>
+            <span className="tabular-nums">{STEPS.length}</span>
+            <span className="mx-2 text-zinc-700">·</span>
+            <span>{STEPS[step - 1].label}</span>
+          </p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-[28px]">
+            {STEPS[step - 1].desc}
           </h1>
+          <p className="mt-2 text-sm text-zinc-400">{STEPS[step - 1].hint}</p>
         </div>
-
-        {/* Step indicator */}
-        <div
-          className="mb-8 flex items-center justify-between rounded-2xl px-5 py-4"
-          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
-        >
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--ink-4)" }}>
-              Step {step} / {STEPS.length}
-            </p>
-            <p className="text-base font-bold text-white">{STEPS[step - 1].label}</p>
-            <p className="text-xs" style={{ color: "var(--ink-3)" }}>{STEPS[step - 1].desc}</p>
-          </div>
-          <StepIndicator current={step} total={STEPS.length} />
+        <div className="mb-6 h-px w-full bg-white/[0.06]">
+          <div className="h-full bg-white transition-all duration-300" style={{ width: `${pct}%` }} />
         </div>
 
         {/* Step content */}
-        <div className="min-h-[380px]">{renderStep()}</div>
+        <div>{renderStep()}</div>
 
         {/* Navigation buttons */}
-        <div className="mt-10 flex items-center justify-between gap-4">
-          <button
-            type="button"
-            onClick={() => setStep((s) => Math.max(1, s - 1))}
-            disabled={step === 1}
-            className="flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all disabled:opacity-30"
-            style={{
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              color: "#A8AACC",
-            }}
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-            </svg>
-            이전
-          </button>
+        <div className="mt-8 flex items-center justify-between gap-4">
+          {step > 1 ? (
+            <button
+              type="button"
+              onClick={() => {
+                setStep((s) => Math.max(1, s - 1));
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="rounded-lg border border-white/10 bg-transparent px-5 py-2.5 text-sm font-medium text-zinc-400 transition-colors hover:border-white/20 hover:text-zinc-200"
+            >
+              이전
+            </button>
+          ) : (
+            <span />
+          )}
 
           {step < STEPS.length ? (
             <button
               type="button"
-              onClick={() => { if (!canProceed()) return; setStep((s) => s + 1); }}
+              onClick={() => {
+                if (!canProceed()) return;
+                setStep((s) => s + 1);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
               disabled={!canProceed()}
-              className="btn-primary flex items-center gap-1.5 px-6 py-2.5 text-sm disabled:opacity-40 disabled:transform-none disabled:shadow-none"
+              className="rounded-lg border border-white/15 bg-white/[0.08] px-6 py-2.5 text-sm font-semibold text-zinc-100 transition-colors hover:border-white/30 hover:bg-white/[0.12] hover:text-white disabled:cursor-not-allowed disabled:border-white/[0.06] disabled:bg-transparent disabled:text-zinc-600"
             >
               다음
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-              </svg>
             </button>
           ) : null}
         </div>
 
-        {/* Previous sessions */}
-        {!loading && sessions.length > 0 ? (
-          <div
-            className="mt-12 space-y-3 pt-8"
-            style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
-          >
-            <h3 className="text-sm font-semibold text-white">이전 분석 결과</h3>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {sessions.slice(0, 4).map((session) => {
-                const ideaCount = session._count?.generatedIdeas ?? 0;
-                const budgetLabel = budgetRangeOptions.find((o) => o.value === session.projectPolicy.budgetRange)?.label;
-                const industries = (() => {
-                  const raw = session.projectPolicy.industries;
-                  if (Array.isArray(raw)) return (raw as string[]).slice(0, 2).join(" · ");
-                  if (typeof raw === "string") return raw;
-                  return null;
-                })();
-                const date = new Date(session.createdAt).toLocaleDateString("ko-KR", { month: "short", day: "numeric" });
+      </div>
+
+      {/* 분석 진행 오버레이 */}
+      {submitting ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="아이디어 분석 진행 중"
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+        >
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-950 p-7 shadow-2xl">
+            <div className="flex items-center gap-3">
+              <svg className="h-5 w-5 animate-spin text-zinc-300" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              <p className="text-sm font-medium text-white">분석을 진행 중입니다</p>
+            </div>
+            <ol className="mt-5 space-y-2.5">
+              {PROGRESS_STEPS.map((label, i) => {
+                const done = i < progressStep;
+                const active = i === progressStep;
                 return (
-                  <Link
-                    key={session.id}
-                    href={`/idea-match/results?sessionId=${session.id}`}
-                    className="group rounded-xl p-4 transition-all"
-                    style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor = "rgba(79,110,247,0.25)";
-                      (e.currentTarget as HTMLElement).style.background = "rgba(79,110,247,0.05)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)";
-                      (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)";
-                    }}
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-sm font-semibold text-white leading-snug">
-                        {session.projectPolicy.title}
-                      </p>
-                      <span className="shrink-0 text-[0.6875rem]" style={{ color: "var(--ink-4)" }}>{date}</span>
-                    </div>
-                    {industries ? (
-                      <p className="mt-1 text-xs font-medium" style={{ color: "#93AFFE" }}>{industries}</p>
-                    ) : null}
-                    <p className="mt-1 line-clamp-1 text-xs" style={{ color: "var(--ink-3)" }}>{session.searchQuery}</p>
-                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                      {ideaCount > 0 ? (
-                        <span
-                          className="rounded px-1.5 py-0.5 text-[0.6875rem] font-semibold"
-                          style={{ background: "rgba(16,185,129,0.1)", color: "#6EE7B7" }}
-                        >
-                          {ideaCount} ideas
-                        </span>
-                      ) : null}
-                      {budgetLabel ? (
-                        <span
-                          className="rounded px-1.5 py-0.5 text-[0.6875rem]"
-                          style={{ background: "rgba(255,255,255,0.05)", color: "var(--ink-3)" }}
-                        >
-                          {budgetLabel}
-                        </span>
-                      ) : null}
-                    </div>
-                  </Link>
+                  <li key={label} className="flex items-center gap-3">
+                    <span
+                      aria-hidden
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[0.65rem] tabular-nums ${
+                        done
+                          ? "border-white/40 bg-white text-zinc-900"
+                          : active
+                            ? "border-white/40 bg-white/[0.08] text-white"
+                            : "border-white/10 text-zinc-500"
+                      }`}
+                    >
+                      {done ? "✓" : i + 1}
+                    </span>
+                    <span
+                      className={`text-sm ${
+                        done ? "text-zinc-500 line-through" : active ? "text-white" : "text-zinc-500"
+                      }`}
+                    >
+                      {label}
+                    </span>
+                  </li>
                 );
               })}
-            </div>
+            </ol>
+            <p className="mt-5 text-center text-xs text-zinc-500">
+              평균 20~40초가 소요됩니다. 창을 닫지 마세요.
+            </p>
           </div>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
     </AuthGuard>
   );
 }
 
-function SummaryRow({ label, children }: { label: string; children: React.ReactNode }) {
+function ReviewRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-3">
-      <span className="w-20 shrink-0 pt-0.5 text-xs font-semibold" style={{ color: "var(--ink-4)" }}>
-        {label}
-      </span>
-      <div className="flex-1">{children}</div>
+    <div className="flex items-start justify-between gap-6 py-3.5">
+      <dt className="shrink-0 text-xs font-medium uppercase tracking-wider text-zinc-500">{label}</dt>
+      <dd className="min-w-0 flex-1 text-right">{children}</dd>
     </div>
   );
 }

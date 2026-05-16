@@ -64,7 +64,7 @@ export default function ProfileEditPage() {
 
   return (
     <AuthGuard>
-      <div className="mx-auto max-w-2xl space-y-8 fade-up pb-12">
+      <div className="space-y-8 fade-up pb-12">
         <header className="space-y-2">
           <Link href="/mypage" className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300">
             ← 내 워크스페이스
@@ -75,7 +75,7 @@ export default function ProfileEditPage() {
 
         {/* 계정 정보 */}
         <section className="space-y-3 rounded-xl border border-white/10 bg-white/[0.03] p-5">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-indigo-300">계정 정보</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-300">계정 정보</h2>
           <dl className="space-y-2">
             <Row label="이메일" value={user?.email || "-"} />
             <Row label="이름" value={user?.name || "-"} />
@@ -85,9 +85,9 @@ export default function ProfileEditPage() {
 
         {/* 프로필 수정 */}
         <section className="space-y-4 rounded-xl border border-white/10 bg-white/[0.03] p-5">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-indigo-300">정보 변경</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-300">정보 변경</h2>
           {profileMsg.text ? (
-            <p className={`text-sm font-medium ${profileMsg.ok ? "text-emerald-300" : "text-rose-300"}`}>
+            <p className={`text-sm font-medium ${profileMsg.ok ? "text-zinc-200" : "text-rose-300"}`}>
               {profileMsg.text}
             </p>
           ) : null}
@@ -130,11 +130,11 @@ export default function ProfileEditPage() {
         {/* 역할 변경 */}
         <section className="space-y-3 rounded-xl border border-white/10 bg-white/[0.03] p-5">
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-indigo-300">역할 변경</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-300">역할 변경</h2>
             <p className="mt-1 text-sm text-zinc-400">역할에 따라 메뉴와 기능이 달라집니다.</p>
           </div>
           {roleMsg.text ? (
-            <p className={`text-sm font-medium ${roleMsg.ok ? "text-emerald-300" : "text-rose-300"}`}>
+            <p className={`text-sm font-medium ${roleMsg.ok ? "text-zinc-200" : "text-rose-300"}`}>
               {roleMsg.text}
             </p>
           ) : null}
@@ -161,7 +161,7 @@ export default function ProfileEditPage() {
                   }
                 >
                   <div>
-                    <p className={`text-sm font-semibold ${isActive ? "text-indigo-200" : "text-white"}`}>
+                    <p className={`text-sm font-semibold ${isActive ? "text-zinc-200" : "text-white"}`}>
                       {opt.label}
                     </p>
                     {opt.hint ? (
@@ -169,7 +169,7 @@ export default function ProfileEditPage() {
                     ) : null}
                   </div>
                   {isActive ? (
-                    <span className="rounded-md bg-indigo-500/20 px-2 py-0.5 text-xs font-semibold text-indigo-200">
+                    <span className="rounded-md bg-white/[0.10] px-2 py-0.5 text-xs font-semibold text-zinc-200">
                       현재
                     </span>
                   ) : (

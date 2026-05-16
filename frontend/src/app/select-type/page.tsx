@@ -32,13 +32,14 @@ export default function SelectTypePage() {
     if (user.userType) router.replace("/idea-match");
   }, [loading, router, user]);
 
-  async function handleSubmit() {
-    if (!selected) return;
+  async function handleSubmit(value?: string) {
+    const role = value ?? selected;
+    if (!role) return;
     setError("");
     setSubmitting(true);
     try {
-      await setUserType(selected);
-      if (selected === "EXPERT") {
+      await setUserType(role);
+      if (role === "EXPERT") {
         router.push("/mypage/expert");
       } else {
         router.push("/idea-match");
@@ -54,9 +55,8 @@ export default function SelectTypePage() {
     <div className="flex min-h-screen flex-col bg-gray-50">
       {/* Minimal header */}
       <header className="flex h-16 items-center border-b border-gray-200 bg-white/80 px-6 backdrop-blur-sm">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white">W</span>
-          <span className="text-lg font-bold text-gray-900">Widea</span>
+        <Link href="/" className="text-lg font-bold tracking-tight text-gray-900">
+          Widea
         </Link>
       </header>
 
@@ -87,7 +87,11 @@ export default function SelectTypePage() {
                 <button
                   key={option.value}
                   type="button"
-                  onClick={() => setSelected(option.value)}
+                  disabled={submitting}
+                  onClick={() => {
+                    setSelected(option.value);
+                    void handleSubmit(option.value);
+                  }}
                   className={`group relative rounded-2xl border-2 p-6 text-left transition-all ${
                     active
                       ? "border-blue-500 bg-white shadow-md shadow-blue-100"
@@ -119,16 +123,11 @@ export default function SelectTypePage() {
             })}
           </div>
 
-          <div className="flex justify-center">
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={!selected || submitting}
-              className="btn-primary min-w-[200px] disabled:opacity-40"
-            >
-              {submitting ? "설정 중..." : "시작하기"}
-            </button>
-          </div>
+          {submitting ? (
+            <p className="text-center text-sm text-gray-500">설정 중…</p>
+          ) : (
+            <p className="text-center text-xs text-gray-400">역할을 선택하면 자동으로 다음 단계로 이동합니다.</p>
+          )}
         </div>
       </div>
     </div>

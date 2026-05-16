@@ -24,32 +24,65 @@ export default function AddPeerToWorkspaceButton({
   const { token, user } = useAuth();
   const [open, setOpen] = useState(false);
   const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>([]);
+  const [memberOf, setMemberOf] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
   const [adding, setAdding] = useState<string | null>(null);
   const [role, setRole] = useState<"EDITOR" | "VIEWER">("EDITOR");
   const [error, setError] = useState("");
   const [done, setDone] = useState<string | null>(null);
+  const [initialized, setInitialized] = useState(false);
+
+  // mount 시 — 내 owner 워크스페이스 목록 + peer 멤버십 fetch
+  useEffect(() => {
+    if (!token || !user || user.id === peerUserId) {
+      setInitialized(true);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await api<{ workspaces: WorkspaceItem[] }>(
+          "GET",
+          "/api/workspace/my-list",
+          undefined,
+          token,
+        );
+        const owned = res.workspaces.filter((w) => w.isOwner);
+        if (cancelled) return;
+        setWorkspaces(owned);
+
+        // 각 워크스페이스에서 peer가 member인지 확인
+        const memberships = await Promise.all(
+          owned.map(async (w) => {
+            try {
+              const m = await api<{ members: Array<{ user: { id: string } }> }>(
+                "GET",
+                `/api/workspace/${w.ideaId}/members`,
+                undefined,
+                token,
+              );
+              const has = m.members.some((mm) => mm.user.id === peerUserId);
+              return has ? w.ideaId : null;
+            } catch {
+              return null;
+            }
+          }),
+        );
+        if (cancelled) return;
+        setMemberOf(new Set(memberships.filter((x): x is string => x !== null)));
+      } catch {
+        // 무시 — 버튼은 그대로 노출
+      } finally {
+        if (!cancelled) setInitialized(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [token, user, peerUserId]);
 
   // 본인에겐 안 보이게
   if (!user || user.id === peerUserId) return null;
-
-  useEffect(() => {
-    if (!open || !token) return;
-    setLoading(true);
-    setError("");
-    api<{ workspaces: WorkspaceItem[] }>(
-      "GET",
-      "/api/workspace/my-list",
-      undefined,
-      token,
-    )
-      .then((res) => {
-        // 본인 owner인 워크스페이스만 멤버 추가 가능 (백엔드도 OWNER만 허용)
-        setWorkspaces(res.workspaces.filter((w) => w.isOwner));
-      })
-      .catch((caught) => setError(readError(caught, "워크스페이스 목록 실패")))
-      .finally(() => setLoading(false));
-  }, [open, token]);
+  // 추가 가능한 워크스페이스가 하나도 없으면 버튼 숨김 (모두 이미 멤버이거나 owner 워크스페이스 없음)
+  if (initialized && workspaces.length > 0 && memberOf.size >= workspaces.length) return null;
 
   async function addToWorkspace(ideaId: string, title: string) {
     if (!token) return;
@@ -80,7 +113,7 @@ export default function AddPeerToWorkspaceButton({
         type="button"
         onClick={() => setOpen(true)}
         title={`${peerName}님을 내 워크스페이스 멤버로 추가`}
-        className="shrink-0 rounded-md border border-emerald-400/40 bg-emerald-500/10 px-2 py-1 text-[0.65rem] font-bold text-emerald-200 hover:bg-emerald-500/20"
+        className="shrink-0 rounded-md border border-white/15 bg-white/[0.06] px-2 py-1 text-[0.65rem] font-semibold text-zinc-100 transition-colors hover:border-white/30 hover:bg-white/[0.10]"
       >
         + 멤버로 추가
       </button>
@@ -125,7 +158,7 @@ export default function AddPeerToWorkspaceButton({
             ) : null}
 
             {done ? (
-              <p className="rounded-lg border border-emerald-400/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
+              <p className="rounded-lg border border-white/15 bg-white/[0.06] px-3 py-2 text-sm text-zinc-200">
                 ✓ {done}에 추가됐습니다.
               </p>
             ) : loading ? (
@@ -137,23 +170,26 @@ export default function AddPeerToWorkspaceButton({
               </p>
             ) : (
               <ul className="space-y-1.5">
-                {workspaces.map((w) => (
-                  <li key={w.ideaId}>
-                    <button
-                      type="button"
-                      disabled={adding === w.ideaId}
-                      onClick={() => addToWorkspace(w.ideaId, w.title)}
-                      className="flex w-full items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-left transition-colors hover:border-emerald-400/40 hover:bg-emerald-500/[0.08] disabled:opacity-50"
-                    >
-                      <span className="truncate text-sm font-semibold text-white">
-                        {w.title}
-                      </span>
-                      <span className="shrink-0 text-[0.65rem] font-semibold text-emerald-300">
-                        {adding === w.ideaId ? "추가 중..." : "→ 추가"}
-                      </span>
-                    </button>
-                  </li>
-                ))}
+                {workspaces.map((w) => {
+                  const already = memberOf.has(w.ideaId);
+                  return (
+                    <li key={w.ideaId}>
+                      <button
+                        type="button"
+                        disabled={adding === w.ideaId || already}
+                        onClick={() => addToWorkspace(w.ideaId, w.title)}
+                        className="flex w-full items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-left transition-colors hover:border-white/30 hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        <span className={`truncate text-sm font-semibold ${already ? "text-zinc-500" : "text-white"}`}>
+                          {w.title}
+                        </span>
+                        <span className="shrink-0 text-[0.65rem] font-semibold text-zinc-300">
+                          {already ? "이미 멤버" : adding === w.ideaId ? "추가 중…" : "→ 추가"}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             )}
 

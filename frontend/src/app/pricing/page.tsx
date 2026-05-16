@@ -122,7 +122,7 @@ export default function PricingPage() {
       />
 
       {message ? (
-        <Surface className="border-emerald-500/30 bg-emerald-500/10 text-emerald-300">{message}</Surface>
+        <Surface className="border-emerald-500/30 bg-white/[0.06] text-zinc-200">{message}</Surface>
       ) : null}
       {error ? (
         <Surface className="border-rose-500/30 bg-rose-500/10 text-rose-300">{error}</Surface>
@@ -200,7 +200,7 @@ export default function PricingPage() {
                           type="button"
                           onClick={() => { setMockPlan(plan); setMockOpen(true); }}
                           disabled={pendingPlan === plan.planType}
-                          className="w-full rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-xs font-semibold text-amber-300 hover:bg-amber-500/20 disabled:opacity-50"
+                          className="w-full rounded-xl border border-amber-500/40 bg-white/[0.06] px-4 py-2 text-xs font-semibold text-zinc-200 hover:bg-white/[0.10] disabled:opacity-50"
                           title="관리자 전용 — Toss 스타일 데모 결제"
                         >
                           🎬 데모 결제 (실거래 X)

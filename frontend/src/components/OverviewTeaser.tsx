@@ -59,7 +59,7 @@ export default function OverviewTeaser({
     <article className="mx-auto max-w-3xl space-y-16 fade-up py-4">
       {/* HERO */}
       <header className="space-y-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-300">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400">
           글로벌 벤치마크 {confidenceBreakdown.sourceCount}건 분석 완료
         </p>
         {idea.oneLinerKo ? (
@@ -113,7 +113,7 @@ export default function OverviewTeaser({
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                 </svg>
               ) : (
-                <span className="text-xs font-medium text-emerald-400">생성됨</span>
+                <span className="text-xs font-medium text-zinc-300">생성됨</span>
               )}
             </li>
           ))}
@@ -125,7 +125,7 @@ export default function OverviewTeaser({
         <button
           type="button"
           onClick={onOpenDeep}
-          className="inline-flex items-center gap-2 rounded-full bg-violet-500 px-8 py-3.5 text-sm font-bold text-white transition-colors hover:bg-violet-400"
+          className="inline-flex items-center gap-2 rounded-full bg-white/[0.10] px-8 py-3.5 text-sm font-bold text-white transition-colors hover:bg-white/[0.15]"
         >
           {isUnlocked ? "분석 보러가기 →" : "심층 리포트 미리보기 →"}
         </button>

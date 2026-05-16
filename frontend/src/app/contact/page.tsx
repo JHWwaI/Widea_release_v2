@@ -52,9 +52,9 @@ export default function ContactPage() {
             </div>
 
             {sent ? (
-              <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-6 text-center">
+              <div className="rounded-xl border border-emerald-100 bg-white/[0.06] p-6 text-center">
                 <p className="text-lg font-semibold text-emerald-800">문의가 접수되었습니다</p>
-                <p className="mt-2 text-sm text-emerald-600">
+                <p className="mt-2 text-sm text-zinc-700">
                   빠른 시일 내에 답변드리겠습니다.
                 </p>
                 <button
@@ -139,7 +139,7 @@ export default function ContactPage() {
               ))}
             </div>
 
-            <div className="rounded-xl border border-blue-100 bg-blue-50 p-4">
+            <div className="rounded-xl border border-blue-100 bg-white/[0.06] p-4">
               <p className="text-sm font-semibold text-blue-800">직접 연락</p>
               <p className="mt-1 text-sm text-blue-600">
                 support@widea.kr

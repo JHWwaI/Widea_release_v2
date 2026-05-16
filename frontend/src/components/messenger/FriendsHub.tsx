@@ -135,21 +135,21 @@ export default function FriendsHub() {
           <button
             type="button"
             onClick={() => setSubTab("friends")}
-            className={`flex-1 px-3 py-2 text-xs font-bold transition-colors ${subTab === "friends" ? "bg-violet-500/10 text-violet-200" : "text-zinc-400 hover:text-zinc-200"}`}
+            className={`flex-1 px-3 py-2 text-xs font-bold transition-colors ${subTab === "friends" ? "bg-white/[0.06] text-zinc-200" : "text-zinc-400 hover:text-zinc-200"}`}
           >
             친구 ({conversations.length})
           </button>
           <button
             type="button"
             onClick={() => setSubTab("chats")}
-            className={`flex-1 px-3 py-2 text-xs font-bold transition-colors ${subTab === "chats" ? "bg-violet-500/10 text-violet-200" : "text-zinc-400 hover:text-zinc-200"}`}
+            className={`flex-1 px-3 py-2 text-xs font-bold transition-colors ${subTab === "chats" ? "bg-white/[0.06] text-zinc-200" : "text-zinc-400 hover:text-zinc-200"}`}
           >
             채팅 ({conversations.filter((c) => c.lastMessage).length})
           </button>
           <button
             type="button"
             onClick={() => setShowStart(true)}
-            className="px-2.5 py-2 text-[0.65rem] font-bold text-violet-200 hover:bg-white/[0.04]"
+            className="px-2.5 py-2 text-[0.65rem] font-bold text-zinc-200 hover:bg-white/[0.04]"
             title="ID/이메일로 친구 추가"
           >
             +
@@ -248,7 +248,7 @@ function FriendList({
             onClick={() => onPick(c.id)}
             className="flex w-full items-center gap-2.5 border-b border-white/5 px-3 py-2 text-left transition-colors hover:bg-white/[0.04]"
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/40 to-violet-700/30 text-xs font-bold text-white">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.08] text-xs font-bold text-white">
               {peerInitial(c.peer)}
             </span>
             <div className="min-w-0 flex-1">
@@ -293,9 +293,9 @@ function ChatList({
             <button
               type="button"
               onClick={() => onSelect(c.id)}
-              className={`flex w-full items-center gap-2.5 border-b border-white/5 px-3 py-2 text-left transition-colors ${sel ? "bg-violet-500/10" : "hover:bg-white/[0.04]"}`}
+              className={`flex w-full items-center gap-2.5 border-b border-white/5 px-3 py-2 text-left transition-colors ${sel ? "bg-white/[0.06]" : "hover:bg-white/[0.04]"}`}
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/40 to-violet-700/30 text-xs font-bold text-white">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.08] text-xs font-bold text-white">
                 {peerInitial(c.peer)}
               </span>
               <div className="min-w-0 flex-1">
@@ -393,7 +393,7 @@ function DmChatPanel({
       <div className="flex items-center gap-2.5 border-b border-white/10 px-3 py-2">
         {peer ? (
           <>
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/40 to-violet-700/30 text-xs font-bold text-white">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/[0.08] text-xs font-bold text-white">
               {peerInitial(peer)}
             </span>
             <div className="min-w-0 flex-1">
@@ -407,7 +407,7 @@ function DmChatPanel({
             <button
               type="button"
               onClick={() => setShowAddTask(true)}
-              className="shrink-0 rounded-md border border-amber-400/40 bg-amber-500/10 px-2 py-1 text-[0.6rem] font-semibold text-amber-200 hover:bg-amber-500/20"
+              className="shrink-0 rounded-md border border-white/15 bg-white/[0.06] px-2 py-1 text-[0.6rem] font-semibold text-zinc-100 transition-colors hover:border-white/30 hover:bg-white/[0.10]"
               title="이 사람에게 일정 할당"
             >
               + 일정
@@ -416,7 +416,7 @@ function DmChatPanel({
             <button
               type="button"
               onClick={onSwitchPeer}
-              className="shrink-0 rounded-md border border-white/10 bg-white/[0.04] px-2 py-1 text-[0.6rem] font-semibold text-zinc-300 hover:border-violet-400/40 hover:bg-violet-500/[0.08] hover:text-violet-200"
+              className="shrink-0 rounded-md border border-white/10 bg-white/[0.04] px-2 py-1 text-[0.6rem] font-semibold text-zinc-300 hover:border-white/20 hover:bg-white/[0.10]/[0.08] hover:text-zinc-200"
               title="다른 친구로 채팅 전환"
             >
               대상 변경
@@ -442,7 +442,7 @@ function DmChatPanel({
               >
                 {!mine && peer ? (
                   <div
-                    className="mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/40 to-violet-700/30 text-[0.65rem] font-bold text-white"
+                    className="mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-white/[0.08] text-[0.65rem] font-bold text-white"
                     title={peerLabel(peer)}
                   >
                     {peerInitial(peer)}
@@ -466,7 +466,7 @@ function DmChatPanel({
                         {isLast ? (
                           <span className="mb-0.5 flex flex-col items-end gap-0.5 text-[0.6rem] text-zinc-500">
                             {mine && !m.readAt ? (
-                              <span className="font-bold text-amber-300">1</span>
+                              <span className="font-bold text-zinc-200">1</span>
                             ) : null}
                             <span>{formatTime(m.createdAt)}</span>
                           </span>
@@ -565,7 +565,7 @@ function StartDmModal({
         </p>
         {user?.userCode ? (
           <p className="mt-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-[0.7rem] text-zinc-400">
-            내 ID: <strong className="text-violet-200">{user.userCode}</strong>
+            내 ID: <strong className="text-zinc-200">{user.userCode}</strong>
           </p>
         ) : null}
         <form onSubmit={submit} className="mt-4 space-y-3">
@@ -594,7 +594,7 @@ function StartDmModal({
             <button
               type="submit"
               disabled={busy}
-              className="rounded-lg bg-violet-500 px-4 py-1.5 text-sm font-bold text-white hover:bg-violet-400 disabled:opacity-50"
+              className="rounded-lg bg-white/[0.10] px-4 py-1.5 text-sm font-bold text-white hover:bg-white/[0.15] disabled:opacity-50"
             >
               {busy ? "찾는 중..." : "추가 / 시작"}
             </button>
@@ -645,7 +645,7 @@ function SwitchPeerModal({
           <button
             type="button"
             onClick={onAddNew}
-            className="rounded-md border border-violet-400/40 bg-violet-500/15 px-2 py-1 text-[0.65rem] font-bold text-violet-100 hover:bg-violet-500/25"
+            className="rounded-md border border-white/20 bg-white/[0.08] px-2 py-1 text-[0.65rem] font-bold text-zinc-100 hover:bg-white/[0.12]"
           >
             + 새 친구
           </button>
@@ -674,7 +674,7 @@ function SwitchPeerModal({
                       onClick={() => onPick(c.id)}
                       className={`flex w-full items-center gap-3 border-b border-white/5 px-4 py-2.5 text-left transition-colors ${isCurrent ? "cursor-default opacity-50" : "hover:bg-white/[0.04]"}`}
                     >
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/40 to-violet-700/30 text-sm font-bold text-white">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.08] text-sm font-bold text-white">
                         {peerInitial(c.peer)}
                       </span>
                       <div className="min-w-0 flex-1">
@@ -684,7 +684,7 @@ function SwitchPeerModal({
                         </p>
                       </div>
                       {isCurrent ? (
-                        <span className="text-[0.6rem] font-bold text-violet-300">현재 대화</span>
+                        <span className="text-[0.6rem] font-bold text-zinc-400">현재 대화</span>
                       ) : null}
                     </button>
                   </li>

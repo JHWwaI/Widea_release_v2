@@ -363,7 +363,7 @@ export default function ExpertEditPage() {
           </p>
         ) : null}
         {success ? (
-          <p className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+          <p className="rounded-lg border border-emerald-500/30 bg-white/[0.06] px-4 py-3 text-sm text-zinc-200">
             {success}
           </p>
         ) : null}
@@ -490,7 +490,7 @@ export default function ExpertEditPage() {
                     key={s}
                     type="button"
                     onClick={() => removeSkill(s)}
-                    className="rounded bg-violet-500/10 px-2 py-0.5 text-xs text-violet-200 ring-1 ring-violet-400/20 hover:bg-rose-500/10 hover:text-rose-200 hover:ring-rose-400/30"
+                    className="rounded bg-white/[0.06] px-2 py-0.5 text-xs text-zinc-200 ring-1 ring-white/10 hover:bg-rose-500/10 hover:text-rose-200 hover:ring-rose-400/30"
                     title="클릭해서 제거"
                   >
                     {s} ×
@@ -654,7 +654,7 @@ export default function ExpertEditPage() {
                     key={s}
                     type="button"
                     onClick={() => removeIndustry(s)}
-                    className="rounded bg-amber-500/10 px-2 py-0.5 text-xs text-amber-200 ring-1 ring-amber-400/20 hover:bg-rose-500/10 hover:text-rose-200"
+                    className="rounded bg-white/[0.06] px-2 py-0.5 text-xs text-zinc-200 ring-1 ring-amber-400/20 hover:bg-rose-500/10 hover:text-rose-200"
                   >
                     {s} ×
                   </button>
@@ -781,7 +781,7 @@ export default function ExpertEditPage() {
                     {pfDraft.stack.map((s) => (
                       <span
                         key={s}
-                        className="rounded bg-violet-500/10 px-1.5 py-0.5 text-[0.65rem] text-violet-200"
+                        className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[0.65rem] text-zinc-200"
                       >
                         {s}
                       </span>
@@ -820,7 +820,7 @@ export default function ExpertEditPage() {
                           href={p.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="mt-1 inline-block text-xs text-violet-300 hover:underline"
+                          className="mt-1 inline-block text-xs text-zinc-400 hover:underline"
                         >
                           {p.url} ↗
                         </a>

@@ -6,6 +6,7 @@ import { api } from "@/lib/api";
 import { readError } from "@/lib/product";
 import { subscribeWS } from "@/lib/ws";
 import AddTaskModal from "@/components/workspace/AddTaskModal";
+import MiniProfilePopup from "@/components/messenger/MiniProfilePopup";
 
 type Message = {
   id: string;
@@ -60,10 +61,12 @@ const ChatMessageList = memo(function ChatMessageList({
   messages,
   myId,
   bottomRef,
+  onAvatarClick,
 }: {
   messages: Message[];
   myId: string | undefined;
   bottomRef: React.RefObject<HTMLDivElement | null>;
+  onAvatarClick?: (author: Message["author"], rect: DOMRect) => void;
 }) {
   const groups = groupKakao(messages);
   return (
@@ -81,16 +84,32 @@ const ChatMessageList = memo(function ChatMessageList({
               className={`flex gap-2 ${isMe ? "flex-row-reverse" : "flex-row"}`}
             >
               {!isMe ? (
-                <div
-                  className="mt-5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-zinc-600 to-zinc-700 text-[0.7rem] font-bold text-zinc-100"
-                  title={g.authorName}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    const author = g.items[0]?.author;
+                    if (!author) return;
+                    onAvatarClick?.(author, (e.currentTarget as HTMLElement).getBoundingClientRect());
+                  }}
+                  className="mt-5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-white/[0.08] text-[0.7rem] font-bold text-zinc-100 transition-colors hover:bg-white/[0.15]"
+                  title={`${g.authorName} 프로필`}
                 >
                   {g.authorName.slice(0, 1).toUpperCase()}
-                </div>
+                </button>
               ) : null}
               <div className={`flex max-w-[75%] flex-col ${isMe ? "items-end" : "items-start"}`}>
                 {!isMe ? (
-                  <p className="mb-1 px-1 text-[0.7rem] text-zinc-400">{g.authorName}</p>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      const author = g.items[0]?.author;
+                      if (!author) return;
+                      onAvatarClick?.(author, (e.currentTarget as HTMLElement).getBoundingClientRect());
+                    }}
+                    className="mb-1 px-1 text-left text-[0.7rem] text-zinc-400 hover:text-zinc-200"
+                  >
+                    {g.authorName}
+                  </button>
                 ) : null}
                 <div className="flex flex-col gap-1">
                   {g.items.map((m, mi) => {
@@ -139,6 +158,7 @@ export default function WorkspaceChat({ ideaId }: { ideaId: string }) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [sending, setSending] = useState(false);
   const [showAddTask, setShowAddTask] = useState(false);
+  const [profilePopup, setProfilePopup] = useState<{ user: Message["author"]; rect: DOMRect } | null>(null);
 
   const fetchMessages = useCallback(async (silent = false) => {
     if (!token) return;
@@ -215,20 +235,32 @@ export default function WorkspaceChat({ ideaId }: { ideaId: string }) {
     <section className="flex h-full min-h-[420px] flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.02]">
       <header className="flex items-center justify-between border-b border-white/10 px-4 py-2.5">
         <div>
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-violet-300">팀 채팅</p>
+          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">팀 채팅</p>
           <h2 className="text-xs font-bold text-white">이 워크스페이스 팀원과 대화</h2>
         </div>
         <button
           type="button"
           onClick={() => setShowAddTask(true)}
-          className="shrink-0 rounded-md border border-amber-400/40 bg-amber-500/10 px-2 py-1 text-[0.65rem] font-semibold text-amber-200 hover:bg-amber-500/20"
+          className="shrink-0 rounded-md border border-white/15 bg-white/[0.06] px-2 py-1 text-[0.65rem] font-semibold text-zinc-100 transition-colors hover:border-white/30 hover:bg-white/[0.10]"
           title="회의 중 즉석 일정 잡기"
         >
           + 일정
         </button>
       </header>
 
-      <ChatMessageList messages={messages} myId={user?.id} bottomRef={bottomRef} />
+      <ChatMessageList
+        messages={messages}
+        myId={user?.id}
+        bottomRef={bottomRef}
+        onAvatarClick={(author, rect) => setProfilePopup({ user: author, rect })}
+      />
+      {profilePopup ? (
+        <MiniProfilePopup
+          user={profilePopup.user}
+          anchorRect={profilePopup.rect}
+          onClose={() => setProfilePopup(null)}
+        />
+      ) : null}
 
       {error ? (
         <p className="border-t border-rose-500/20 bg-rose-500/10 px-4 py-2 text-xs text-rose-300">

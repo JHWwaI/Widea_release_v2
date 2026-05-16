@@ -76,7 +76,7 @@ function Inner() {
     <div className="flex h-[calc(100vh-var(--navbar-height)-6rem)] min-h-[600px] flex-col gap-3">
       <header className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-violet-300">
+          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">
             메신저
           </p>
           <h1 className="mt-1 text-2xl font-bold text-white">채팅</h1>
@@ -85,14 +85,14 @@ function Inner() {
           <button
             type="button"
             onClick={() => setTab("dm")}
-            className={`rounded-md px-3 py-1.5 text-xs font-bold transition-colors ${tab === "dm" ? "bg-violet-500 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            className={`rounded-md px-3 py-1.5 text-xs font-bold transition-colors ${tab === "dm" ? "bg-white/[0.10] text-white" : "text-zinc-400 hover:text-zinc-200"}`}
           >
             개인 DM
           </button>
           <button
             type="button"
             onClick={() => setTab("team")}
-            className={`rounded-md px-3 py-1.5 text-xs font-bold transition-colors ${tab === "team" ? "bg-violet-500 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            className={`rounded-md px-3 py-1.5 text-xs font-bold transition-colors ${tab === "team" ? "bg-white/[0.10] text-white" : "text-zinc-400 hover:text-zinc-200"}`}
           >
             팀 채팅 ({teams.length})
           </button>
@@ -133,7 +133,7 @@ function Inner() {
                         <button
                           type="button"
                           onClick={() => setSelectedIdeaId(w.ideaId)}
-                          className={`flex w-full items-start gap-2.5 border-b border-white/5 px-3 py-3 text-left transition-colors ${sel ? "bg-violet-500/10" : "hover:bg-white/[0.04]"}`}
+                          className={`flex w-full items-start gap-2.5 border-b border-white/5 px-3 py-3 text-left transition-colors ${sel ? "bg-white/[0.06]" : "hover:bg-white/[0.04]"}`}
                         >
                           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/30 to-violet-700/20 text-xs font-bold text-white">
                             {w.title.trim()[0] ?? "?"}

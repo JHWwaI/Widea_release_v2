@@ -1,64 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-
-type NavItem = { href: string; label: string; icon: string };
-type NavSection = { title: string; items: NavItem[] };
-
-function getNavSections(): NavSection[] {
-  const community: NavSection = {
-    title: "커뮤니티",
-    items: [
-      { href: "/community?category=IDEA_SHARE", label: "아이디어 공유", icon: "sparkle" },
-      { href: "/community?category=TEAM_RECRUIT", label: "팀 모집", icon: "team" },
-      { href: "/community?category=OUTSOURCE_REQUEST", label: "외주 의뢰", icon: "tool" },
-      { href: "/community?category=AC_REQUEST", label: "전문 컨설팅", icon: "mentor" },
-    ],
-  };
-
-  const expert: NavSection = {
-    title: "전문가 협업",
-    items: [
-      { href: "/talent", label: "전문가 찾기", icon: "user" },
-      { href: "/mypage/expert", label: "내 전문가 프로필", icon: "users" },
-      { href: "/mypage/inbox", label: "협업 요청", icon: "chat" },
-    ],
-  };
-
-  const support: NavSection = {
-    title: "고객 지원",
-    items: [{ href: "/contact", label: "문의하기", icon: "chat" }],
-  };
-
-  // 모든 역할 공통: 메인은 마이페이지·아이디어, 협업은 커뮤니티·회의로 통합
-  return [
-    {
-      title: "메인",
-      items: [
-        { href: "/idea-match", label: "아이디어 만들기", icon: "sparkle" },
-        { href: "/mypage", label: "내 아이디어", icon: "user" },
-        { href: "/projects", label: "프로젝트", icon: "folder" },
-      ],
-    },
-    {
-      title: "관리",
-      items: [
-        { href: "/schedule", label: "일정", icon: "ledger" },
-        { href: "/messages", label: "채팅", icon: "chat" },
-        { href: "/office", label: "Widea Valley (베타)", icon: "sparkle" },
-      ],
-    },
-    {
-      title: "결제",
-      items: [{ href: "/billing", label: "구독·결제", icon: "credit" }],
-    },
-    community,
-    expert,
-    support,
-  ];
-}
+import { api as apiCall } from "@/lib/api";
+import { planLabels } from "@/lib/product";
+import { subscribeWS } from "@/lib/ws";
+import SearchPalette from "@/components/SearchPalette";
 
 const icons: Record<string, React.ReactNode> = {
   search: (
@@ -127,14 +76,35 @@ export default function Sidebar({
   open,
   visible,
   onClose,
+  onToggle,
 }: {
   open: boolean;
   visible: boolean;
   onClose: () => void;
+  onToggle?: () => void;
 }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const { user } = useAuth();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchScope, setSearchScope] = useState<"all" | "workspace" | "session">("all");
+
+  // Cmd/Ctrl + K 단축키
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) {
+        e.preventDefault();
+        setSearchScope("all");
+        setSearchOpen((v) => !v);
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
+  function openSearch(scope: "all" | "workspace" | "session") {
+    setSearchScope(scope);
+    setSearchOpen(true);
+  }
 
   if (!user) return null;
 
@@ -153,117 +123,544 @@ export default function Sidebar({
         style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
       />
 
-      {/* Sidebar panel */}
+      {/* Mobile open button — lg 미만에서 사이드바 닫혀있을 때 노출 */}
+      {!open && onToggle ? (
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-label="사이드바 열기"
+          className="fixed left-2 top-2 z-40 inline-flex h-8 w-8 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-zinc-100 lg:hidden"
+        >
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="4.5" width="18" height="15" rx="2.5" />
+            <line x1="9.5" y1="4.5" x2="9.5" y2="19.5" />
+          </svg>
+        </button>
+      ) : null}
+
+      {/* Sidebar panel — collapsed면 좁은 아이콘 레일 */}
       <aside
         className={[
-          "fixed bottom-0 left-0 top-[var(--navbar-height)] z-40 w-[var(--sidebar-width)]",
-          "transition-transform duration-300",
-          open ? "translate-x-0" : "-translate-x-full",
-          visible ? "lg:translate-x-0" : "lg:-translate-x-full",
+          "fixed bottom-0 left-0 top-0 z-40 transition-all duration-300",
+          // 모바일: open=true 일 때만 표시 (full width)
+          open ? "translate-x-0 w-[var(--sidebar-width)]" : "-translate-x-full w-[var(--sidebar-width)]",
+          // 데스크탑: 항상 보이되, visible=false면 좁은 레일
+          visible ? "lg:translate-x-0 lg:w-[var(--sidebar-width)]" : "lg:translate-x-0 lg:w-14",
         ].join(" ")}
         style={{
-          background: "rgba(8,7,14,0.96)",
-          backdropFilter: "blur(24px)",
-          WebkitBackdropFilter: "blur(24px)",
-          borderRight: "1px solid rgba(255,255,255,0.07)",
+          background: "#0B0C10",
+          borderRight: "1px solid rgba(255,255,255,0.06)",
         }}
       >
-        <div className="flex h-full flex-col overflow-y-auto px-3 pb-4 pt-4">
-          {/* Navigation (사용자 정보는 Navbar 우측에 노출) */}
-          <nav className="flex-1 space-y-6">
-            {/* Admin section */}
-            {user.isAdmin && (
-              <div>
-                <p
-                  className="mb-1.5 px-3 text-[0.6875rem] font-semibold uppercase tracking-wider"
-                  style={{ color: "#F59E0B" }}
-                >
-                  Admin
-                </p>
-                <div className="space-y-0.5">
-                  {[{ href: "/admin", label: "관리자 대시보드", icon: "admin" }].map((item) => {
-                    const active = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={onClose}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all"
-                        style={
-                          active
-                            ? {
-                                background: "rgba(245,158,11,0.1)",
-                                border: "1px solid rgba(245,158,11,0.18)",
-                                color: "#FCD34D",
-                              }
-                            : {
-                                color: "var(--ink-3)",
-                                border: "1px solid transparent",
-                              }
-                        }
-                      >
-                        <span style={{ color: active ? "#FCD34D" : "var(--ink-4)" }}>
-                          {icons[item.icon]}
-                        </span>
-                        {item.label}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+        <div className="flex h-full flex-col px-2 pb-2 pt-3">
+          {/* Brand header — collapsed면 토글만 */}
+          <div className={`mb-3 flex items-center gap-2 px-1 ${visible ? "justify-between" : "justify-center"}`}>
+            {visible ? (
+              <Link
+                href="/idea-match"
+                onClick={onClose}
+                className="flex flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-[0.95rem] font-semibold text-white transition-colors hover:bg-white/[0.04]"
+              >
+                Widea
+              </Link>
+            ) : null}
+            {onToggle ? (
+              <button
+                type="button"
+                onClick={onToggle}
+                aria-label={visible ? "사이드바 닫기" : "사이드바 열기"}
+                title={visible ? "사이드바 닫기" : "사이드바 열기"}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-zinc-100"
+              >
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="4.5" width="18" height="15" rx="2.5" />
+                  <line x1="9.5" y1="4.5" x2="9.5" y2="19.5" />
+                </svg>
+              </button>
+            ) : null}
+          </div>
 
-            {/* Dynamic sections */}
-            {getNavSections().map((section) => (
-              <div key={section.title}>
-                <p
-                  className="mb-1.5 px-3 text-[0.6875rem] font-semibold uppercase tracking-wider"
-                  style={{ color: "var(--ink-4)" }}
+          {/* 중간 영역 — 펼침 모드에서만 스크롤 (collapsed에선 tooltip 가시화) */}
+          <div className={`min-h-0 flex-1 ${visible ? "overflow-y-auto" : "overflow-visible"}`}>
+            {/* 펼침 모드 전용: + 새 아이디어 + 검색 */}
+            {visible ? (
+              <>
+                <Link
+                  href="/idea-match"
+                  onClick={onClose}
+                  className="mb-1.5 flex items-center gap-2 rounded-md border border-white/10 px-2.5 py-2 text-[0.8125rem] font-medium text-zinc-100 transition-colors hover:bg-white/[0.06] hover:text-white"
                 >
-                  {section.title}
-                </p>
-                <div className="space-y-0.5">
-                  {section.items.map((item: NavItem) => {
-                    const [itemPath, itemQuery] = item.href.split("?");
-                    const itemCategory = new URLSearchParams(itemQuery ?? "").get("category") ?? "";
-                    const currentCategory = searchParams.get("category") ?? "";
-                    const active =
-                      pathname === itemPath &&
-                      (itemCategory === "" ? currentCategory === "" : currentCategory === itemCategory) ||
-                      (!item.href.includes("?") && pathname.startsWith(`${item.href}/`));
+                  <svg viewBox="0 0 16 16" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M8 3v10M3 8h10" />
+                  </svg>
+                  <span>새 아이디어</span>
+                </Link>
+              </>
+            ) : null}
 
-                    return (
-                      <Link
-                        key={`${item.href}-${item.label}`}
-                        href={item.href}
-                        onClick={onClose}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all"
-                        style={
-                          active
-                            ? {
-                                background: "rgba(124,58,237,0.1)",
-                                border: "1px solid rgba(124,58,237,0.18)",
-                                color: "#C4B5FD",
-                              }
-                            : {
-                                color: "var(--ink-3)",
-                                border: "1px solid transparent",
-                              }
-                        }
-                      >
-                        <span style={{ color: active ? "#A78BFA" : "var(--ink-4)" }}>
-                          {icons[item.icon]}
-                        </span>
-                        {item.label}
-                      </Link>
-                    );
-                  })}
-                </div>
+            {/* 펼침 모드 전용: 워크스페이스 + 분석 기록 (목록 형태) */}
+            {visible ? (
+              <>
+                <SidebarWorkspaces onNav={onClose} onOpenSearch={() => openSearch("workspace")} />
+                <SidebarSessions onNav={onClose} onOpenSearch={() => openSearch("session")} />
+              </>
+            ) : null}
+
+            {/* Collapsed 모드 전용: 워크스페이스/분석기록(모달) + 커뮤니티/전문가(링크) */}
+            {!visible ? (
+              <div className="space-y-1">
+                {/* 워크스페이스 — 클릭 시 워크스페이스 검색 모달 */}
+                <button
+                  type="button"
+                  onClick={() => openSearch("workspace")}
+                  className="group relative flex h-10 w-10 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-white/[0.04] hover:text-zinc-100"
+                >
+                  <svg viewBox="0 0 16 16" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M2 5.5C2 4.7 2.7 4 3.5 4h2.4l1.2 1.5h5.4c.8 0 1.5.7 1.5 1.5v4.5c0 .8-.7 1.5-1.5 1.5H3.5C2.7 13 2 12.3 2 11.5v-6Z" />
+                  </svg>
+                  <span className="pointer-events-none invisible absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 whitespace-nowrap rounded-md border border-white/10 bg-zinc-900 px-2 py-1 text-xs text-zinc-100 shadow-lg group-hover:visible">
+                    워크스페이스
+                  </span>
+                </button>
+                {/* 분석 기록 — 클릭 시 분석 기록 검색 모달 */}
+                <button
+                  type="button"
+                  onClick={() => openSearch("session")}
+                  className="group relative flex h-10 w-10 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-white/[0.04] hover:text-zinc-100"
+                >
+                  <svg viewBox="0 0 16 16" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="8" cy="8" r="5.5" />
+                    <path d="M8 5v3l2 1.5" />
+                  </svg>
+                  <span className="pointer-events-none invisible absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 whitespace-nowrap rounded-md border border-white/10 bg-zinc-900 px-2 py-1 text-xs text-zinc-100 shadow-lg group-hover:visible">
+                    분석 기록
+                  </span>
+                </button>
+                {/* 커뮤니티 / 전문가 — 페이지 링크 */}
+                {[
+                  {
+                    href: "/community",
+                    label: "커뮤니티",
+                    icon: (
+                      <svg viewBox="0 0 16 16" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 6.5C3 4.6 4.6 3 6.5 3h3C11.4 3 13 4.6 13 6.5S11.4 10 9.5 10H7l-3 2.5V10c-.6 0-1-.4-1-1V6.5Z" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    href: "/talent",
+                    label: "전문가 찾기",
+                    icon: (
+                      <svg viewBox="0 0 16 16" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="8" cy="5.5" r="2.5" />
+                        <path d="M3 13c.5-2.5 2.5-4 5-4s4.5 1.5 5 4" />
+                      </svg>
+                    ),
+                  },
+                ].map((m) => {
+                  const active = pathname === m.href || pathname.startsWith(`${m.href}/`);
+                  return (
+                    <Link
+                      key={m.href}
+                      href={m.href}
+                      onClick={onClose}
+                      className={`group relative flex h-10 w-10 items-center justify-center rounded-md transition-colors ${
+                        active
+                          ? "bg-white/[0.07] text-white"
+                          : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100"
+                      }`}
+                    >
+                      {m.icon}
+                      <span className="pointer-events-none invisible absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 whitespace-nowrap rounded-md border border-white/10 bg-zinc-900 px-2 py-1 text-xs text-zinc-100 shadow-lg group-hover:visible">
+                        {m.label}
+                      </span>
+                    </Link>
+                  );
+                })}
               </div>
-            ))}
-          </nav>
+            ) : null}
+
+            {/* 펼침 모드 전용: 부가 메뉴 */}
+            {visible ? (
+            <div className="mt-4 space-y-0.5 border-t border-white/[0.06] pt-3">
+              {[
+                {
+                  href: "/community",
+                  label: "커뮤니티",
+                  icon: (
+                    <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 6.5C3 4.6 4.6 3 6.5 3h3C11.4 3 13 4.6 13 6.5S11.4 10 9.5 10H7l-3 2.5V10c-.6 0-1-.4-1-1V6.5Z" />
+                    </svg>
+                  ),
+                },
+                {
+                  href: "/messages",
+                  label: "채팅",
+                  icon: (
+                    <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M2.5 4A1.5 1.5 0 0 1 4 2.5h8A1.5 1.5 0 0 1 13.5 4v6A1.5 1.5 0 0 1 12 11.5H7l-3 2.5V11.5a1.5 1.5 0 0 1-1.5-1.5V4Z" />
+                    </svg>
+                  ),
+                },
+                {
+                  href: "/schedule",
+                  label: "일정",
+                  icon: (
+                    <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2.5" y="3.5" width="11" height="10" rx="1.5" />
+                      <path d="M2.5 6.5h11M5 2v3M11 2v3" />
+                    </svg>
+                  ),
+                },
+                {
+                  href: "/talent",
+                  label: "전문가 찾기",
+                  icon: (
+                    <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="8" cy="5.5" r="2.5" />
+                      <path d="M3 13c.5-2.5 2.5-4 5-4s4.5 1.5 5 4" />
+                    </svg>
+                  ),
+                },
+              ].map((m) => {
+                const active = pathname === m.href || pathname.startsWith(`${m.href}/`);
+                return (
+                  <Link
+                    key={m.href}
+                    href={m.href}
+                    onClick={onClose}
+                    title={m.label}
+                    className={`flex items-center gap-2 rounded-md py-1.5 text-[0.8125rem] transition-colors ${
+                      visible ? "px-2.5" : "justify-center px-0"
+                    } ${
+                      active
+                        ? "bg-white/[0.07] text-white"
+                        : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100"
+                    }`}
+                  >
+                    <span className={`shrink-0 ${active ? "text-zinc-200" : "text-zinc-500"}`}>{m.icon}</span>
+                    <span>{m.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+            ) : null}
+
+            {/* Admin 진입 — 펼침 모드 전용 */}
+            {visible && user.isAdmin ? (
+              <Link
+                href="/admin"
+                onClick={onClose}
+                className={`mt-2 flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[0.75rem] transition-colors ${
+                  pathname === "/admin"
+                    ? "bg-white/[0.07] text-white"
+                    : "text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-200"
+                }`}
+              >
+                <span className="shrink-0 text-zinc-600">{icons.admin}</span>
+                <span>관리자</span>
+              </Link>
+            ) : null}
+          </div>
+
+          {/* Bottom user panel — flex 끝에 항상 고정 (좌측 하단) */}
+          <div className="shrink-0">
+            <SidebarUserPanel onNav={onClose} compact={!visible} />
+          </div>
         </div>
       </aside>
+
+      {/* 검색 팔레트 */}
+      <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} scope={searchScope} />
     </>
+  );
+}
+
+function SidebarUserPanel({ onNav, compact = false }: { onNav: () => void; compact?: boolean }) {
+  const { user, token, logout } = useAuth();
+  const pathname = usePathname();
+  const [unread, setUnread] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!token) { setUnread(0); return; }
+    let cancelled = false;
+    async function fetchUnread() {
+      try {
+        const [a, b] = await Promise.all([
+          apiCall<{ count: number }>("GET", "/api/inbox/count", undefined, token).catch(() => ({ count: 0 })),
+          apiCall<{ unreadTotal: number }>("GET", "/api/dm/unread-summary", undefined, token).catch(() => ({ unreadTotal: 0 })),
+        ]);
+        if (!cancelled) setUnread((a.count ?? 0) + (b.unreadTotal ?? 0));
+      } catch { /* silent */ }
+    }
+    fetchUnread();
+    const t = setInterval(fetchUnread, 60_000);
+    const unsub = subscribeWS("notification.new", () => setUnread((u) => u + 1));
+    return () => { cancelled = true; clearInterval(t); unsub(); };
+  }, [token, pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    function onDocClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, [menuOpen]);
+
+  if (!user) return null;
+  const name = user.name || user.email.split("@")[0];
+  const initial = name.trim()[0]?.toUpperCase() ?? "?";
+  const planLabel = user.isAdmin ? "Admin" : (planLabels[user.planType] || user.planType);
+
+  return (
+    <div ref={menuRef} className="relative mt-2 border-t border-white/[0.06] pt-2">
+      {/* Notification row — 펼침 모드에서만 노출 */}
+      {!compact ? (
+        <Link
+          href="/mypage/inbox"
+          onClick={onNav}
+          className="relative flex items-center gap-2 rounded-md px-2.5 py-2 text-[0.8125rem] text-zinc-300 transition-colors hover:bg-white/[0.04] hover:text-white"
+        >
+          <svg className="h-4 w-4 shrink-0 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+          </svg>
+          <span className="flex-1">알림</span>
+          {unread > 0 ? (
+            <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1.5 text-[0.65rem] font-bold text-white">
+              {unread > 99 ? "99+" : unread}
+            </span>
+          ) : null}
+        </Link>
+      ) : null}
+
+      {/* Account row — 이재환 클릭하면 메뉴 열림 (compact면 아바타만 + 툴팁) */}
+      <button
+        type="button"
+        onClick={() => setMenuOpen((v) => !v)}
+        aria-haspopup="menu"
+        aria-expanded={menuOpen}
+        className={`group relative flex w-full items-center transition-colors hover:bg-white/[0.04] ${
+          compact ? "justify-center rounded-md py-1.5" : "gap-2.5 rounded-md px-2 py-2 text-left"
+        }`}
+      >
+        <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/[0.08] text-[0.7rem] font-bold text-zinc-100">
+          {initial}
+          {compact && unread > 0 ? (
+            <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[0.55rem] font-bold text-white">
+              {unread > 9 ? "9+" : unread}
+            </span>
+          ) : null}
+        </span>
+        {compact ? (
+          <span className="pointer-events-none invisible absolute bottom-1/2 left-full z-50 ml-3 translate-y-1/2 whitespace-nowrap rounded-md border border-white/10 bg-zinc-900 px-2 py-1 text-xs text-zinc-100 shadow-lg group-hover:visible">
+            {name}
+          </span>
+        ) : (
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-sm font-medium text-white">{name}</span>
+            <span className="block truncate text-[0.65rem] text-zinc-500">
+              {planLabel} · {user.isAdmin ? "∞" : user.creditBalance} cr
+            </span>
+          </span>
+        )}
+      </button>
+
+      {menuOpen ? (
+        <div
+          role="menu"
+          className="absolute bottom-full left-1 right-1 mb-1 overflow-hidden rounded-lg border border-white/10 bg-zinc-900 shadow-2xl"
+        >
+          <Link
+            href="/mypage"
+            role="menuitem"
+            onClick={() => { setMenuOpen(false); onNav(); }}
+            className="block px-3 py-2 text-sm text-zinc-200 transition-colors hover:bg-white/[0.06]"
+          >
+            프로필
+          </Link>
+          <Link
+            href="/mypage/edit"
+            role="menuitem"
+            onClick={() => { setMenuOpen(false); onNav(); }}
+            className="block px-3 py-2 text-sm text-zinc-200 transition-colors hover:bg-white/[0.06]"
+          >
+            설정
+          </Link>
+          <Link
+            href="/billing"
+            role="menuitem"
+            onClick={() => { setMenuOpen(false); onNav(); }}
+            className="block px-3 py-2 text-sm font-medium text-zinc-100 transition-colors hover:bg-white/[0.06]"
+          >
+            구독 업그레이드
+          </Link>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => { setMenuOpen(false); logout(); }}
+            className="block w-full border-t border-white/[0.06] px-3 py-2 text-left text-sm text-rose-300 transition-colors hover:bg-rose-500/10"
+          >
+            로그아웃
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/* ───── 확정한 워크스페이스 목록 ───── */
+function SidebarWorkspaces({ onNav, onOpenSearch: _onOpenSearch }: { onNav: () => void; onOpenSearch: () => void }) {
+  const { token } = useAuth();
+  const pathname = usePathname();
+  type WS = { ideaId: string; title: string; isOwner: boolean };
+  const [items, setItems] = useState<WS[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState(true);
+
+  useEffect(() => {
+    if (!token) { setLoading(false); return; }
+    let cancelled = false;
+    apiCall<{ workspaces: WS[] }>(
+      "GET",
+      "/api/workspace/my-list",
+      undefined,
+      token,
+    )
+      .then((res) => { if (!cancelled) setItems(res.workspaces ?? []); })
+      .catch(() => { /* silent */ })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [token, pathname]);
+
+  if (loading) return null;
+  return (
+    <div className="mb-3">
+      {/* 섹션 헤더 — 토글 (chevron) */}
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        aria-expanded={expanded}
+        className="mb-1 flex w-full items-center gap-1.5 rounded-md px-2.5 py-1 text-[0.7rem] font-semibold uppercase tracking-wider text-zinc-400 transition-colors hover:bg-white/[0.03] hover:text-zinc-200"
+      >
+        <svg
+          viewBox="0 0 16 16"
+          className={`h-3 w-3 transition-transform ${expanded ? "rotate-90" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M6 4l4 4-4 4" />
+        </svg>
+        <span className="flex-1 text-left">워크스페이스</span>
+        {items.length > 0 ? <span className="text-[0.6rem] tabular-nums text-zinc-500">{items.length}</span> : null}
+      </button>
+      {/* 항목 리스트 */}
+      {expanded ? (
+        <div className="space-y-0.5">
+          {items.length === 0 ? (
+            <p className="px-2.5 py-1.5 text-[0.75rem] text-zinc-600">아직 확정한 워크스페이스가 없습니다</p>
+          ) : null}
+          {items.map((w) => {
+            const active = pathname === `/workspace/${w.ideaId}` || pathname.startsWith(`/workspace/${w.ideaId}/`);
+            return (
+              <Link
+                key={w.ideaId}
+                href={`/workspace/${w.ideaId}`}
+                onClick={onNav}
+                className={`block truncate rounded-md px-2.5 py-1.5 text-[0.8125rem] transition-colors ${
+                  active
+                    ? "bg-white/[0.07] text-white"
+                    : "text-zinc-300 hover:bg-white/[0.04] hover:text-white"
+                }`}
+              >
+                {w.title}
+              </Link>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/* ───── 과거 분석 세션 (ChatGPT 채팅 히스토리 패턴) ───── */
+function SidebarSessions({ onNav, onOpenSearch: _onOpenSearch }: { onNav: () => void; onOpenSearch: () => void }) {
+  const { token } = useAuth();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentSessionId = searchParams.get("sessionId");
+  type Sess = { id: string; projectPolicy: { title: string }; createdAt: string };
+  const [sessions, setSessions] = useState<Sess[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState(true);
+
+  useEffect(() => {
+    if (!token) { setLoading(false); return; }
+    let cancelled = false;
+    apiCall<{ sessions: Sess[] }>(
+      "GET",
+      "/api/idea-match/sessions?limit=30",
+      undefined,
+      token,
+    )
+      .then((res) => { if (!cancelled) setSessions(res.sessions); })
+      .catch(() => { /* silent */ })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [token, pathname]);
+
+  if (loading) return null;
+  return (
+    <div className="mb-3">
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        aria-expanded={expanded}
+        className="mb-1 flex w-full items-center gap-1.5 rounded-md px-2.5 py-1 text-[0.7rem] font-semibold uppercase tracking-wider text-zinc-400 transition-colors hover:bg-white/[0.03] hover:text-zinc-200"
+      >
+        <svg
+          viewBox="0 0 16 16"
+          className={`h-3 w-3 transition-transform ${expanded ? "rotate-90" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M6 4l4 4-4 4" />
+        </svg>
+        <span className="flex-1 text-left">분석 기록</span>
+        {sessions.length > 0 ? <span className="text-[0.6rem] tabular-nums text-zinc-500">{sessions.length}</span> : null}
+      </button>
+      {expanded ? (
+        <div className="space-y-0.5">
+          {sessions.length === 0 ? (
+            <p className="px-2.5 py-1.5 text-[0.75rem] text-zinc-600">아직 분석 기록이 없습니다</p>
+          ) : null}
+          {sessions.map((s) => {
+            const active = currentSessionId === s.id;
+            return (
+              <Link
+                key={s.id}
+                href={`/idea-match/results?sessionId=${s.id}`}
+                onClick={onNav}
+                className={`block truncate rounded-md px-2.5 py-1.5 text-[0.8125rem] transition-colors ${
+                  active
+                    ? "bg-white/[0.07] text-white"
+                    : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100"
+                }`}
+              >
+                {s.projectPolicy?.title || "이름 없음"}
+              </Link>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
   );
 }

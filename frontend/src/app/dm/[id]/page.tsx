@@ -7,7 +7,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
@@ -70,6 +70,7 @@ export default function SingleDmPage() {
 
 function Inner() {
   const { id: rawId } = useParams<{ id: string }>();
+  const router = useRouter();
   const conversationId = Array.isArray(rawId) ? rawId[0] : rawId;
   const { token, user } = useAuth();
   const [messages, setMessages] = useState<DmMessage[]>([]);
@@ -77,8 +78,60 @@ function Inner() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showAddTask, setShowAddTask] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    function onDocClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, [menuOpen]);
+
+  async function leaveConversation() {
+    if (!token || !conversationId) return;
+    if (!window.confirm("이 대화방을 나가시겠습니까? 메시지가 모두 사라집니다.")) return;
+    try {
+      await api("DELETE", `/api/dm/conversations/${conversationId}`, undefined, token);
+      router.push("/mypage/inbox");
+    } catch (caught) {
+      setError(readError(caught, "대화 나가기 실패"));
+    }
+  }
+
+  async function deleteMessage(messageId: string) {
+    if (!token) return;
+    if (!window.confirm("이 메시지를 삭제할까요?")) return;
+    try {
+      await api("DELETE", `/api/dm/messages/${messageId}`, undefined, token);
+      setMessages((prev) => prev.filter((m) => m.id !== messageId));
+    } catch (caught) {
+      setError(readError(caught, "메시지 삭제 실패"));
+    }
+  }
+
+  async function editMessage(messageId: string, current: string) {
+    if (!token) return;
+    const next = window.prompt("메시지 수정 (5분 이내만 가능):", current);
+    if (next === null) return;
+    const trimmed = next.trim();
+    if (!trimmed || trimmed === current) return;
+    try {
+      const res = await api<{ message: DmMessage }>(
+        "PATCH",
+        `/api/dm/messages/${messageId}`,
+        { content: trimmed },
+        token,
+      );
+      setMessages((prev) => prev.map((m) => (m.id === messageId ? res.message : m)));
+    } catch (caught) {
+      setError(readError(caught, "편집 실패"));
+    }
+  }
 
   const load = useCallback(async () => {
     if (!token || !conversationId) return;
@@ -146,7 +199,7 @@ function Inner() {
         <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3">
           {peer ? (
             <>
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/40 to-violet-700/30 text-sm font-bold text-white">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.08] text-sm font-bold text-white">
                 {peerInitial(peer)}
               </span>
               <div className="min-w-0 flex-1">
@@ -160,11 +213,37 @@ function Inner() {
               <button
                 type="button"
                 onClick={() => setShowAddTask(true)}
-                className="shrink-0 rounded-md border border-amber-400/40 bg-amber-500/10 px-2 py-1 text-[0.65rem] font-semibold text-amber-200 hover:bg-amber-500/20"
+                className="shrink-0 rounded-md border border-white/15 bg-white/[0.06] px-2 py-1 text-[0.65rem] font-semibold text-zinc-100 transition-colors hover:border-white/30 hover:bg-white/[0.10]"
               >
                 + 일정
               </button>
               <AddPeerToWorkspaceButton peerUserId={peer.id} peerName={peerLabel(peer)} />
+              <div ref={menuRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen((v) => !v)}
+                  aria-label="옵션"
+                  className="flex h-8 w-8 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-zinc-100"
+                >
+                  <svg viewBox="0 0 16 16" className="h-4 w-4" fill="currentColor">
+                    <circle cx="8" cy="3" r="1.5" />
+                    <circle cx="8" cy="8" r="1.5" />
+                    <circle cx="8" cy="13" r="1.5" />
+                  </svg>
+                </button>
+                {menuOpen ? (
+                  <div role="menu" className="absolute right-0 top-full z-20 mt-1 w-40 overflow-hidden rounded-lg border border-white/10 bg-zinc-900 shadow-lg">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => { setMenuOpen(false); leaveConversation(); }}
+                      className="block w-full px-3 py-2 text-left text-sm text-rose-300 transition-colors hover:bg-rose-500/10"
+                    >
+                      대화 나가기
+                    </button>
+                  </div>
+                ) : null}
+              </div>
             </>
           ) : (
             <p className="text-xs text-zinc-500">불러오는 중...</p>
@@ -186,17 +265,19 @@ function Inner() {
                   className={`flex gap-2 ${mine ? "flex-row-reverse" : "flex-row"}`}
                 >
                   {!mine && peer ? (
-                    <div className="mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/40 to-violet-700/30 text-[0.65rem] font-bold text-white">
+                    <div className="mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-white/[0.08] text-[0.65rem] font-bold text-white">
                       {peerInitial(peer)}
                     </div>
                   ) : null}
                   <div className={`flex max-w-[75%] flex-col gap-1 ${mine ? "items-end" : "items-start"}`}>
                     {g.items.map((m, mi) => {
                       const isLast = mi === g.items.length - 1;
+                      const ageMs = Date.now() - new Date(m.createdAt).getTime();
+                      const canEdit = mine && ageMs < 5 * 60 * 1000;
                       return (
                         <div
                           key={m.id}
-                          className={`flex items-end gap-1.5 ${mine ? "flex-row-reverse" : "flex-row"}`}
+                          className={`group/msg relative flex items-end gap-1.5 ${mine ? "flex-row-reverse" : "flex-row"}`}
                         >
                           <div
                             className={`whitespace-pre-wrap break-words rounded-2xl px-3 py-2 text-sm leading-relaxed ${
@@ -208,10 +289,36 @@ function Inner() {
                           {isLast ? (
                             <span className="mb-0.5 flex flex-col items-end gap-0.5 text-[0.6rem] text-zinc-500">
                               {mine && !m.readAt ? (
-                                <span className="font-bold text-amber-300">1</span>
+                                <span className="font-bold text-zinc-200">1</span>
                               ) : null}
                               <span>{formatTime(m.createdAt)}</span>
                             </span>
+                          ) : null}
+                          {mine ? (
+                            <div className={`flex items-center gap-0.5 opacity-0 transition-opacity group-hover/msg:opacity-100 ${mine ? "mr-1" : "ml-1"}`}>
+                              {canEdit ? (
+                                <button
+                                  type="button"
+                                  onClick={() => editMessage(m.id, m.content)}
+                                  title="편집 (5분 이내)"
+                                  className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-100"
+                                >
+                                  <svg viewBox="0 0 16 16" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="1.6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 2.5l2.5 2.5L5 13.5l-3 1 1-3L11 2.5z" />
+                                  </svg>
+                                </button>
+                              ) : null}
+                              <button
+                                type="button"
+                                onClick={() => deleteMessage(m.id)}
+                                title="삭제"
+                                className="flex h-6 w-6 items-center justify-center rounded-md text-zinc-400 hover:bg-rose-500/10 hover:text-rose-300"
+                              >
+                                <svg viewBox="0 0 16 16" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="1.6">
+                                  <path strokeLinecap="round" d="M3 4h10M6 4V2.5h4V4M5 4l1 9h4l1-9" />
+                                </svg>
+                              </button>
+                            </div>
                           ) : null}
                         </div>
                       );

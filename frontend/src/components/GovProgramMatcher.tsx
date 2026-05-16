@@ -134,7 +134,7 @@ export default function GovProgramMatcher({ ideaId }: { ideaId: string }) {
         <div>
           <p className="eyebrow">정부지원사업 자동 매칭</p>
           <h2 className="mt-1 text-lg font-semibold text-white">
-            받을 수 있는 지원금 — 최대 <span className="text-emerald-300">{formatKRW(data.totalAmountKRW)}</span>
+            받을 수 있는 지원금 — 최대 <span className="text-zinc-200">{formatKRW(data.totalAmountKRW)}</span>
           </h2>
           <p className="mt-0.5 text-xs text-zinc-500">
             {data.matchedCount}건의 사업이 이 아이디어에 적합합니다 · 감지된 키워드: {data.detectedKeywords.join(", ") || "—"}
@@ -151,7 +151,7 @@ export default function GovProgramMatcher({ ideaId }: { ideaId: string }) {
           return (
             <div
               key={m.program.id}
-              className="rounded-xl border border-white/10 bg-white/[0.03] transition-colors hover:border-emerald-400/30"
+              className="rounded-xl border border-white/10 bg-white/[0.03] transition-colors hover:border-white/15"
             >
               {/* 카드 헤더 */}
               <div className="p-4">
@@ -159,14 +159,14 @@ export default function GovProgramMatcher({ ideaId }: { ideaId: string }) {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="text-base font-semibold text-white">{m.program.name}</h3>
-                      <span className="rounded border border-emerald-400/30 bg-emerald-500/10 px-1.5 py-0.5 text-[0.65rem] font-semibold text-emerald-300">
+                      <span className="rounded border border-white/15 bg-white/[0.06] px-1.5 py-0.5 text-[0.65rem] font-semibold text-zinc-200">
                         매칭 {m.score}점
                       </span>
                     </div>
                     <p className="mt-0.5 text-xs text-zinc-500">{m.program.agency}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-bold text-emerald-300">{formatKRW(m.program.amount.max)}</p>
+                    <p className="text-lg font-bold text-zinc-200">{formatKRW(m.program.amount.max)}</p>
                     <p className="text-[0.65rem] text-zinc-500">최대 지원</p>
                   </div>
                 </div>
@@ -182,23 +182,23 @@ export default function GovProgramMatcher({ ideaId }: { ideaId: string }) {
                     ⏱ {m.program.durationMonths}개월
                   </span>
                   {m.program.selfBurdenRatio ? (
-                    <span className="rounded bg-amber-500/10 px-2 py-0.5 text-amber-300">
+                    <span className="rounded bg-white/[0.06] px-2 py-0.5 text-zinc-200">
                       자부담 {Math.round(m.program.selfBurdenRatio * 100)}%
                     </span>
                   ) : (
-                    <span className="rounded bg-emerald-500/10 px-2 py-0.5 text-emerald-300">
+                    <span className="rounded bg-white/[0.06] px-2 py-0.5 text-zinc-200">
                       자부담 0%
                     </span>
                   )}
-                  <span className="rounded bg-indigo-500/10 px-2 py-0.5 text-indigo-300">
+                  <span className="rounded bg-white/[0.06] px-2 py-0.5 text-zinc-300">
                     {m.program.programType}
                   </span>
                 </div>
 
                 {/* 매칭 이유 */}
                 {m.matchReasons.length > 0 ? (
-                  <div className="mt-3 rounded-lg bg-emerald-500/5 p-2.5">
-                    <p className="text-[0.7rem] font-semibold text-emerald-300">✓ 매칭 이유</p>
+                  <div className="mt-3 rounded-lg bg-white/[0.10]/5 p-2.5">
+                    <p className="text-[0.7rem] font-semibold text-zinc-200">✓ 매칭 이유</p>
                     <ul className="mt-1 space-y-0.5">
                       {m.matchReasons.map((r) => (
                         <li key={r} className="text-xs text-zinc-300">· {r}</li>
@@ -209,8 +209,8 @@ export default function GovProgramMatcher({ ideaId }: { ideaId: string }) {
 
                 {/* 미충족 요건 */}
                 {m.missingRequirements.length > 0 ? (
-                  <div className="mt-2 rounded-lg bg-amber-500/5 p-2.5">
-                    <p className="text-[0.7rem] font-semibold text-amber-300">⚠ 추가 필요</p>
+                  <div className="mt-2 rounded-lg bg-white/[0.10]/5 p-2.5">
+                    <p className="text-[0.7rem] font-semibold text-zinc-200">⚠ 추가 필요</p>
                     <ul className="mt-1 space-y-0.5">
                       {m.missingRequirements.map((r) => (
                         <li key={r} className="text-xs text-zinc-300">· {r}</li>
@@ -291,7 +291,7 @@ export default function GovProgramMatcher({ ideaId }: { ideaId: string }) {
                         className="group rounded-lg border border-white/10 bg-white/[0.03]"
                       >
                         <summary className="cursor-pointer list-none px-3 py-2.5 text-sm font-semibold text-zinc-100 group-open:border-b group-open:border-white/10">
-                          <span className="mr-2 text-emerald-300">{i + 1}.</span>{s.title}
+                          <span className="mr-2 text-zinc-200">{i + 1}.</span>{s.title}
                         </summary>
                         <div className="px-3 py-3 text-sm leading-relaxed text-zinc-300 whitespace-pre-wrap">
                           {s.content}
@@ -301,8 +301,8 @@ export default function GovProgramMatcher({ ideaId }: { ideaId: string }) {
                   </div>
 
                   {draft.draft.submitChecklist && draft.draft.submitChecklist.length > 0 ? (
-                    <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
-                      <p className="text-xs font-semibold text-amber-300">✅ 제출 전 체크리스트</p>
+                    <div className="rounded-lg border border-amber-500/30 bg-white/[0.10]/5 p-3">
+                      <p className="text-xs font-semibold text-zinc-200">✅ 제출 전 체크리스트</p>
                       <ul className="mt-1.5 space-y-0.5">
                         {draft.draft.submitChecklist.map((c, i) => (
                           <li key={i} className="text-xs text-zinc-300">· {c}</li>

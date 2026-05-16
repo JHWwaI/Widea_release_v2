@@ -68,8 +68,8 @@ function TeamAcceptContent() {
 
             {state === "success" && (
               <>
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50">
-                  <svg className="h-7 w-7 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/[0.06]">
+                  <svg className="h-7 w-7 text-zinc-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                 </div>

@@ -53,12 +53,14 @@ export function registerCommunityRoutes(
     try {
       const category = req.query.category as string | undefined;
       const q = String(req.query.q ?? "").trim();
+      const authorId = String(req.query.authorId ?? "").trim();
       const page = Math.max(1, Number(req.query.page) || 1);
       const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 20));
       const skip = (page - 1) * limit;
 
       const where: Record<string, unknown> = {};
       if (category) where.category = category;
+      if (authorId) where.authorId = authorId;
       if (q.length > 0) {
         where.OR = [
           { title: { contains: q, mode: "insensitive" } },

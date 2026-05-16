@@ -59,7 +59,7 @@ export default function InvestorHome() {
           </h2>
           <Link
             href="/community?category=IDEA_SHARE"
-            className="text-xs font-medium text-indigo-300 hover:text-indigo-200"
+            className="text-xs font-medium text-zinc-300 hover:text-zinc-200"
           >
             전체 보기 →
           </Link>
@@ -78,13 +78,13 @@ export default function InvestorHome() {
               <Link
                 key={p.id}
                 href={`/community/${p.id}`}
-                className="group block rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-emerald-400/40 hover:bg-white/[0.05]"
+                className="group block rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-white/20 hover:bg-white/[0.05]"
               >
                 <div className="flex flex-wrap items-baseline gap-2">
-                  <p className="truncate text-base font-semibold text-white group-hover:text-emerald-200">
+                  <p className="truncate text-base font-semibold text-white group-hover:text-zinc-200">
                     {p.title}
                   </p>
-                  <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 text-[0.6rem] font-bold text-emerald-300">
+                  <span className="rounded bg-white/[0.08] px-1.5 py-0.5 text-[0.6rem] font-bold text-zinc-200">
                     {p.category === "IDEA_SHARE" ? "Idea" : "Case"}
                   </span>
                 </div>
@@ -121,11 +121,11 @@ function QuickLink({ href, title, desc }: { href: string; title: string; desc: s
   return (
     <Link
       href={href}
-      className="group rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-emerald-400/40 hover:bg-white/[0.05]"
+      className="group rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-white/20 hover:bg-white/[0.05]"
     >
-      <p className="text-sm font-semibold text-white group-hover:text-emerald-200">{title}</p>
+      <p className="text-sm font-semibold text-white group-hover:text-zinc-200">{title}</p>
       <p className="mt-1 text-xs text-zinc-400">{desc}</p>
-      <p className="mt-3 text-xs font-semibold text-emerald-300">바로가기 →</p>
+      <p className="mt-3 text-xs font-semibold text-zinc-200">바로가기 →</p>
     </Link>
   );
 }

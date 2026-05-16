@@ -156,15 +156,19 @@ export default function AddTaskModal({
         onKeyDown={(e) => e.key === "Escape" && onClose()}
         className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm"
       />
-      <div className="fixed left-1/2 top-1/2 z-[70] w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-zinc-950 shadow-2xl">
-        <header className="flex items-center justify-between border-b border-white/10 px-5 py-3">
-          <h3 className="text-base font-bold text-white">+ 일정 추가</h3>
+      <div className="fixed left-1/2 top-1/2 z-[70] w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-white/15 bg-zinc-950 shadow-2xl">
+        <header className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+          <div>
+            <p className="text-[0.65rem] font-medium uppercase tracking-wider text-zinc-500">새 일정</p>
+            <h3 className="mt-0.5 text-lg font-semibold text-white">일정 추가</h3>
+          </div>
           <button
             type="button"
             onClick={onClose}
+            aria-label="닫기"
             className="rounded-full p-1.5 text-zinc-400 hover:bg-white/5 hover:text-white"
           >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
             </svg>
           </button>
@@ -224,7 +228,7 @@ export default function AddTaskModal({
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="예: 와이어프레임 초안 / 결제 PG 연동 / 인터뷰 정리"
-                  className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:border-violet-400/60 focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:border-white/40 focus:outline-none"
                 />
               </div>
 
@@ -264,8 +268,8 @@ export default function AddTaskModal({
 
               {/* DM 상대가 멤버 아님 안내 */}
               {defaultAssigneeId && peerIsMember === false ? (
-                <p className="rounded-lg border border-amber-400/30 bg-amber-500/10 px-3 py-2 text-[0.7rem] text-amber-200">
-                  💡 이 사람은 선택한 워크스페이스 멤버가 아닙니다. 담당자 할당하려면 먼저 [+ 멤버로 추가] 후 다시 시도하세요.
+                <p className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-[0.7rem] text-zinc-300">
+                  이 사람은 선택한 워크스페이스 멤버가 아닙니다. 담당자 할당하려면 먼저 [+ 멤버로 추가] 후 다시 시도하세요.
                 </p>
               ) : null}
             </>
@@ -278,11 +282,11 @@ export default function AddTaskModal({
           ) : null}
         </div>
 
-        <footer className="flex items-center justify-end gap-2 border-t border-white/10 p-3">
+        <footer className="flex items-center justify-end gap-2 border-t border-white/10 bg-white/[0.02] px-5 py-4">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg px-3 py-1.5 text-sm text-zinc-400 hover:text-zinc-200"
+            className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-white/25 hover:text-white"
           >
             취소
           </button>
@@ -290,9 +294,19 @@ export default function AddTaskModal({
             type="button"
             onClick={handleSubmit}
             disabled={loading || !stageId || !content.trim() || workspaces.length === 0}
-            className="rounded-lg bg-violet-500 px-4 py-1.5 text-sm font-bold text-white hover:bg-violet-400 disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-white px-5 py-2 text-sm font-semibold text-zinc-900 shadow-sm transition-colors hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-white/15 disabled:text-zinc-500 disabled:shadow-none"
           >
-            {loading ? "추가 중..." : "추가"}
+            {loading ? (
+              <>
+                <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                추가 중…
+              </>
+            ) : (
+              "추가하기"
+            )}
           </button>
         </footer>
       </div>

@@ -34,8 +34,8 @@ const REQ_STATUS_LABEL: Record<CollabRequestStatus, string> = {
 };
 
 const REQ_STATUS_COLOR: Record<CollabRequestStatus, string> = {
-  PENDING: "bg-amber-500/15 text-amber-200 ring-amber-400/30",
-  ACCEPTED: "bg-emerald-500/15 text-emerald-200 ring-emerald-400/30",
+  PENDING: "bg-white/[0.08] text-zinc-200 ring-white/15",
+  ACCEPTED: "bg-white/[0.08] text-zinc-200 ring-white/15",
   REJECTED: "bg-rose-500/15 text-rose-200 ring-rose-400/30",
   CANCELLED: "bg-zinc-700 text-zinc-400 ring-white/10",
 };
@@ -47,8 +47,8 @@ const ROLE_LABEL: Record<WorkspaceRole, string> = {
 };
 
 const ROLE_COLOR: Record<WorkspaceRole, string> = {
-  OWNER: "text-amber-300 bg-amber-500/10 ring-amber-400/30",
-  EDITOR: "text-violet-300 bg-violet-500/10 ring-violet-400/30",
+  OWNER: "text-zinc-200 bg-white/[0.06] ring-white/15",
+  EDITOR: "text-zinc-400 bg-white/[0.06] ring-white/15",
   VIEWER: "text-zinc-400 bg-white/[0.04] ring-white/10",
 };
 
@@ -218,7 +218,7 @@ export default function WorkspaceMembers({
   return (
     <section className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
       <header>
-        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-violet-300">
+        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">
           공동 작업
         </p>
         <h2 className="mt-1 text-lg font-bold text-white">워크스페이스 멤버</h2>
@@ -229,9 +229,9 @@ export default function WorkspaceMembers({
 
       {/* 내 초대 코드 안내 — 다른 사람이 나를 추가할 때, 또는 내가 누구를 추가할 때 모두 필요 */}
       {user?.userCode ? (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-violet-400/25 bg-violet-500/[0.06] px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/12 bg-white/[0.10]/[0.06] px-4 py-3">
           <div className="min-w-0 flex-1">
-            <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-violet-300">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-400">
               내 초대 코드 (태그)
             </p>
             <p className="mt-0.5 text-xs text-zinc-300">
@@ -380,14 +380,14 @@ export default function WorkspaceMembers({
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold text-zinc-300">멤버 추가</p>
             <p className="text-[0.65rem] text-zinc-500">
-              상대방 마이페이지의 <span className="font-mono text-violet-300">초대 코드</span>를 입력하세요
+              상대방 마이페이지의 <span className="font-mono text-zinc-400">초대 코드</span>를 입력하세요
             </p>
           </div>
           {inviteError ? (
             <p className="text-xs text-rose-300">{inviteError}</p>
           ) : null}
           {inviteSuccess ? (
-            <p className="text-xs text-emerald-300">{inviteSuccess}</p>
+            <p className="text-xs text-zinc-200">{inviteSuccess}</p>
           ) : null}
           <div className="flex gap-2">
             <input
@@ -397,7 +397,7 @@ export default function WorkspaceMembers({
               onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
               maxLength={6}
               required
-              className="w-36 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 font-mono text-sm uppercase tracking-widest text-white placeholder-zinc-600 outline-none focus:border-violet-400/60"
+              className="w-36 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 font-mono text-sm uppercase tracking-widest text-white placeholder-zinc-600 outline-none focus:border-white/30"
             />
             <select
               value={inviteRole}
@@ -410,7 +410,7 @@ export default function WorkspaceMembers({
             <button
               type="submit"
               disabled={inviting || inviteCode.length < 6}
-              className="rounded-lg bg-violet-500 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-400 disabled:opacity-50"
+              className="rounded-lg bg-white/[0.10] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.15] disabled:opacity-50"
             >
               {inviting ? "..." : "추가"}
             </button>
@@ -455,7 +455,7 @@ function MemberCard({
     <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3.5">
       <div className="flex items-start gap-3">
         {/* 아바타 */}
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/40 to-violet-700/30 text-sm font-bold text-white">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.08] text-sm font-bold text-white">
           {initial}
         </span>
 
@@ -505,7 +505,7 @@ function MemberCard({
                   </span>
                 ) : null}
                 {progress.pending === 0 && progress.overdue === 0 && progress.done > 0 ? (
-                  <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 font-semibold text-emerald-300">
+                  <span className="rounded bg-white/[0.08] px-1.5 py-0.5 font-semibold text-zinc-200">
                     모두 완료 ✓
                   </span>
                 ) : null}
@@ -525,7 +525,7 @@ function MemberCard({
               type="button"
               onClick={onStartDm}
               disabled={dmBusy}
-              className="inline-flex items-center gap-1 rounded-md border border-violet-400/30 bg-violet-500/10 px-2 py-1 text-[0.65rem] font-semibold text-violet-100 hover:bg-violet-500/20 disabled:opacity-50"
+              className="inline-flex items-center gap-1 rounded-md border border-white/15 bg-white/[0.06] px-2 py-1 text-[0.65rem] font-semibold text-zinc-100 hover:bg-white/[0.10] disabled:opacity-50"
               title="1:1 DM 시작 (워크스페이스 채팅 탭으로 이동)"
             >
               {dmBusy ? "..." : "메시지"}
@@ -569,9 +569,9 @@ function UserCodeChip({
         type="button"
         onClick={handleCopy}
         title="클릭해서 복사"
-        className={`group inline-flex items-center gap-1.5 rounded-md border border-violet-400/40 bg-violet-500/15 ${
+        className={`group inline-flex items-center gap-1.5 rounded-md border border-white/20 bg-white/[0.08] ${
           isLg ? "px-3 py-1.5 text-sm" : "px-1.5 py-0.5 text-[0.7rem]"
-        } font-mono font-bold tracking-widest text-violet-100 hover:bg-violet-500/25`}
+        } font-mono font-bold tracking-widest text-zinc-100 hover:bg-white/[0.12]`}
       >
         <span>{code}</span>
         <span className={isLg ? "text-xs" : "text-[0.6rem]"}>
@@ -582,7 +582,7 @@ function UserCodeChip({
   }
 
   return (
-    <span className="inline-flex items-center gap-1 rounded border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[0.65rem] font-mono tracking-widest text-violet-300/70">
+    <span className="inline-flex items-center gap-1 rounded border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[0.65rem] font-mono tracking-widest text-zinc-400/70">
       {code}
     </span>
   );

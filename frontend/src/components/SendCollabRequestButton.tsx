@@ -24,17 +24,18 @@ export default function SendCollabRequestButton({
   const loadIdeas = useCallback(async () => {
     if (!token) return;
     try {
-      const res = await api<{ sessions: Array<{ generatedIdeas: IdeaOption[] }> }>(
+      // 확정한 워크스페이스(SELECTED 아이디어)만 노출 — 협업은 워크스페이스 단위
+      const res = await api<{ workspaces: Array<{ ideaId: string; title: string }> }>(
         "GET",
-        "/api/idea-match/sessions",
+        "/api/workspace/my-list",
         undefined,
         token,
       );
-      const flat = res.sessions.flatMap((s) => s.generatedIdeas ?? []);
-      setIdeas(flat);
-      if (flat.length > 0) setIdeaId(flat[0].id);
+      const list = (res.workspaces ?? []).map((w) => ({ id: w.ideaId, titleKo: w.title }));
+      setIdeas(list);
+      if (list.length > 0) setIdeaId(list[0].id);
     } catch {
-      // 아이디어 목록 조회 실패 시 빈 목록 유지
+      // 목록 조회 실패 시 빈 목록 유지
     }
   }, [token]);
 
@@ -66,7 +67,7 @@ export default function SendCollabRequestButton({
 
   if (done) {
     return (
-      <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/[0.06] px-4 py-3 text-sm text-emerald-200">
+      <div className="rounded-xl border border-white/15 bg-white/[0.10]/[0.06] px-4 py-3 text-sm text-zinc-200">
         협업 요청이 전송되었습니다. 전문가가 수락하면 워크스페이스에 초대됩니다.
       </div>
     );
@@ -78,27 +79,29 @@ export default function SendCollabRequestButton({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="rounded-xl border border-violet-400/40 bg-violet-500/10 px-5 py-2.5 text-sm font-semibold text-violet-200 hover:bg-violet-500/20"
+          className="rounded-xl border border-white/20 bg-white/[0.06] px-5 py-2.5 text-sm font-semibold text-zinc-200 hover:bg-white/[0.10]"
         >
           워크스페이스 협업 요청 →
         </button>
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="space-y-3 rounded-xl border border-violet-400/30 bg-violet-500/[0.05] p-4"
+          className="space-y-3 rounded-xl border border-white/15 bg-white/[0.10]/[0.05] p-4"
         >
-          <p className="text-sm font-semibold text-violet-200">워크스페이스 협업 요청</p>
+          <p className="text-sm font-semibold text-zinc-200">워크스페이스 협업 요청</p>
 
           {error ? (
             <p className="text-xs text-rose-300">{error}</p>
           ) : null}
 
           {ideas.length === 0 ? (
-            <p className="text-xs text-zinc-500">연결할 아이디어가 없습니다. 먼저 아이디어를 생성해주세요.</p>
+            <p className="text-xs text-zinc-500">
+              먼저 워크스페이스를 만들어야 협업 요청을 보낼 수 있습니다. 아이디어 매칭에서 아이디어를 선정하면 워크스페이스가 생성됩니다.
+            </p>
           ) : (
             <>
               <div className="space-y-1">
-                <label className="text-xs text-zinc-400">연결할 아이디어</label>
+                <label className="text-xs text-zinc-400">연결할 워크스페이스</label>
                 <select
                   value={ideaId}
                   onChange={(e) => setIdeaId(e.target.value)}
@@ -120,7 +123,7 @@ export default function SendCollabRequestButton({
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="협업하고 싶은 이유나 역할을 간단히 설명해주세요."
                   rows={3}
-                  className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder-zinc-600 outline-none focus:border-violet-400/60 resize-none"
+                  className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder-zinc-600 outline-none focus:border-white/30 resize-none"
                 />
               </div>
 
@@ -128,7 +131,7 @@ export default function SendCollabRequestButton({
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-lg bg-violet-500 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-400 disabled:opacity-50"
+                  className="rounded-lg bg-white/[0.10] px-4 py-2 text-sm font-semibold text-white hover:bg-white/[0.15] disabled:opacity-50"
                 >
                   {submitting ? "전송 중..." : "요청 보내기"}
                 </button>

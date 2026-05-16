@@ -90,7 +90,7 @@ export default function ProjectDetailPage() {
 
   return (
     <AuthGuard>
-      <div className="mx-auto max-w-3xl space-y-8 fade-up pb-12">
+      <div className="space-y-8 fade-up pb-12">
 
         {/* 헤더 */}
         <header className="space-y-3">
@@ -116,9 +116,9 @@ export default function ProjectDetailPage() {
         {/* 메인 CTA */}
         <Link
           href={`/idea-match?projectId=${project.id}`}
-          className="block rounded-2xl border border-indigo-400/30 bg-gradient-to-br from-indigo-500/[0.12] to-purple-500/[0.06] p-6 transition-colors hover:border-indigo-400/50"
+          className="block rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6 transition-colors hover:border-white/20 hover:bg-white/[0.05]"
         >
-          <p className="text-xs font-semibold uppercase tracking-wider text-indigo-300">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
             다음 액션
           </p>
           <p className="mt-1.5 text-lg font-bold text-white">
@@ -150,7 +150,7 @@ export default function ProjectDetailPage() {
                   <Link
                     key={entry.idea.id}
                     href={`/ideas/${entry.idea.id}`}
-                    className="group flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-indigo-400/40 hover:bg-white/[0.05]"
+                    className="group flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-white/20 hover:bg-white/[0.05]"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
@@ -168,7 +168,7 @@ export default function ProjectDetailPage() {
                         </p>
                       ) : null}
                     </div>
-                    <span className="shrink-0 text-zinc-500 group-hover:text-indigo-300">→</span>
+                    <span className="shrink-0 text-zinc-500 group-hover:text-zinc-200">→</span>
                   </Link>
                 );
               })}

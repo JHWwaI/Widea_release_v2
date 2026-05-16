@@ -9,10 +9,15 @@
  */
 
 import "dotenv/config";
-import { PrismaClient, ExpertCategory, PostCategory } from "@prisma/client";
+import { PrismaClient, ExpertCategory, PostCategory, Prisma } from "@prisma/client";
 import { hashPassword } from "../src/lib/auth.js";
 
 const prisma = new PrismaClient();
+
+type Career = { company: string; role: string; period: string; summary: string };
+type Portfolio = { title: string; role: string; stack: string[]; summary: string; url: string };
+type Edu = { school: string; degree: string; period: string };
+type Cert = { name: string; issuer: string; year: string };
 
 type ExpertSeed = {
   email: string;
@@ -25,6 +30,13 @@ type ExpertSeed = {
   hourlyRateMax: number | null;
   links: Array<{ label: string; url: string }>;
   location: string;
+  yearsOfExperience?: number;
+  workMode?: "REMOTE" | "HYBRID" | "ONSITE";
+  industries?: string[];
+  careers?: Career[];
+  portfolioItems?: Portfolio[];
+  education?: Edu[];
+  certifications?: Cert[];
 };
 
 const EXPERTS: ExpertSeed[] = [
@@ -37,11 +49,56 @@ const EXPERTS: ExpertSeed[] = [
     skills: ["React", "Next.js", "TypeScript", "PostgreSQL", "Prisma", "Toss Payments"],
     hourlyRateMin: 80000,
     hourlyRateMax: 130000,
+    yearsOfExperience: 6,
+    workMode: "REMOTE",
+    industries: ["핀테크", "B2B SaaS"],
     links: [
       { label: "GitHub", url: "https://github.com/example-kim" },
       { label: "포트폴리오", url: "https://kim.dev" },
     ],
     location: "서울 (원격 가능)",
+    careers: [
+      {
+        company: "InvoiceFlow (Series A, B2B SaaS)",
+        role: "CTO",
+        period: "2024.03 ~ 현재",
+        summary: "B2B 인보이스 자동화 SaaS 0→1 빌딩. React/Next.js + Node 백엔드 전체 설계. 시드 라운드 12억 유치 기여.",
+      },
+      {
+        company: "토스 (Toss)",
+        role: "Senior Frontend Engineer",
+        period: "2021.01 ~ 2024.02",
+        summary: "토스 송금·증권 화면 풀스택 개발. 결제 흐름 리팩토링으로 전환율 8% 개선. 디자인 시스템 컨트리뷰터.",
+      },
+      {
+        company: "뱅크샐러드",
+        role: "Frontend Engineer",
+        period: "2019.06 ~ 2020.12",
+        summary: "가계부 자동 분류 UI 개편. 모바일 웹 PWA 성능 최적화 (LCP 4.2s → 1.8s).",
+      },
+    ],
+    portfolioItems: [
+      {
+        title: "InvoiceFlow MVP",
+        role: "CTO·풀스택",
+        stack: ["Next.js", "tRPC", "PostgreSQL", "Prisma"],
+        summary: "0→1 MVP 빌딩. 4개월 만에 베타 30사 확보. ARR 추정 1.5억.",
+        url: "https://invoiceflow.example.com",
+      },
+      {
+        title: "토스 송금 v3 리디자인",
+        role: "Frontend Lead",
+        stack: ["React", "Recoil", "Storybook"],
+        summary: "송금 흐름 3단계 → 2단계. 전환율 14% → 22%. 평균 송금 시간 92초 → 38초.",
+        url: "",
+      },
+    ],
+    education: [
+      { school: "서울대학교", degree: "컴퓨터공학 학사", period: "2013.03 ~ 2019.02" },
+    ],
+    certifications: [
+      { name: "AWS Certified Solutions Architect (Associate)", issuer: "AWS", year: "2022" },
+    ],
   },
   {
     email: "park.designer@example.com",
@@ -52,11 +109,56 @@ const EXPERTS: ExpertSeed[] = [
     skills: ["Figma", "Framer", "Webflow", "디자인 시스템", "UX 리서치"],
     hourlyRateMin: 60000,
     hourlyRateMax: 90000,
+    yearsOfExperience: 4,
+    workMode: "HYBRID",
+    industries: ["B2C 커머스", "라이프스타일"],
     links: [
       { label: "Behance", url: "https://www.behance.net/example-park" },
       { label: "Dribbble", url: "https://dribbble.com/example-park" },
     ],
     location: "서울",
+    careers: [
+      {
+        company: "프리랜서",
+        role: "UX Designer",
+        period: "2022.03 ~ 현재",
+        summary: "B2C 모바일 앱 12건 디자인. 스타트업 시드~시리즈A 대상. 와이어프레임 → 프로토타입 → 핸드오프까지 한 사이클 진행.",
+      },
+      {
+        company: "오늘의집 (Bucketplace)",
+        role: "Product Designer (인턴)",
+        period: "2021.09 ~ 2022.02",
+        summary: "홈피드 카드 UI 개편 프로젝트 참여. 사용자 인터뷰 8건 정리.",
+      },
+      {
+        company: "당근마켓",
+        role: "Design 인턴",
+        period: "2020.07 ~ 2020.12",
+        summary: "중고거래 채팅 UI 개편 워크숍 참여. 디자인 시스템 컨트리뷰션.",
+      },
+    ],
+    portfolioItems: [
+      {
+        title: "라이프스타일 앱 \"베란다\" 풀 리디자인",
+        role: "Solo Designer",
+        stack: ["Figma", "Framer", "디자인 시스템"],
+        summary: "다크 모드 + 미니멀 카드 레이아웃. 출시 6개월 만에 앱스토어 라이프스타일 부문 12위.",
+        url: "",
+      },
+      {
+        title: "당근마켓 채팅 v2 (사이드 프로젝트)",
+        role: "UX Researcher · Designer",
+        stack: ["Figma", "사용자 인터뷰"],
+        summary: "스팸 메시지 차단 UI 개선 제안. 인턴 발표회 우수상.",
+        url: "",
+      },
+    ],
+    education: [
+      { school: "홍익대학교", degree: "시각디자인 학사", period: "2017.03 ~ 2022.02" },
+    ],
+    certifications: [
+      { name: "ADP (Adobe Certified Professional)", issuer: "Adobe", year: "2021" },
+    ],
   },
   {
     email: "lee.backend@example.com",
@@ -67,8 +169,40 @@ const EXPERTS: ExpertSeed[] = [
     skills: ["Node.js", "Python", "AWS", "PostgreSQL", "Redis", "결제 통합"],
     hourlyRateMin: 90000,
     hourlyRateMax: 150000,
+    yearsOfExperience: 7,
+    workMode: "REMOTE",
+    industries: ["핀테크", "결제"],
     links: [{ label: "GitHub", url: "https://github.com/example-lee" }],
     location: "원격",
+    careers: [
+      {
+        company: "PayLink (결제 인프라 스타트업)",
+        role: "Backend Tech Lead",
+        period: "2023.05 ~ 현재",
+        summary: "토스페이먼츠·아임포트 통합 SDK 설계. 월 거래액 80억 처리. 결제 실패율 0.7% 유지.",
+      },
+      {
+        company: "쿠팡 (Coupang)",
+        role: "Backend Engineer",
+        period: "2019.08 ~ 2023.04",
+        summary: "주문·결제 마이크로서비스 운영. AWS Lambda + SQS 기반 비동기 처리. P99 latency 220ms → 80ms 개선.",
+      },
+    ],
+    portfolioItems: [
+      {
+        title: "결제 웹훅 멱등성 라이브러리 (OSS)",
+        role: "Author",
+        stack: ["Node.js", "TypeScript", "Redis"],
+        summary: "토스/카카오/네이버페이 웹훅을 일관된 인터페이스로 처리. GitHub Star 320+.",
+        url: "https://github.com/example-lee/payment-webhook-kit",
+      },
+    ],
+    education: [
+      { school: "KAIST", degree: "전산학부 학사", period: "2013.03 ~ 2019.02" },
+    ],
+    certifications: [
+      { name: "정보처리기사", issuer: "한국산업인력공단", year: "2019" },
+    ],
   },
   {
     email: "choi.marketing@example.com",
@@ -79,8 +213,54 @@ const EXPERTS: ExpertSeed[] = [
     skills: ["Meta Ads", "Google Ads", "GA4", "Mixpanel", "콘텐츠 마케팅"],
     hourlyRateMin: 50000,
     hourlyRateMax: 80000,
+    yearsOfExperience: 5,
+    workMode: "HYBRID",
+    industries: ["B2C 그로스", "이커머스"],
     links: [{ label: "LinkedIn", url: "https://linkedin.com/in/example-choi" }],
     location: "서울",
+    careers: [
+      {
+        company: "마켓컬리 (Kurly)",
+        role: "Growth Marketing Lead",
+        period: "2022.04 ~ 현재",
+        summary: "신규 가입자 retention 캠페인 책임. D7 retention 28% → 41%. 월 광고 예산 4억 운영.",
+      },
+      {
+        company: "29CM",
+        role: "Performance Marketer",
+        period: "2020.06 ~ 2022.03",
+        summary: "메타·구글 광고 + 카카오모먼트 운영. ROAS 580% 달성. 신규 카테고리 런칭 6건.",
+      },
+      {
+        company: "프리랜서 마케팅",
+        role: "Solo Marketer",
+        period: "2019.01 ~ 2020.05",
+        summary: "스타트업 12곳 그로스 컨설팅. 평균 가입 전환율 +35% 달성.",
+      },
+    ],
+    portfolioItems: [
+      {
+        title: "마켓컬리 신규 가입 캠페인",
+        role: "Lead Marketer",
+        stack: ["Meta Ads", "GA4", "Mixpanel"],
+        summary: "D7 retention 28% → 41%. ROAS 720%. 분기 가입자 +28%.",
+        url: "",
+      },
+      {
+        title: "29CM 새벽배송 런칭",
+        role: "Performance Marketer",
+        stack: ["Google Ads", "Mixpanel", "Braze"],
+        summary: "런칭 첫 달 가입 1.2만명 확보. CAC 18,000원 → 9,500원 개선.",
+        url: "",
+      },
+    ],
+    education: [
+      { school: "고려대학교", degree: "경영학 학사", period: "2014.03 ~ 2019.02" },
+    ],
+    certifications: [
+      { name: "Google Ads 인증", issuer: "Google", year: "2021" },
+      { name: "GA4 분석 인증", issuer: "Google", year: "2022" },
+    ],
   },
   {
     email: "jung.ac@example.com",
@@ -91,8 +271,38 @@ const EXPERTS: ExpertSeed[] = [
     skills: ["IR 컨설팅", "재무모델링", "KPI 설계", "투자 유치"],
     hourlyRateMin: null,
     hourlyRateMax: null,
+    yearsOfExperience: 10,
+    workMode: "HYBRID",
+    industries: ["B2C 모바일", "투자/AC"],
     links: [{ label: "LinkedIn", url: "https://linkedin.com/in/example-jung" }],
     location: "서울",
+    careers: [
+      {
+        company: "프라이머사제 (Primer Sazze)",
+        role: "Partner",
+        period: "2022.06 ~ 현재",
+        summary: "시드~프리A 단계 스타트업 30+ 멘토링. 평균 후속 라운드 성공률 65%.",
+      },
+      {
+        company: "Linkly (전 직장, 매각)",
+        role: "Co-founder & CEO",
+        period: "2017.04 ~ 2022.05",
+        summary: "B2C 모바일 커머스. 시리즈A 100억 유치 후 2022년 카카오모빌리티에 인수.",
+      },
+    ],
+    portfolioItems: [
+      {
+        title: "IR 덱 컨설팅 50건 누적",
+        role: "Senior Advisor",
+        stack: ["IR 덱", "재무모델", "KPI"],
+        summary: "후속 라운드 성공 33건. 평균 라운드 사이즈 35억.",
+        url: "",
+      },
+    ],
+    education: [
+      { school: "연세대학교", degree: "경영학 학사", period: "2008.03 ~ 2014.02" },
+    ],
+    certifications: [],
   },
   {
     email: "han.planner@example.com",
@@ -103,8 +313,44 @@ const EXPERTS: ExpertSeed[] = [
     skills: ["서비스 기획", "사용자 리서치", "MVP 정의", "Figma 와이어프레임"],
     hourlyRateMin: 70000,
     hourlyRateMax: 100000,
+    yearsOfExperience: 7,
+    workMode: "HYBRID",
+    industries: ["B2C 서비스", "모바일"],
     links: [{ label: "Notion 포트폴리오", url: "https://example.notion.site/han" }],
     location: "서울 (하이브리드)",
+    careers: [
+      {
+        company: "프리랜서 서비스 기획",
+        role: "Senior Product Planner",
+        period: "2023.03 ~ 현재",
+        summary: "B2C 모바일 14건 기획. 페르소나 정의 → MVP 기능 확정 → 디자인-개발 핸드오프까지.",
+      },
+      {
+        company: "당근마켓",
+        role: "Service Planner",
+        period: "2020.04 ~ 2023.02",
+        summary: "중고거래 안전결제 도입 PM. 사용자 인터뷰 60건 진행. 거래 분쟁율 22% 감소.",
+      },
+      {
+        company: "토스 (Toss)",
+        role: "Junior Planner",
+        period: "2018.03 ~ 2020.03",
+        summary: "송금 화면 UX 개선 워크숍 진행. KPI 트래킹 dashboard 설계.",
+      },
+    ],
+    portfolioItems: [
+      {
+        title: "당근 안전결제 도입",
+        role: "Lead Planner",
+        stack: ["사용자 리서치", "Notion", "Figma"],
+        summary: "분쟁율 22% 감소. 출시 6개월 만에 거래 5만건 적용.",
+        url: "",
+      },
+    ],
+    education: [
+      { school: "서강대학교", degree: "경영학 학사", period: "2014.03 ~ 2018.02" },
+    ],
+    certifications: [],
   },
   {
     email: "yoo.flutter@example.com",
@@ -115,8 +361,53 @@ const EXPERTS: ExpertSeed[] = [
     skills: ["Flutter", "React Native", "Dart", "Firebase", "App Store Connect"],
     hourlyRateMin: 70000,
     hourlyRateMax: 110000,
+    yearsOfExperience: 5,
+    workMode: "REMOTE",
+    industries: ["모바일 앱", "B2C"],
     links: [{ label: "GitHub", url: "https://github.com/example-yoo" }],
     location: "원격",
+    careers: [
+      {
+        company: "프리랜서 모바일 개발",
+        role: "Mobile Tech Lead",
+        period: "2022.07 ~ 현재",
+        summary: "iOS+Android 동시 출시 8회. 평균 출시 기간 12주. 푸시·인앱결제·딥링크 셋업 포함.",
+      },
+      {
+        company: "직방 (Zigbang)",
+        role: "Mobile Engineer",
+        period: "2020.03 ~ 2022.06",
+        summary: "iOS 네이티브 → Flutter 마이그레이션. 코드 라인 32% 감소, 빌드 시간 18분 → 4분.",
+      },
+      {
+        company: "야놀자",
+        role: "Junior Mobile Engineer",
+        period: "2018.09 ~ 2020.02",
+        summary: "Android 객실 예약 화면 개발. 결제 SDK 통합 (KCP, NICE).",
+      },
+    ],
+    portfolioItems: [
+      {
+        title: "라이프 트래킹 앱 \"Daily Log\"",
+        role: "Solo Developer",
+        stack: ["Flutter", "Riverpod", "Firebase"],
+        summary: "출시 4개월 만에 누적 다운로드 12만. 앱스토어 라이프 부문 평점 4.7.",
+        url: "https://apps.example.com/dailylog",
+      },
+      {
+        title: "직방 Flutter 마이그레이션",
+        role: "Tech Lead",
+        stack: ["Flutter", "Dart"],
+        summary: "iOS 네이티브 → Flutter 전체 전환. 빌드 시간 78% 단축.",
+        url: "",
+      },
+    ],
+    education: [
+      { school: "한양대학교", degree: "컴퓨터공학 학사", period: "2014.03 ~ 2020.02" },
+    ],
+    certifications: [
+      { name: "정보처리기사", issuer: "한국산업인력공단", year: "2020" },
+    ],
   },
   {
     email: "song.brand@example.com",
@@ -127,8 +418,38 @@ const EXPERTS: ExpertSeed[] = [
     skills: ["브랜드 아이덴티티", "로고", "Figma", "Adobe Illustrator", "After Effects"],
     hourlyRateMin: 60000,
     hourlyRateMax: 100000,
+    yearsOfExperience: 6,
+    workMode: "HYBRID",
+    industries: ["브랜드", "스타트업 BI"],
     links: [{ label: "Behance", url: "https://www.behance.net/example-song" }],
     location: "서울",
+    careers: [
+      {
+        company: "프리랜서 브랜드 디자인",
+        role: "Brand Designer",
+        period: "2021.05 ~ 현재",
+        summary: "스타트업 BI·로고 50건. 시드~프리A 단계 고객 중심. 평균 작업 기간 3주.",
+      },
+      {
+        company: "플러스엑스 (PlusX)",
+        role: "Designer",
+        period: "2018.07 ~ 2021.04",
+        summary: "B2C 브랜드 12건 BI 작업. 모션그래픽 영상 + 키 비주얼 + 컬러 시스템.",
+      },
+    ],
+    portfolioItems: [
+      {
+        title: "Doohu 브랜드 BI 시스템",
+        role: "Brand Designer",
+        stack: ["Figma", "Illustrator", "After Effects"],
+        summary: "B2C 라이프스타일. 로고 + 컬러 시스템 + 모션 런칭 영상. 출시 후 인스타 팔로워 0→3만.",
+        url: "",
+      },
+    ],
+    education: [
+      { school: "국민대학교", degree: "시각디자인 학사", period: "2014.03 ~ 2018.02" },
+    ],
+    certifications: [],
   },
   {
     email: "kang.pm@example.com",
@@ -139,8 +460,40 @@ const EXPERTS: ExpertSeed[] = [
     skills: ["로드맵 설계", "OKR", "Linear", "Notion", "사용자 분석"],
     hourlyRateMin: 90000,
     hourlyRateMax: 150000,
+    yearsOfExperience: 8,
+    workMode: "ONSITE",
+    industries: ["핀테크", "B2B SaaS"],
     links: [{ label: "LinkedIn", url: "https://linkedin.com/in/example-kang" }],
     location: "서울",
+    careers: [
+      {
+        company: "토스증권",
+        role: "Lead PM",
+        period: "2022.01 ~ 현재",
+        summary: "주식 거래 화면 로드맵 책임. ARR 0→30억 달성에 기여. 디자인-개발 4팀 OKR 조율.",
+      },
+      {
+        company: "네이버 클로바",
+        role: "Product Manager",
+        period: "2018.02 ~ 2021.12",
+        summary: "음성 인식 API 제품 PM. B2B 영업팀과 협업해 매출 70억 달성.",
+      },
+    ],
+    portfolioItems: [
+      {
+        title: "토스증권 주문 흐름 v2",
+        role: "Lead PM",
+        stack: ["Linear", "Notion", "Figma"],
+        summary: "분기 OKR 100% 달성. 주문 완료율 84% → 91% 개선.",
+        url: "",
+      },
+    ],
+    education: [
+      { school: "포항공과대학교 (POSTECH)", degree: "산업경영공학 학사", period: "2010.03 ~ 2016.02" },
+    ],
+    certifications: [
+      { name: "PMP (Project Management Professional)", issuer: "PMI", year: "2020" },
+    ],
   },
   {
     email: "noh.content@example.com",
@@ -151,6 +504,9 @@ const EXPERTS: ExpertSeed[] = [
     skills: ["콘텐츠 마케팅", "카피라이팅", "SEO", "뉴스레터", "브랜드 톤"],
     hourlyRateMin: 40000,
     hourlyRateMax: 70000,
+    yearsOfExperience: 4,
+    workMode: "REMOTE",
+    industries: ["콘텐츠", "스타트업"],
     links: [{ label: "포트폴리오", url: "https://noh.studio" }],
     location: "원격",
   },
@@ -163,6 +519,9 @@ const EXPERTS: ExpertSeed[] = [
     skills: ["AWS", "GCP", "Kubernetes", "Terraform", "GitHub Actions", "Sentry"],
     hourlyRateMin: 100000,
     hourlyRateMax: 160000,
+    yearsOfExperience: 8,
+    workMode: "REMOTE",
+    industries: ["인프라/DevOps"],
     links: [{ label: "GitHub", url: "https://github.com/example-im" }],
     location: "원격",
   },
@@ -175,6 +534,9 @@ const EXPERTS: ExpertSeed[] = [
     skills: ["사업계획서", "정부지원사업", "프레젠테이션 코칭", "여성창업"],
     hourlyRateMin: null,
     hourlyRateMax: null,
+    yearsOfExperience: 12,
+    workMode: "HYBRID",
+    industries: ["여성창업", "정부지원사업"],
     links: [{ label: "K-Startup", url: "https://www.k-startup.go.kr" }],
     location: "서울 + 원격",
   },
@@ -389,6 +751,13 @@ async function main() {
         hourlyRateMax: e.hourlyRateMax,
         links: e.links,
         location: e.location,
+        yearsOfExperience: e.yearsOfExperience ?? null,
+        workMode: e.workMode ?? null,
+        industries: e.industries ?? [],
+        careers: (e.careers ?? []) as unknown as Prisma.InputJsonValue,
+        portfolioItems: (e.portfolioItems ?? []) as unknown as Prisma.InputJsonValue,
+        education: (e.education ?? []) as unknown as Prisma.InputJsonValue,
+        certifications: (e.certifications ?? []) as unknown as Prisma.InputJsonValue,
         available: true,
       },
       update: {
@@ -400,6 +769,13 @@ async function main() {
         hourlyRateMax: e.hourlyRateMax,
         links: e.links,
         location: e.location,
+        yearsOfExperience: e.yearsOfExperience ?? null,
+        workMode: e.workMode ?? null,
+        industries: e.industries ?? [],
+        careers: (e.careers ?? []) as unknown as Prisma.InputJsonValue,
+        portfolioItems: (e.portfolioItems ?? []) as unknown as Prisma.InputJsonValue,
+        education: (e.education ?? []) as unknown as Prisma.InputJsonValue,
+        certifications: (e.certifications ?? []) as unknown as Prisma.InputJsonValue,
         available: true,
       },
     });
