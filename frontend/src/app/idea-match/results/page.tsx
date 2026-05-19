@@ -61,13 +61,7 @@ function StatusPill({ status }: { status: string }) {
   if (status === "SELECTED") return (
     <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold"
       style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", color: "#6EE7B7" }}>
-      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />대표안
-    </span>
-  );
-  if (status === "SHORTLISTED") return (
-    <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold"
-      style={{ background: "rgba(79,110,247,0.1)", border: "1px solid rgba(79,110,247,0.25)", color: "#93AFFE" }}>
-      <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#4F6EF7" }} />Shortlist
+      <span className="h-1.5 w-1.5 rounded-full bg-white/[0.06]" />대표안
     </span>
   );
   return null;

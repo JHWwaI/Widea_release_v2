@@ -363,7 +363,7 @@ export default function ExpertEditPage() {
           </p>
         ) : null}
         {success ? (
-          <p className="rounded-lg border border-emerald-500/30 bg-white/[0.06] px-4 py-3 text-sm text-zinc-200">
+          <p className="rounded-lg border border-white/15 bg-white/[0.06] px-4 py-3 text-sm text-zinc-200">
             {success}
           </p>
         ) : null}
@@ -618,7 +618,7 @@ export default function ExpertEditPage() {
                     key={s}
                     type="button"
                     onClick={() => removeLang(s)}
-                    className="rounded bg-sky-500/10 px-2 py-0.5 text-xs text-sky-200 ring-1 ring-sky-400/20 hover:bg-rose-500/10 hover:text-rose-200"
+                    className="rounded bg-white/[0.05] px-2 py-0.5 text-xs text-zinc-200 ring-1 ring-white/10 hover:bg-rose-500/10 hover:text-rose-200"
                   >
                     {s} ×
                   </button>
@@ -654,7 +654,7 @@ export default function ExpertEditPage() {
                     key={s}
                     type="button"
                     onClick={() => removeIndustry(s)}
-                    className="rounded bg-white/[0.06] px-2 py-0.5 text-xs text-zinc-200 ring-1 ring-amber-400/20 hover:bg-rose-500/10 hover:text-rose-200"
+                    className="rounded bg-white/[0.06] px-2 py-0.5 text-xs text-zinc-200 ring-1 ring-white/10 hover:bg-rose-500/10 hover:text-rose-200"
                   >
                     {s} ×
                   </button>

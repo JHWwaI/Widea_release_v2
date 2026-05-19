@@ -129,12 +129,7 @@ export default function IdeaMatchPage() {
   const creditBalance = user?.creditBalance ?? null;
   const hasCredits = creditBalance === null || creditBalance >= IDEA_MATCH_CREDIT_COST;
 
-  const matchEstimate = selectedCategories.reduce((sum, cat) => {
-    const found = INDUSTRY_CATEGORIES.find((c) => c.group === cat);
-    return sum + (found?.count ?? 0);
-  }, 0);
-
-  useEffect(() => {
+useEffect(() => {
     if (!token || !wantsLatest) return;
     let cancelled = false;
     api<IdeaMatchSessionListResponse>("GET", buildQuery("/api/idea-match/sessions", { limit: 1 }), undefined, token)
@@ -228,11 +223,6 @@ export default function IdeaMatchPage() {
       case 1:
         return (
           <div className="space-y-6">
-            {matchEstimate > 0 && (
-              <p className="text-xs text-zinc-400">
-                매칭 예상 사례 <span className="font-medium tabular-nums text-white">{matchEstimate}</span>건
-              </p>
-            )}
             <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
               {INDUSTRY_CATEGORIES.map((cat) => {
                 const sel = selectedCategories.includes(cat.group);
@@ -478,11 +468,7 @@ export default function IdeaMatchPage() {
                 type="button"
                 onClick={handleSubmit}
                 disabled={disabled}
-                className={`flex w-full items-center justify-center gap-2 rounded-lg border px-6 py-3.5 text-sm font-semibold transition-colors ${
-                  disabled
-                    ? "cursor-not-allowed border-white/[0.06] bg-transparent text-zinc-600"
-                    : "border-white/20 bg-white/[0.10] text-white hover:border-white/35 hover:bg-white/[0.15]"
-                }`}
+                className="widea-btn-primary flex w-full items-center justify-center gap-2 py-3.5 text-sm"
               >
                 {submitting ? (
                   <>
@@ -510,20 +496,20 @@ export default function IdeaMatchPage() {
 
   return (
     <AuthGuard>
-      <div className="fade-up pb-6">
+      <div className="widea-fade-up pb-6">
         {/* Step header */}
-        <div className="mb-2">
-          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+        <div className="mb-3">
+          <p className="widea-eyebrow">
             <span className="tabular-nums text-zinc-300">{step}</span>
             <span className="mx-1.5 text-zinc-600">/</span>
             <span className="tabular-nums">{STEPS.length}</span>
             <span className="mx-2 text-zinc-700">·</span>
             <span>{STEPS[step - 1].label}</span>
           </p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-[28px]">
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
             {STEPS[step - 1].desc}
           </h1>
-          <p className="mt-2 text-sm text-zinc-400">{STEPS[step - 1].hint}</p>
+          <p className="mt-3 text-sm text-zinc-400 sm:text-base">{STEPS[step - 1].hint}</p>
         </div>
         <div className="mb-6 h-px w-full bg-white/[0.06]">
           <div className="h-full bg-white transition-all duration-300" style={{ width: `${pct}%` }} />
@@ -541,7 +527,7 @@ export default function IdeaMatchPage() {
                 setStep((s) => Math.max(1, s - 1));
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
-              className="rounded-lg border border-white/10 bg-transparent px-5 py-2.5 text-sm font-medium text-zinc-400 transition-colors hover:border-white/20 hover:text-zinc-200"
+              className="widea-btn-ghost"
             >
               이전
             </button>
@@ -558,7 +544,7 @@ export default function IdeaMatchPage() {
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               disabled={!canProceed()}
-              className="rounded-lg border border-white/15 bg-white/[0.08] px-6 py-2.5 text-sm font-semibold text-zinc-100 transition-colors hover:border-white/30 hover:bg-white/[0.12] hover:text-white disabled:cursor-not-allowed disabled:border-white/[0.06] disabled:bg-transparent disabled:text-zinc-600"
+              className="widea-btn-primary"
             >
               다음
             </button>

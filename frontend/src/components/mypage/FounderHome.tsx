@@ -56,7 +56,7 @@ export default function FounderHome() {
         for (const session of sessionData.sessions) {
           if (session.generatedIdeas) {
             for (const idea of session.generatedIdeas) {
-              if (idea.status === "SELECTED" || idea.status === "SHORTLISTED") {
+              if (idea.status === "SELECTED") {
                 ideas.push({
                   id: idea.id,
                   titleKo: idea.titleKo,

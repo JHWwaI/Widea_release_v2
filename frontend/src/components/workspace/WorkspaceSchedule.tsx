@@ -34,7 +34,7 @@ const BUCKET_META: Record<TimeBucket, { label: string; emoji: string; ring: stri
   TODAY:      { label: "오늘 마감",  emoji: "🔥",  ring: "ring-white/15",   tone: "text-zinc-200" },
   TOMORROW:   { label: "내일 마감",  emoji: "📅",  ring: "ring-amber-400/20",   tone: "text-zinc-200" },
   THIS_WEEK:  { label: "이번 주",    emoji: "📆",  ring: "ring-white/15",  tone: "text-zinc-200" },
-  THIS_MONTH: { label: "이번 달",    emoji: "🗓",   ring: "ring-violet-400/15",  tone: "text-zinc-300" },
+  THIS_MONTH: { label: "이번 달",    emoji: "🗓",   ring: "ring-white/20",  tone: "text-zinc-300" },
   LATER:      { label: "이후",       emoji: "⏳",  ring: "ring-white/10",       tone: "text-zinc-400" },
   NO_DUE:     { label: "기한 없음",  emoji: "—",    ring: "ring-white/5",        tone: "text-zinc-500" },
 };
@@ -436,7 +436,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                             <span>0{task.stage.stageNumber}. {task.stage.stageName}</span>
                             {assignee ? (
                               <span className="inline-flex items-center gap-1 text-zinc-200">
-                                <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gradient-to-br from-violet-500/60 to-violet-700/40 text-[0.5rem] font-bold text-white">
+                                <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gradient-to-br from-white/[0.06] to-white/[0.02] text-[0.5rem] font-bold text-white">
                                   {memberInitial(assignee)}
                                 </span>
                                 {assignee.name ?? assignee.email.split("@")[0]}
@@ -507,7 +507,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                   <div className="mt-1 flex items-center gap-2">
                     <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/5">
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-violet-500/70 to-emerald-400/70 transition-[width]"
+                        className="h-full rounded-full bg-gradient-to-r from-white/[0.06] to-white/30 transition-[width]"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -614,7 +614,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                                   >
                                     {assignee ? (
                                       <>
-                                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-br from-violet-500/60 to-violet-700/40 text-[0.55rem] font-bold text-white">
+                                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-br from-white/[0.06] to-white/[0.02] text-[0.55rem] font-bold text-white">
                                           {memberInitial(assignee)}
                                         </span>
                                         <span>{assignee.name ?? assignee.email.split("@")[0]}</span>
@@ -659,7 +659,7 @@ export default function WorkspaceSchedule({ stages, ideaId, onChanged }: Props) 
                                     })
                                   }
                                   disabled={saving}
-                                  className={`rounded-full border-0 px-1.5 py-0.5 text-[0.65rem] font-semibold ring-1 focus:outline-none focus:ring-violet-400/50 ${
+                                  className={`rounded-full border-0 px-1.5 py-0.5 text-[0.65rem] font-semibold ring-1 focus:outline-none focus:ring-white/20 ${
                                     STATUS_BADGE[task.status]
                                   }`}
                                 >

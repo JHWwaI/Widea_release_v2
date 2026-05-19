@@ -149,7 +149,7 @@ export default function StageDetail({
                           onClick={() => toggleStatus(t, t.status === "DONE" ? "PENDING" : "DONE")}
                           className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors ${
                             t.status === "DONE" ? "border-emerald-400 bg-emerald-400 text-zinc-950"
-                              : t.status === "OUTSOURCED" ? "border-violet-400 bg-violet-400 text-zinc-950"
+                              : t.status === "OUTSOURCED" ? "border-white/30 bg-white/30 text-zinc-950"
                               : t.status === "SKIPPED" ? "border-zinc-600 bg-zinc-700 text-zinc-300"
                               : "border-zinc-600 hover:border-emerald-400"
                           }`}
@@ -504,7 +504,7 @@ function StageResourcesBox({ stageNumber }: { stageNumber: number }) {
   const totalItems = res.groups.reduce((acc, g) => acc + g.items.length, 0);
 
   return (
-    <div className="space-y-4 rounded-2xl border border-white/12 bg-gradient-to-br from-violet-500/[0.07] to-violet-500/[0.02] p-5">
+    <div className="space-y-4 rounded-2xl border border-white/12 bg-gradient-to-br from-white/[0.06] to-white/[0.02] p-5">
       <header className="space-y-1.5">
         <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-zinc-400">
           이 단계에서 진짜 필요한 것 · 도구 {totalItems}개

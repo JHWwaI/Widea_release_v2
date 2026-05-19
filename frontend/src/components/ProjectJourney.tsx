@@ -59,7 +59,7 @@ export default function ProjectJourney({
             className="h-full rounded-full transition-[width] duration-300"
             style={{
               width: `${workflow.completionPercent}%`,
-              background: "linear-gradient(90deg, #5D5DFF, #A855F7)",
+              background: "linear-gradient(90deg, #ffffff, #a1a1aa)",
             }}
           />
         </div>

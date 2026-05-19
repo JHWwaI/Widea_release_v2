@@ -16,7 +16,6 @@ import type {
 
 const IDEA_STATUS_META: Record<string, { label: string; tone: "accent" | "success" | "warning" | "neutral" }> = {
   SELECTED:    { label: "대표 아이디어", tone: "accent" },
-  SHORTLISTED: { label: "Shortlist",   tone: "success" },
   ARCHIVED:    { label: "보관됨",       tone: "warning" },
 };
 
@@ -59,7 +58,7 @@ export default function ProjectDetailPage() {
         sessionDate: s.createdAt,
       })),
     );
-    const order: Record<string, number> = { SELECTED: 0, SHORTLISTED: 1, DRAFT: 2, ARCHIVED: 3 };
+    const order: Record<string, number> = { SELECTED: 0, DRAFT: 1, ARCHIVED: 2 };
     return list.sort(
       (a, b) =>
         (order[a.idea.status] ?? 9) - (order[b.idea.status] ?? 9) ||

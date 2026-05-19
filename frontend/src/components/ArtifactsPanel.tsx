@@ -269,7 +269,7 @@ export default function ArtifactsPanel({ ideaId }: { ideaId: string }) {
             ) : null}
 
             {investorChecklist.moatKo ? (
-              <div className="border-l-2 border-violet-400 pl-5">
+              <div className="border-l-2 border-white/30 pl-5">
                 <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-zinc-400">
                   왜 망하지 않는가
                 </p>
@@ -281,11 +281,7 @@ export default function ArtifactsPanel({ ideaId }: { ideaId: string }) {
       ) : null}
 
       {/* ─── 결정의 순간 ─────────────────────────────────────── */}
-      <section className="relative mt-16 -mx-4 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-violet-950/40 via-zinc-950 to-emerald-950/30 p-8 sm:mx-0 sm:p-12">
-        {/* 분위기용 거대 워터마크 숫자 */}
-        <span className="pointer-events-none absolute -bottom-8 -right-4 select-none text-[10rem] font-black leading-none text-white/[0.04] sm:text-[14rem]">
-          GO
-        </span>
+      <section className="relative mt-16 -mx-4 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.06] via-zinc-950 to-zinc-900 p-8 sm:mx-0 sm:p-12">
 
         <div className="relative space-y-10">
           {launched ? (
@@ -377,10 +373,7 @@ function ArtifactBlock({
   children: React.ReactNode;
 }) {
   return (
-    <section className="grid grid-cols-[auto_1fr] gap-x-6">
-      <div className="select-none text-5xl font-black leading-none text-white/[0.06] sm:text-7xl">
-        {num}
-      </div>
+    <section className="grid grid-cols-1 gap-x-6">
       <div className="min-w-0 space-y-4">
         <header>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400">

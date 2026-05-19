@@ -158,7 +158,7 @@ function BlueprintContent() {
             {activeCreditError ? (
               <div
                 role="alert"
-                className="space-y-3 rounded-xl border border-amber-100 bg-amber-50 px-4 py-4 text-sm text-amber-800"
+                className="space-y-3 rounded-xl border border-white/15 bg-white/[0.04] px-4 py-4 text-sm text-zinc-200"
               >
                 <div className="space-y-1">
                   <p className="font-semibold">크레딧이 부족합니다</p>

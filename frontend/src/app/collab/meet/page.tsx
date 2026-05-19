@@ -137,7 +137,7 @@ function MeetContent() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           {/* 만들기 */}
-          <section className="space-y-3 rounded-2xl border border-white/15 bg-gradient-to-br from-indigo-500/[0.10] to-purple-500/[0.06] p-5">
+          <section className="space-y-3 rounded-2xl border border-white/15 bg-gradient-to-br from-white/[0.06] to-white/[0.02] p-5">
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-300">새 회의</p>
             <h2 className="text-lg font-bold text-white">회의방 만들기</h2>
             <p className="text-sm text-zinc-300">

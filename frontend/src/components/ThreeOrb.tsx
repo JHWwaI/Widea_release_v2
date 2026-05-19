@@ -18,7 +18,7 @@ function OrbMesh() {
     <Float speed={1.6} rotationIntensity={0.25} floatIntensity={0.6}>
       <Sphere ref={ref} args={[1.55, 128, 128]}>
         <MeshDistortMaterial
-          color="#5D5DFF"
+          color="#a1a1aa"
           distort={0.38}
           speed={1.6}
           roughness={0.04}
@@ -53,8 +53,8 @@ export default function ThreeOrb({ className = "" }: { className?: string }) {
         style={{ background: "transparent" }}
       >
         <ambientLight intensity={0.08} />
-        <pointLight position={[4, 3, 4]} intensity={2.2} color="#5D5DFF" />
-        <pointLight position={[-4, -2, -3]} intensity={1.8} color="#A855F7" />
+        <pointLight position={[4, 3, 4]} intensity={2.2} color="#a1a1aa" />
+        <pointLight position={[-4, -2, -3]} intensity={1.8} color="#a1a1aa" />
         <pointLight position={[0, 5, 1]} intensity={0.6} color="#818CF8" />
         <Suspense fallback={null}>
           <OrbMesh />

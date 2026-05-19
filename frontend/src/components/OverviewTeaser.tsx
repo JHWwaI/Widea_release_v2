@@ -83,7 +83,7 @@ export default function OverviewTeaser({
 
       {/* 한국 타이밍 — pull quote */}
       {idea.whyNowInKoreaKo ? (
-        <blockquote className="border-l-2 border-violet-400 pl-6 text-base leading-8 text-zinc-200 sm:text-lg">
+        <blockquote className="border-l-2 border-white/30 pl-6 text-base leading-8 text-zinc-200 sm:text-lg">
           {idea.whyNowInKoreaKo}
         </blockquote>
       ) : null}

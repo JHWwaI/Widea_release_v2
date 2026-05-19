@@ -91,7 +91,7 @@ export default function CollabHubPage() {
                 type="button"
                 onClick={() => setTab(key)}
                 className={`rounded-md px-4 py-1.5 text-sm font-semibold transition-colors ${
-                  active ? "bg-white/[0.10] text-indigo-100" : "text-zinc-400 hover:text-white"
+                  active ? "bg-white/[0.10] text-zinc-200" : "text-zinc-400 hover:text-white"
                 }`}
               >
                 {TAB_META[key].label}
@@ -156,7 +156,7 @@ export default function CollabHubPage() {
         )}
 
         {/* 회의 카드 */}
-        <section className="rounded-2xl border border-white/15 bg-gradient-to-br from-indigo-500/[0.10] to-purple-500/[0.06] p-6">
+        <section className="rounded-2xl border border-white/15 bg-gradient-to-br from-white/[0.06] to-white/[0.02] p-6">
           <p className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
             실시간 회의
           </p>

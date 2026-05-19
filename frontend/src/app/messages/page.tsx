@@ -135,7 +135,7 @@ function Inner() {
                           onClick={() => setSelectedIdeaId(w.ideaId)}
                           className={`flex w-full items-start gap-2.5 border-b border-white/5 px-3 py-3 text-left transition-colors ${sel ? "bg-white/[0.06]" : "hover:bg-white/[0.04]"}`}
                         >
-                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/30 to-violet-700/20 text-xs font-bold text-white">
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-white/[0.06] to-white/[0.02] text-xs font-bold text-white">
                             {w.title.trim()[0] ?? "?"}
                           </span>
                           <div className="min-w-0 flex-1">

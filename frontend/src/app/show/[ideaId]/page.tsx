@@ -176,7 +176,7 @@ export default function ShowPage() {
                     <div className="h-1 overflow-hidden rounded-full bg-white/[0.04]">
                       <div
                         className={`h-full rounded-full ${
-                          pct === 100 ? "bg-emerald-400" : "bg-violet-400"
+                          pct === 100 ? "bg-white" : "bg-zinc-500"
                         }`}
                         style={{ width: `${pct}%` }}
                       />

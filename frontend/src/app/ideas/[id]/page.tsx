@@ -34,7 +34,6 @@ function str(src: unknown, ...keys: string[]): string | null {
 }
 function statusMeta(s: string) {
   if (s === "SELECTED")   return { text: "대표 아이디어", tone: "accent"   as const };
-  if (s === "SHORTLISTED") return { text: "Shortlist",   tone: "success"  as const };
   if (s === "ARCHIVED")   return { text: "보관됨",        tone: "warning"  as const };
   return                         { text: "초안",          tone: "neutral"  as const };
 }
@@ -113,7 +112,7 @@ function InlineEdit({ label, value, placeholder, onSave, onDelete, multiline = t
         </div>
         <textarea
           autoFocus
-          className="w-full resize-none rounded-lg border border-white/20 bg-white/[0.04] px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-indigo-400 min-h-[80px]"
+          className="w-full resize-none rounded-lg border border-white/20 bg-white/[0.04] px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-white/30 min-h-[80px]"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -177,7 +176,7 @@ function InlineEditCustom({
         {editingTitle ? (
           <input
             autoFocus
-            className="flex-1 rounded-lg border border-white/20 bg-white/[0.08] px-2 py-1 text-sm font-semibold text-white outline-none focus:ring-2 focus:ring-indigo-400"
+            className="flex-1 rounded-lg border border-white/20 bg-white/[0.08] px-2 py-1 text-sm font-semibold text-white outline-none focus:ring-2 focus:ring-white/30"
             value={draftTitle}
             onChange={(e) => setDraftTitle(e.target.value)}
             onBlur={() => { onSaveTitle(draftTitle); setEditingTitle(false); }}
@@ -210,7 +209,7 @@ function InlineEditCustom({
         <div className="space-y-2">
           <textarea
             autoFocus
-            className="w-full resize-none rounded-lg border border-white/20 bg-white/[0.06] px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-indigo-400 min-h-[80px]"
+            className="w-full resize-none rounded-lg border border-white/20 bg-white/[0.06] px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-white/30 min-h-[80px]"
             value={draftContent}
             onChange={(e) => setDraftContent(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Escape") { onSaveContent(draftContent); setEditingContent(false); } }}
@@ -269,8 +268,8 @@ const _GOVERNMENT_PROGRAMS_DEPRECATED = [
 ];
 
 const DECISION_META: Record<string, { label: string; cls: string }> = {
-  PENDING: { label: "검증 중",  cls: "bg-white/[0.06] text-zinc-200 border-amber-500/30" },
-  GO:      { label: "GO ✓",    cls: "bg-white/[0.06] text-zinc-200 border-emerald-500/30" },
+  PENDING: { label: "검증 중",  cls: "bg-white/[0.06] text-zinc-200 border-white/15" },
+  GO:      { label: "GO ✓",    cls: "bg-white/[0.06] text-zinc-200 border-white/15" },
   PIVOT:   { label: "PIVOT ↻", cls: "bg-white/[0.08] text-zinc-300 border-white/20" },
   HOLD:    { label: "HOLD ✗",  cls: "bg-rose-500/15 text-rose-300 border-rose-500/30" },
 };
@@ -422,7 +421,7 @@ export default function IdeaWorkspacePage() {
     schedulePlanSave(plan, customSections, next);
   }
 
-  async function handleStatus(status: "SELECTED" | "SHORTLISTED" | "ARCHIVED") {
+  async function handleStatus(status: "SELECTED" | "ARCHIVED") {
     if (!token || !idea) return;
     setSaving(true); setSaveMsg("");
     try {
@@ -430,7 +429,7 @@ export default function IdeaWorkspacePage() {
         "PATCH", `/api/idea-match/ideas/${idea.id}/status`, { status }, token,
       );
       setIdea((p) => p ? { ...p, status: res.idea.status } : p);
-      setSaveMsg({ SELECTED: "대표 아이디어로 저장됐습니다.", SHORTLISTED: "Shortlist에 저장됐습니다.", ARCHIVED: "보관 처리됐습니다." }[status]);
+      setSaveMsg({ SELECTED: "대표 아이디어로 저장됐습니다.", ARCHIVED: "보관 처리됐습니다." }[status]);
     } catch (caught) { setError(readError(caught, "상태 변경 실패")); }
     finally { setSaving(false); }
   }
@@ -709,9 +708,6 @@ export default function IdeaWorkspacePage() {
               <button type="button" disabled={saving || idea.status === "SELECTED"} onClick={() => handleStatus("SELECTED")} className="btn-primary px-4 py-2 text-sm">
                 {idea.status === "SELECTED" ? "대표 아이디어 ✓" : "대표 아이디어로 선정"}
               </button>
-              <button type="button" disabled={saving || idea.status === "SHORTLISTED"} onClick={() => handleStatus("SHORTLISTED")} className="btn-secondary px-4 py-2 text-sm">
-                Shortlist
-              </button>
               <button type="button" disabled={saving} onClick={() => handleStatus("ARCHIVED")} className="btn-ghost px-4 py-2 text-sm">
                 보관
               </button>
@@ -719,13 +715,13 @@ export default function IdeaWorkspacePage() {
           }
         />
 
-        {saveMsg ? <Surface className="border-emerald-500/30 bg-white/[0.06] text-zinc-200 py-3">{saveMsg}</Surface> : null}
+        {saveMsg ? <Surface className="border-white/15 bg-white/[0.06] text-zinc-200 py-3">{saveMsg}</Surface> : null}
 
         {/* 워크스페이스 진입 CTA — SELECTED 일 때 가장 prominent */}
         {idea.status === "SELECTED" ? (
           <Link
             href={`/workspace/${idea.id}`}
-            className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/20 bg-gradient-to-br from-violet-500/[0.10] to-violet-500/[0.02] px-5 py-4 transition-all hover:border-white/30"
+            className="group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/20 bg-gradient-to-br from-white/30/[0.10] to-white/10/[0.02] px-5 py-4 transition-all hover:border-white/30"
           >
             <div>
               <p className="text-xs font-semibold text-zinc-400">실행 시작</p>
@@ -747,7 +743,7 @@ export default function IdeaWorkspacePage() {
                 onClick={() => setTab(t.id)}
                 className={`shrink-0 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
                   tab === t.id
-                    ? "border-indigo-400 text-zinc-300"
+                    ? "border-white/20 text-zinc-300"
                     : "border-transparent text-zinc-400 hover:text-zinc-200"
                 }`}
               >
@@ -821,7 +817,7 @@ export default function IdeaWorkspacePage() {
             <button
               type="button"
               onClick={addCustomSection}
-              className="flex w-full items-center gap-2 rounded-xl border border-dashed border-white/15 px-4 py-3 text-sm text-zinc-500 hover:border-indigo-400/60 hover:text-zinc-300 transition-colors"
+              className="flex w-full items-center gap-2 rounded-xl border border-dashed border-white/15 px-4 py-3 text-sm text-zinc-500 hover:border-white/15 hover:text-zinc-300 transition-colors"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -849,7 +845,7 @@ export default function IdeaWorkspacePage() {
               <div className="flex items-center gap-3 pt-1">
                 <div className="h-2 flex-1 rounded-full bg-white/[0.05]">
                   <div
-                    className="h-2 rounded-full bg-emerald-400 transition-all"
+                    className="h-2 rounded-full bg-white/[0.06] transition-all"
                     style={{ width: `${(doneCount / totalDocs) * 100}%` }}
                   />
                 </div>
@@ -868,7 +864,7 @@ export default function IdeaWorkspacePage() {
                           type="checkbox"
                           checked={!!checked[item]}
                           onChange={() => toggleDoc(item)}
-                          className="h-4 w-4 rounded accent-indigo-500"
+                          className="h-4 w-4 rounded accent-white"
                         />
                         <span className={`text-sm ${checked[item] ? "text-zinc-500 line-through" : "text-zinc-100"}`}>
                           {item}

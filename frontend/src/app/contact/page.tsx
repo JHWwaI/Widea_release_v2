@@ -52,8 +52,8 @@ export default function ContactPage() {
             </div>
 
             {sent ? (
-              <div className="rounded-xl border border-emerald-100 bg-white/[0.06] p-6 text-center">
-                <p className="text-lg font-semibold text-emerald-800">문의가 접수되었습니다</p>
+              <div className="rounded-xl border border-white/20 bg-white/[0.06] p-6 text-center">
+                <p className="text-lg font-semibold text-zinc-300">문의가 접수되었습니다</p>
                 <p className="mt-2 text-sm text-zinc-700">
                   빠른 시일 내에 답변드리겠습니다.
                 </p>

@@ -206,7 +206,7 @@ export default function DeepReportTab({
 
         {/* hookLine */}
         {report.hookLine ? (
-          <blockquote className="border-l-2 border-violet-400 pl-5 text-xl font-bold leading-snug text-white sm:text-2xl">
+          <blockquote className="border-l-2 border-white/30 pl-5 text-xl font-bold leading-snug text-white sm:text-2xl">
             “{report.hookLine}”
           </blockquote>
         ) : null}
@@ -375,7 +375,7 @@ function ArchiveThumbnail({
         {/* 위 그라데이션 + 라벨 */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/70 to-transparent" />
         <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1.5 backdrop-blur-sm">
-          <span className="h-1.5 w-1.5 rounded-full bg-violet-400" />
+          <span className="h-1.5 w-1.5 rounded-full bg-white/30" />
           <span className="text-[0.7rem] font-semibold uppercase tracking-wider text-white">
             Wayback · {year ?? "초창기"}
           </span>
@@ -422,11 +422,8 @@ function ConclusionSection({
     : null;
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-br from-violet-950/60 via-zinc-950 to-zinc-950 p-8 sm:p-12">
+    <section className="relative overflow-hidden rounded-3xl border border-white/15 bg-gradient-to-br from-white/[0.06] via-zinc-950 to-zinc-950 p-8 sm:p-12">
       {/* 워터마크 */}
-      <span className="pointer-events-none absolute -bottom-12 -right-4 select-none text-[10rem] font-black leading-none text-violet-500/[0.06] sm:text-[14rem]">
-        결론
-      </span>
 
       <div className="relative space-y-8">
         <p className="text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-zinc-400">
@@ -610,7 +607,7 @@ function TimelineBar({ foundedYear }: { foundedYear: number }) {
       </div>
       <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-violet-500 to-violet-300"
+          className="h-full rounded-full bg-gradient-to-r from-white/30 to-white/10"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -787,11 +784,7 @@ function Chapter({
 }) {
   return (
     <section className="relative space-y-8">
-      <div className="pointer-events-none absolute -top-2 -left-2 select-none text-7xl font-black leading-none text-white/[0.05] sm:text-9xl">
-        {num}
-      </div>
-
-      <div className="relative pl-3 sm:pl-6">
+      <div className="relative">
         <p className="text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-zinc-400">
           {eyebrow}
         </p>

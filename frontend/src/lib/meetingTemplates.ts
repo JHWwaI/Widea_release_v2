@@ -15,7 +15,7 @@ export type TemplateSection = {
   field: string;
   label: string;
   kind: SectionKind;
-  tone?: "default" | "amber" | "rose" | "emerald" | "violet" | "sky";
+  tone?: "default" | "amber" | "rose" | "emerald" | "sky";
   emoji?: string;
 };
 
@@ -55,7 +55,7 @@ export const MEETING_TEMPLATES: Record<MeetingTemplateKey, MeetingTemplateMeta> 
     category: "팀 내부",
     sections: [
       { field: "yesterday", label: "어제 한 일", kind: "actionList", tone: "default" },
-      { field: "today",     label: "오늘 할 일", kind: "actionList", tone: "violet"  },
+      { field: "today",     label: "오늘 할 일", kind: "actionList", tone: "default"  },
       { field: "blockers",  label: "블로커",     kind: "actionList", tone: "rose",   emoji: "🚧" },
     ],
   },
@@ -82,7 +82,7 @@ export const MEETING_TEMPLATES: Record<MeetingTemplateKey, MeetingTemplateMeta> 
     category: "외부 미팅",
     sections: [
       { field: "painPoints",           label: "페인포인트",    kind: "stringList", tone: "rose",    emoji: "🩹" },
-      { field: "insights",             label: "인사이트",      kind: "stringList", tone: "violet",  emoji: "💡" },
+      { field: "insights",             label: "인사이트",      kind: "stringList", tone: "default",  emoji: "💡" },
       { field: "hypothesesValidated",  label: "검증된 가설",   kind: "stringList", tone: "emerald", emoji: "✅" },
       { field: "hypothesesRejected",   label: "반증된 가설",   kind: "stringList", tone: "amber",   emoji: "❌" },
       { field: "openQuestions",        label: "추가 검증 필요", kind: "stringList", tone: "sky",     emoji: "❓" },
@@ -99,7 +99,7 @@ export const MEETING_TEMPLATES: Record<MeetingTemplateKey, MeetingTemplateMeta> 
     sections: [
       { field: "keep",    label: "Keep — 유지",    kind: "stringList", tone: "emerald" },
       { field: "problem", label: "Problem — 문제", kind: "stringList", tone: "rose"    },
-      { field: "try",     label: "Try — 시도",     kind: "stringList", tone: "violet"  },
+      { field: "try",     label: "Try — 시도",     kind: "stringList", tone: "default"  },
     ],
   },
 };
@@ -117,7 +117,6 @@ export const TONE_TEXT: Record<NonNullable<TemplateSection["tone"]>, string> = {
   amber:   "text-amber-300",
   rose:    "text-rose-300",
   emerald: "text-emerald-300",
-  violet:  "text-violet-300",
   sky:     "text-sky-300",
 };
 

@@ -4,6 +4,7 @@ const backendOrigin = (process.env.BACKEND_ORIGIN || "http://localhost:3001").re
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["*.trycloudflare.com"],
+  devIndicators: false,
   async rewrites() {
     return [
       {

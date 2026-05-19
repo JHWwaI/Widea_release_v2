@@ -18,7 +18,7 @@ export function PageHeader({
     <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
       <div className="max-w-3xl space-y-2">
         {eyebrow ? (
-          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#93AFFE" }}>{eyebrow}</p>
+          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#A1A1AA", letterSpacing: "0.16em" }}>{eyebrow}</p>
         ) : null}
         <div className="flex flex-wrap items-center gap-3">
           <h1
@@ -29,7 +29,7 @@ export function PageHeader({
           </h1>
           {badge}
         </div>
-        <p className="max-w-2xl text-sm leading-7 sm:text-base" style={{ color: "#C5CAE9" }}>
+        <p className="max-w-2xl text-sm leading-7 sm:text-base" style={{ color: "#a1a1aa" }}>
           {description}
         </p>
       </div>
@@ -55,13 +55,13 @@ export function SectionHeader({
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div className="max-w-2xl space-y-1.5">
         {eyebrow ? (
-          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#93AFFE" }}>{eyebrow}</p>
+          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#A1A1AA", letterSpacing: "0.16em" }}>{eyebrow}</p>
         ) : null}
         <h2 id={titleId} className="text-lg font-bold text-white sm:text-xl">
           {title}
         </h2>
         {description ? (
-          <p className="text-sm leading-relaxed" style={{ color: "#C5CAE9" }}>{description}</p>
+          <p className="text-sm leading-relaxed" style={{ color: "#a1a1aa" }}>{description}</p>
         ) : null}
       </div>
       {action ? <div className="flex flex-wrap items-center gap-2">{action}</div> : null}
@@ -106,14 +106,14 @@ export function StatCard({
 }) {
   const styles = {
     default: { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" },
-    accent: { background: "rgba(79,110,247,0.08)", border: "1px solid rgba(79,110,247,0.2)" },
-    warm: { background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)" },
+    accent: { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.14)" },
+    warm: { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" },
   };
   return (
     <div className="space-y-2 rounded-2xl p-5" style={styles[tone]}>
       <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#A8AACC" }}>{label}</p>
       <p className="text-3xl font-bold text-white tracking-tight">{value}</p>
-      <p className="text-sm leading-relaxed" style={{ color: "#C5CAE9" }}>{hint}</p>
+      <p className="text-sm leading-relaxed" style={{ color: "#a1a1aa" }}>{hint}</p>
     </div>
   );
 }

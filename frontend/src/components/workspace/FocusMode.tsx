@@ -171,7 +171,7 @@ export default function FocusMode({
                         isComplete
                           ? "bg-emerald-400"
                           : isCurrent
-                            ? "bg-violet-400"
+                            ? "bg-white/30"
                             : "bg-zinc-700"
                       }`}
                       style={{ width: `${pct}%` }}

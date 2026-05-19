@@ -117,7 +117,29 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--bg)" }}>
+    <div className="relative min-h-screen overflow-x-hidden" style={{ background: "var(--bg)" }}>
+      {/* Ambient backdrop — applies to all logged-in pages for Linear-style tone */}
+      {user ? (
+        <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(900px 520px at 20% -10%, rgba(255,255,255,0.05), transparent 60%), radial-gradient(700px 400px at 95% 10%, rgba(255,255,255,0.025), transparent 70%)",
+            }}
+          />
+          <div
+            className="absolute inset-0 opacity-[0.10]"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px)",
+              backgroundSize: "56px 56px",
+              maskImage: "radial-gradient(ellipse at 50% 0%, black 25%, transparent 75%)",
+              WebkitMaskImage: "radial-gradient(ellipse at 50% 0%, black 25%, transparent 75%)",
+            }}
+          />
+        </div>
+      ) : null}
       {!user ? <Navbar onMenuToggle={handleMenuToggle} /> : null}
       {user ? (
         <Sidebar
@@ -129,7 +151,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       ) : null}
       <main
         className={[
-          "px-3 pb-6 sm:px-4",
+          "relative z-10 px-3 pb-6 sm:px-4",
           user ? "pt-12 lg:pt-8" : "pt-[calc(var(--navbar-height)+0.25rem)]",
           user && sidebarVisible
             ? "lg:pl-[calc(var(--sidebar-width)+0.5rem)] lg:pr-3 transition-[padding] duration-300"

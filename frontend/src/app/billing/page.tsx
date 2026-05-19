@@ -6,7 +6,9 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
+import { loadTossPayments } from "@tosspayments/payment-sdk";
 import AuthGuard from "@/components/AuthGuard";
+import MockTossModal from "@/components/MockTossModal";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/lib/api";
 import { readError } from "@/lib/product";
@@ -44,6 +46,18 @@ function Inner() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [clientKey, setClientKey] = useState("");
+  const [mockOpen, setMockOpen] = useState(false);
+  const [mockPlan, setMockPlan] = useState<PlanMeta | null>(null);
+
+  // 토스 클라이언트 키 로드
+  useEffect(() => {
+    let cancelled = false;
+    api<{ tossClientKey: string }>("GET", "/api/config/payment")
+      .then((cfg) => { if (!cancelled) setClientKey(cfg.tossClientKey); })
+      .catch(() => { /* silent */ });
+    return () => { cancelled = true; };
+  }, []);
 
   const refreshWs = useCallback(async () => {
     if (!token) return;
@@ -78,21 +92,61 @@ function Inner() {
   }, [token, selectedWs]);
 
   async function handleSubscribePersonal(plan: PlanMeta) {
-    if (!token) return;
-    setLoading(true);
-    setError("");
-    setSuccess("");
-    try {
-      // 개인 플랜은 기존 /api/subscribe (FREE) 또는 /api/admin/demo-subscribe (유료, 데모용)
-      if (plan.priceKrw === 0) {
+    if (!token || !user) return;
+    setError(""); setSuccess("");
+
+    // FREE 플랜 — 결제 없이 즉시 적용
+    if (plan.priceKrw === 0) {
+      setLoading(true);
+      try {
         await api("POST", "/api/subscribe", { planType: plan.key }, token);
-      } else {
-        await api("POST", "/api/admin/demo-subscribe", { planType: plan.key }, token);
+        await refreshUser();
+        setSuccess(`${plan.label} 플랜으로 변경됐습니다.`);
+      } catch (caught) {
+        setError(readError(caught, "구독 실패"));
+      } finally {
+        setLoading(false);
       }
+      return;
+    }
+
+    // 유료 플랜 — 토스 결제창 호출
+    if (!clientKey) {
+      setError("결제 모듈을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const tossPayments = await loadTossPayments(clientKey);
+      const orderId = `widea-${plan.key.toLowerCase()}-${Date.now()}`;
+      await tossPayments.requestPayment("카드", {
+        amount: plan.priceKrw,
+        orderId,
+        orderName: `Widea ${plan.label} 구독`,
+        customerName: user.name || user.email,
+        successUrl: `${window.location.origin}/billing/success?planType=${plan.key}`,
+        failUrl: `${window.location.origin}/billing/fail`,
+      });
+    } catch (caught: unknown) {
+      if (caught && typeof caught === "object" && "code" in caught && (caught as { code: string }).code === "USER_CANCEL") {
+        setLoading(false);
+        return;
+      }
+      setError(readError(caught, "결제 요청에 실패했습니다."));
+      setLoading(false);
+    }
+  }
+
+  // 관리자 전용 — Toss 안 거치고 즉시 플랜 부여 (데모 시연용)
+  async function handleDemoSubscribeAdmin(plan: PlanMeta) {
+    if (!token) return;
+    setLoading(true); setError(""); setSuccess("");
+    try {
+      await api("POST", "/api/admin/demo-subscribe", { planType: plan.key }, token);
       await refreshUser();
-      setSuccess(`${plan.label} 플랜으로 변경됐습니다.`);
+      setSuccess(`🎬 데모 결제 완료 — ${plan.label} 플랜 적용 (실거래 X)`);
     } catch (caught) {
-      setError(readError(caught, "구독 실패"));
+      setError(readError(caught, "데모 결제 실패"));
     } finally {
       setLoading(false);
     }
@@ -220,6 +274,8 @@ function Inner() {
             tab === "personal"
               ? currentPersonalPlan === plan.key
               : wsSub?.planType === plan.key;
+          const showAdminDemo =
+            tab === "personal" && !!user?.isAdmin && plan.priceKrw > 0 && !isCurrent;
           return (
             <PlanCard
               key={plan.key}
@@ -230,10 +286,25 @@ function Inner() {
               }
               loading={loading}
               showWsRequired={tab === "team" && !selectedWs && plan.key !== "ENTERPRISE"}
+              adminDemo={
+                showAdminDemo
+                  ? () => { setMockPlan(plan); setMockOpen(true); }
+                  : undefined
+              }
             />
           );
         })}
       </div>
+
+      {mockPlan ? (
+        <MockTossModal
+          open={mockOpen}
+          planLabel={mockPlan.label}
+          amountKRW={mockPlan.priceKrw}
+          onClose={() => setMockOpen(false)}
+          onConfirm={async () => { await handleDemoSubscribeAdmin(mockPlan); }}
+        />
+      ) : null}
 
       <p className="text-center text-[0.7rem] text-zinc-500">
         ⚠ 데모 환경 — 유료 플랜 결제는 시연용 우회 모드입니다. 실제 카드 결제는 발생하지 않습니다.
@@ -248,12 +319,14 @@ function PlanCard({
   onClick,
   loading,
   showWsRequired,
+  adminDemo,
 }: {
   plan: PlanMeta;
   isCurrent: boolean;
   onClick: () => void;
   loading: boolean;
   showWsRequired: boolean;
+  adminDemo?: () => void;
 }) {
   const isFree = plan.priceKrw === 0 && plan.key !== "ENTERPRISE";
   const isEnterprise = plan.key === "ENTERPRISE";
@@ -262,7 +335,7 @@ function PlanCard({
     plan.badge === "popular"
       ? { text: "인기", cn: "bg-white/[0.10] text-white" }
       : plan.badge === "best_value"
-        ? { text: "추천", cn: "bg-white text-white" }
+        ? { text: "추천", cn: "bg-white text-zinc-900" }
         : null;
 
   return (
@@ -283,7 +356,7 @@ function PlanCard({
         </span>
       ) : null}
       {isCurrent ? (
-        <span className="absolute -top-2.5 right-3 rounded-full bg-white px-2.5 py-0.5 text-[0.6rem] font-bold text-white">
+        <span className="absolute -top-2.5 right-3 rounded-full bg-white px-2.5 py-0.5 text-[0.6rem] font-bold text-zinc-900">
           현재 플랜
         </span>
       ) : null}
@@ -343,8 +416,19 @@ function PlanCard({
               ? "워크스페이스 선택 필요"
               : isFree
                 ? "FREE로 변경"
-                : `${plan.label} 시작`}
+                : `${plan.label} 결제하기`}
       </button>
+      {adminDemo ? (
+        <button
+          type="button"
+          onClick={adminDemo}
+          disabled={loading}
+          className="w-full rounded-lg border border-white/15 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-zinc-200 transition-colors hover:bg-white/[0.08] disabled:opacity-50"
+          title="관리자 전용 — Toss 스타일 데모 결제"
+        >
+          🎬 데모 결제 (실거래 X)
+        </button>
+      ) : null}
     </div>
   );
 }

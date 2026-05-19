@@ -35,8 +35,8 @@ export default function ForgotPasswordPage() {
         </div>
 
         {sent ? (
-          <div className="rounded-xl border border-emerald-100 bg-white/[0.06] p-6 text-center space-y-2">
-            <p className="font-semibold text-emerald-800">메일을 보냈습니다</p>
+          <div className="rounded-xl border border-white/15 bg-white/[0.06] p-6 text-center space-y-2">
+            <p className="font-semibold text-white">메일을 보냈습니다</p>
             <p className="text-sm text-zinc-700">
               받은 편지함을 확인해주세요. 링크는 1시간 동안 유효합니다.
             </p>

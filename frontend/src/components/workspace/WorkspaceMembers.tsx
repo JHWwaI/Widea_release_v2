@@ -485,7 +485,7 @@ function MemberCard({
               <div className="flex items-center gap-2">
                 <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/5">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-violet-500/70 to-emerald-400/70 transition-[width]"
+                    className="h-full rounded-full bg-gradient-to-r from-white/[0.06] to-white/30 transition-[width]"
                     style={{ width: `${pct}%` }}
                   />
                 </div>

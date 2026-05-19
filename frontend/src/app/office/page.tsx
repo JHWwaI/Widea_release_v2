@@ -51,7 +51,7 @@ export default function CityPage() {
         {/* 상단 배너 */}
         <div className="pointer-events-none absolute left-1/2 top-3 z-20 -translate-x-1/2">
           <span className="pointer-events-auto inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/[0.06] px-3 py-1 text-xs font-medium text-zinc-200 backdrop-blur">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400" />
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/50" />
             Widea Valley — 베타 (개발 중)
           </span>
         </div>

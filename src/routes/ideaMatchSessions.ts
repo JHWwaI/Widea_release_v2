@@ -3,6 +3,7 @@ import { IdeaStatus, type PrismaClient } from "@prisma/client";
 import { requireAuth } from "../lib/auth.js";
 import { getAuthedUser, handleRouteError } from "../lib/http.js";
 import { ensureWorkspaceForIdea } from "../lib/workspace.js";
+import { isAdminEmail } from "../lib/admin.js";
 
 type RegisterIdeaMatchSessionRoutesOptions = {
   prisma: PrismaClient;
@@ -162,6 +163,48 @@ export function registerIdeaMatchSessionRoutes(
     }
   });
 
+  // 아이디어 제목(titleKo) 변경 — 워크스페이스 이름 변경에 해당
+  app.patch("/api/ideas/:id", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId } = getAuthedUser(req);
+      const id = String(req.params.id);
+      const { titleKo } = req.body as { titleKo?: string };
+
+      if (!titleKo || typeof titleKo !== "string" || !titleKo.trim()) {
+        res.status(400).json({ error: "제목을 입력해주세요." });
+        return;
+      }
+      if (titleKo.trim().length > 200) {
+        res.status(400).json({ error: "제목은 200자 이하로 입력해주세요." });
+        return;
+      }
+
+      const idea = await prisma.generatedIdea.findUnique({
+        where: { id },
+        include: { session: { include: { projectPolicy: { select: { userId: true } } } } },
+      });
+      if (!idea) {
+        res.status(404).json({ error: "아이디어를 찾을 수 없습니다." });
+        return;
+      }
+      const actor = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
+      const isOwner = idea.session.projectPolicy.userId === userId;
+      if (!isOwner && !isAdminEmail(actor?.email)) {
+        res.status(403).json({ error: "권한이 없습니다." });
+        return;
+      }
+
+      const updated = await prisma.generatedIdea.update({
+        where: { id },
+        data: { titleKo: titleKo.trim() },
+        select: { id: true, titleKo: true },
+      });
+      res.json(updated);
+    } catch (err) {
+      handleRouteError(res, err, "아이디어 제목 변경 오류");
+    }
+  });
+
   app.patch("/api/ideas/:id/plan", requireAuth, async (req: Request, res: Response): Promise<void> => {
     try {
       const { userId } = getAuthedUser(req);
@@ -225,8 +268,14 @@ export function registerIdeaMatchSessionRoutes(
         },
       });
 
-      if (!idea || idea.session.projectPolicy.userId !== userId) {
+      if (!idea) {
         res.status(404).json({ error: "Idea not found." });
+        return;
+      }
+      const actorStatus = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
+      const isOwnerStatus = idea.session.projectPolicy.userId === userId;
+      if (!isOwnerStatus && !isAdminEmail(actorStatus?.email)) {
+        res.status(403).json({ error: "권한이 없습니다." });
         return;
       }
 

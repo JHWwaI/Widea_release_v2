@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
 import { LoadingState } from "@/components/ProductUI";
 import { useAuth } from "@/context/AuthContext";
@@ -50,6 +50,22 @@ export default function WorkspacePage() {
   const { ideaId: rawId } = useParams<{ ideaId: string }>();
   const ideaId = Array.isArray(rawId) ? rawId[0] : rawId;
   const { token } = useAuth();
+  const router = useRouter();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [renaming, setRenaming] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [actionError, setActionError] = useState("");
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [menuOpen]);
   const [data, setData] = useState<WorkspaceResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -92,6 +108,35 @@ export default function WorkspacePage() {
     refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ideaId, token]);
+
+  async function handleRename() {
+    if (!token || !ideaId || !newTitle.trim()) return;
+    setBusy(true); setActionError("");
+    try {
+      const updated = await api<{ titleKo: string }>(
+        "PATCH", `/api/ideas/${ideaId}`, { titleKo: newTitle.trim() }, token,
+      );
+      setData((prev) => prev ? { ...prev, idea: { ...prev.idea, titleKo: updated.titleKo } } : prev);
+      setRenaming(false); setMenuOpen(false);
+    } catch (caught) {
+      setActionError(readError(caught, "이름 변경 실패"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!token || !ideaId) return;
+    if (!window.confirm("이 워크스페이스를 삭제할까요? 아이디어는 보관 처리되고 사이드바에서 사라집니다.")) return;
+    setBusy(true); setActionError("");
+    try {
+      await api("PATCH", `/api/idea-match/ideas/${ideaId}/status`, { status: "ARCHIVED" }, token);
+      router.push("/idea-match");
+    } catch (caught) {
+      setActionError(readError(caught, "삭제 실패"));
+      setBusy(false);
+    }
+  }
 
   async function ensureWorkspace() {
     if (!token || !ideaId) return;
@@ -201,7 +246,7 @@ export default function WorkspacePage() {
 
   return (
     <AuthGuard>
-      <div className="space-y-10 fade-up py-4 pb-12">
+      <div className="widea-fade-up space-y-10 py-4 pb-12">
         {/* 헤더 */}
         <header className="space-y-3">
           <Link href={`/ideas/${idea.id}`} className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300">
@@ -209,28 +254,103 @@ export default function WorkspacePage() {
           </Link>
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="space-y-2">
-              <p className="eyebrow">워크스페이스</p>
-              <h1 className="editorial-h1">{idea.titleKo}</h1>
+              <p className="widea-eyebrow">워크스페이스</p>
+              <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">{idea.titleKo}</h1>
               {idea.oneLinerKo ? (
                 <p className="text-sm text-zinc-400">{idea.oneLinerKo}</p>
               ) : null}
             </div>
             <div className="flex items-center gap-3">
-              <Link
-                href={`/workspace/${idea.id}/office`}
-                className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/[0.06] px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/[0.08]"
-                title="가상 사무실 — 개발 중 (프로토타입)"
-              >
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400" />
-                가상 사무실 (베타)
-              </Link>
               <div className="text-right">
                 <p className="display-num text-4xl text-zinc-200 sm:text-5xl">{overallPct}%</p>
                 <p className="mt-1 text-xs text-zinc-500">전체 진척 ({done}/{total})</p>
               </div>
+              {/* 케밥 메뉴 — 이름 변경 / 삭제 */}
+              <div ref={menuRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setMenuOpen((v) => !v)}
+                    aria-label="워크스페이스 옵션"
+                    aria-haspopup="menu"
+                    aria-expanded={menuOpen}
+                    className="flex h-9 w-9 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-white/[0.06] hover:text-zinc-100"
+                  >
+                    <svg viewBox="0 0 16 16" className="h-4 w-4" fill="currentColor">
+                      <circle cx="8" cy="3" r="1.5" />
+                      <circle cx="8" cy="8" r="1.5" />
+                      <circle cx="8" cy="13" r="1.5" />
+                    </svg>
+                  </button>
+                  {menuOpen ? (
+                    <div role="menu" className="absolute right-0 top-full z-20 mt-1 w-44 overflow-hidden rounded-lg border border-white/10 bg-zinc-900 shadow-lg">
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => { setNewTitle(idea.titleKo); setRenaming(true); setMenuOpen(false); }}
+                        className="block w-full px-3 py-2 text-left text-sm text-zinc-200 transition-colors hover:bg-white/[0.06]"
+                      >
+                        이름 변경
+                      </button>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={handleDelete}
+                        className="block w-full border-t border-white/[0.06] px-3 py-2 text-left text-sm text-rose-300 transition-colors hover:bg-rose-500/10"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
             </div>
           </div>
+          {actionError ? (
+            <p className="text-xs text-rose-300">{actionError}</p>
+          ) : null}
         </header>
+
+        {/* 이름 변경 모달 */}
+        {renaming ? (
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+            onClick={() => !busy && setRenaming(false)}
+          >
+            <div
+              className="w-full max-w-sm rounded-2xl border border-white/10 bg-zinc-950 p-6 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-base font-semibold text-white">워크스페이스 이름 변경</h3>
+              <input
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                autoFocus
+                placeholder="새 이름"
+                className="mt-4 w-full rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-white/30 focus:outline-none"
+                onKeyDown={(e) => { if (e.key === "Enter") handleRename(); }}
+              />
+              <div className="mt-5 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setRenaming(false)}
+                  disabled={busy}
+                  className="rounded-md border border-white/10 px-3 py-1.5 text-sm text-zinc-300 hover:bg-white/[0.05] disabled:opacity-50"
+                >
+                  취소
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRename}
+                  disabled={busy || !newTitle.trim()}
+                  className="rounded-md bg-white px-3 py-1.5 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 disabled:opacity-50"
+                >
+                  {busy ? "저장 중…" : "저장"}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         {/* 탭 바 — 단계 ↔ 회의록 토글 */}
         <div
@@ -245,7 +365,7 @@ export default function WorkspacePage() {
             onClick={() => setTab("stages")}
             className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
               tab === "stages"
-                ? "bg-white/[0.10]/15 text-zinc-100 ring-1 ring-white/15"
+                ? "bg-white text-zinc-900 text-zinc-100 ring-1 ring-white/15"
                 : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
             }`}
           >
@@ -258,7 +378,7 @@ export default function WorkspacePage() {
             onClick={() => setTab("meetings")}
             className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
               tab === "meetings"
-                ? "bg-white/[0.10]/15 text-zinc-100 ring-1 ring-white/15"
+                ? "bg-white text-zinc-900 text-zinc-100 ring-1 ring-white/15"
                 : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
             }`}
           >
@@ -271,7 +391,7 @@ export default function WorkspacePage() {
             onClick={() => setTab("members")}
             className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
               tab === "members"
-                ? "bg-white/[0.10]/15 text-zinc-100 ring-1 ring-white/15"
+                ? "bg-white text-zinc-900 text-zinc-100 ring-1 ring-white/15"
                 : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
             }`}
           >
@@ -284,13 +404,13 @@ export default function WorkspacePage() {
           <>
 
         {allDone ? (
-          <section className="rounded-2xl border border-white/15 bg-white/[0.10]/[0.06] p-6 text-center">
+          <section className="rounded-2xl border border-white/15 bg-white/[0.06] p-6 text-center">
             <p className="text-3xl">🎉</p>
             <h2 className="mt-2 text-xl font-bold text-zinc-200">모든 단계 완료!</h2>
             <p className="mt-1 text-sm text-zinc-400">{total}개 작업을 모두 처리했어요.</p>
             <Link
               href={`/show/${idea.id}`}
-              className="mt-4 inline-flex rounded-xl bg-emerald-400 px-5 py-2.5 text-sm font-bold text-zinc-950 hover:bg-emerald-300"
+              className="widea-btn-primary mt-4 inline-flex"
             >
               🌐 사업 페이지 공유하기
             </Link>
@@ -405,7 +525,7 @@ export default function WorkspacePage() {
                   <div
                     className={`h-full rounded-full transition-all ${
                       s.status === "DONE"
-                        ? "bg-emerald-400"
+                        ? "bg-white"
                         : s.status === "ACTIVE"
                           ? "bg-white"
                           : "bg-zinc-600"
